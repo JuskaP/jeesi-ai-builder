@@ -32,8 +32,13 @@ export default function Landing() {
         <ChatUI />
       </motion.div>
 
-      <div className="mt-6 text-center text-muted-foreground">
-        Ei vaadi kirjautumista aloittamiseen.
+      <div className="mt-6 text-center">
+        <a 
+          href="/auth" 
+          className="text-primary hover:underline text-sm"
+        >
+          Kirjaudu sisään tai luo tili →
+        </a>
       </div>
     </div>
   );
