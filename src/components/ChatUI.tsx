@@ -27,15 +27,22 @@ export default function ChatUI() {
 
   const streamChat = async (userMessage: Message) => {
     try {
-      const response = await supabase.functions.invoke('agent-chat', {
-        body: { messages: [...messages, userMessage] }
+      const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/agent-chat`;
+      
+      const response = await fetch(CHAT_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({ messages: [...messages, userMessage] }),
       });
 
-      if (response.error) {
-        throw response.error;
+      if (!response.ok || !response.body) {
+        throw new Error('Failed to start stream');
       }
 
-      const reader = response.data.getReader();
+      const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let textBuffer = "";
       let streamDone = false;
