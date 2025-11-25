@@ -55,7 +55,7 @@ Botti voisi esimerkiksi:
 - Auttaa tilausten seurannassa ja perustietojen päivittämisessä
 - Kerätä asiakaspalautetta ja luokitella yhteydenottoja"
 
-Ole ystävällinen, kannustava ja käytä selkeää kieltä ilman ammattislangia.` 
+Ole ystävällinen, kannustava ja käytä selkeää kieltä ilman ammattislangia.`
           },
           ...messages,
         ],
