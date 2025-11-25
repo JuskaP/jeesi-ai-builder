@@ -8,6 +8,14 @@ interface Message {
   content: string;
 }
 
+const formatMessage = (content: string) => {
+  return content
+    .replace(/\*\*/g, '')
+    .replace(/\*/g, '')
+    .replace(/\n\n/g, '\n')
+    .trim();
+};
+
 export default function ChatUI() {
   const [messages, setMessages] = useState<Message[]>([
     { role: "assistant", content: "Hei! Mitä haluaisit luoda tänään?" }
@@ -122,17 +130,19 @@ export default function ChatUI() {
 
   return (
     <div className="flex flex-col w-full max-w-xl mx-auto p-4 rounded-2xl border border-border shadow-lg bg-card h-[600px]">
-      <div className="flex-1 overflow-y-auto space-y-3 p-2">
+      <div className="flex-1 overflow-y-auto space-y-4 p-4">
         {messages.map((m, i) => (
           <div
             key={i}
-            className={`p-3 rounded-xl max-w-[80%] ${
+            className={`p-4 rounded-xl max-w-[85%] ${
               m.role === "assistant" 
                 ? "bg-muted text-foreground" 
                 : "bg-primary text-primary-foreground ml-auto"
             }`}
           >
-            {m.content}
+            <div className="whitespace-pre-wrap leading-relaxed text-sm">
+              {formatMessage(m.content)}
+            </div>
           </div>
         ))}
         {isLoading && (
