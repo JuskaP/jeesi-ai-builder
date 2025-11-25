@@ -1,22 +1,116 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
+import { Loader2 } from "lucide-react";
+
+interface Message {
+  role: "user" | "assistant";
+  content: string;
+}
 
 export default function ChatUI() {
-  const [messages, setMessages] = useState([
+  const [messages, setMessages] = useState<Message[]>([
     { role: "assistant", content: "Hei! Mitä haluaisit luoda tänään?" }
   ]);
-
   const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { toast } = useToast();
 
-  const sendMessage = () => {
-    if (!input.trim()) return;
-    const newMsg = { role: "user", content: input };
-    setMessages([...messages, newMsg]);
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const streamChat = async (userMessage: Message) => {
+    try {
+      const response = await supabase.functions.invoke('agent-chat', {
+        body: { messages: [...messages, userMessage] }
+      });
+
+      if (response.error) {
+        throw response.error;
+      }
+
+      const reader = response.data.getReader();
+      const decoder = new TextDecoder();
+      let textBuffer = "";
+      let streamDone = false;
+      let assistantContent = "";
+
+      while (!streamDone) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        
+        textBuffer += decoder.decode(value, { stream: true });
+
+        let newlineIndex: number;
+        while ((newlineIndex = textBuffer.indexOf("\n")) !== -1) {
+          let line = textBuffer.slice(0, newlineIndex);
+          textBuffer = textBuffer.slice(newlineIndex + 1);
+
+          if (line.endsWith("\r")) line = line.slice(0, -1);
+          if (line.startsWith(":") || line.trim() === "") continue;
+          if (!line.startsWith("data: ")) continue;
+
+          const jsonStr = line.slice(6).trim();
+          if (jsonStr === "[DONE]") {
+            streamDone = true;
+            break;
+          }
+
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+            
+            if (content) {
+              assistantContent += content;
+              setMessages(prev => {
+                const last = prev[prev.length - 1];
+                if (last?.role === "assistant" && prev.length > 1) {
+                  return prev.map((m, i) => 
+                    i === prev.length - 1 ? { ...m, content: assistantContent } : m
+                  );
+                }
+                return [...prev, { role: "assistant", content: assistantContent }];
+              });
+            }
+          } catch {
+            textBuffer = line + "\n" + textBuffer;
+            break;
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Chat error:', error);
+      toast({
+        title: "Virhe",
+        description: "Viestien lähetyksessä tapahtui virhe. Yritä uudelleen.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const sendMessage = async () => {
+    if (!input.trim() || isLoading) return;
+    
+    const userMessage: Message = { role: "user", content: input };
+    setMessages(prev => [...prev, userMessage]);
     setInput("");
+    setIsLoading(true);
 
-    // Placeholder assistant logic
-    setTimeout(() => {
-      setMessages(prev => [...prev, { role: "assistant", content: "Kiitos! Aloitetaan agentin luonti." }]);
-    }, 400);
+    await streamChat(userMessage);
+    setIsLoading(false);
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage();
+    }
   };
 
   return (
@@ -34,6 +128,13 @@ export default function ChatUI() {
             {m.content}
           </div>
         ))}
+        {isLoading && (
+          <div className="flex items-center gap-2 text-muted-foreground">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            <span>Kirjoittaa...</span>
+          </div>
+        )}
+        <div ref={messagesEndRef} />
       </div>
 
       <div className="flex gap-2 mt-3">
@@ -41,11 +142,14 @@ export default function ChatUI() {
           className="flex-1 border border-border rounded-xl p-3 bg-background text-foreground"
           value={input}
           onChange={(e) => setInput(e.target.value)}
+          onKeyPress={handleKeyPress}
           placeholder="Kerro, millaisen agentin haluat..."
+          disabled={isLoading}
         />
         <button
           onClick={sendMessage}
-          className="px-4 py-2 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90"
+          disabled={isLoading || !input.trim()}
+          className="px-4 py-2 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Lähetä
         </button>
