@@ -58,7 +58,7 @@ export default function ChatUI() {
           setMessages([{ role: "assistant", content: rotatingGreetings[nextIndex] }]);
           return nextIndex;
         });
-      }, 10000);
+      }, 20000);
 
       return () => clearInterval(interval);
     }
@@ -169,7 +169,7 @@ export default function ChatUI() {
   };
 
   return (
-    <div className="flex flex-col w-full max-w-3xl mx-auto p-4 rounded-2xl border border-border shadow-lg bg-card h-[450px]">
+    <div className="flex flex-col w-full max-w-3xl mx-auto p-4 rounded-2xl border border-border/20 shadow-lg bg-card/10 backdrop-blur-sm min-h-[200px] max-h-[600px]">
       <div className="flex-1 overflow-y-auto space-y-4 p-4">
         {messages.map((m, i) => (
           <div
