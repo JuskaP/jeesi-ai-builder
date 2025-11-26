@@ -2,12 +2,13 @@ import React, { useState, useRef, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import { Loader2, Image as ImageIcon, Mic, MicOff } from "lucide-react";
+import { Loader2, Image as ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface Message {
   role: "user" | "assistant";
   content: string;
+  attachments?: string[];
 }
 
 interface Template {
@@ -48,9 +49,9 @@ export default function ChatUI({ template }: ChatUIProps) {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [hasUserTyped, setHasUserTyped] = useState(false);
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [isRecording, setIsRecording] = useState(false);
-  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
+  const [selectedImage, setSelectedImage] = useState<File | null>(null);
+  const [selectedImagePreview, setSelectedImagePreview] = useState<string | null>(null);
+  const [conversationId, setConversationId] = useState<string | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
@@ -170,6 +171,11 @@ export default function ChatUI({ template }: ChatUIProps) {
           }
         }
       }
+      
+      // Save assistant message after streaming completes
+      if (assistantContent) {
+        await saveMessage("assistant", assistantContent);
+      }
     } catch (error) {
       console.error('Chat error:', error);
       toast({
@@ -183,78 +189,77 @@ export default function ChatUI({ template }: ChatUIProps) {
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setSelectedImage(file);
       const reader = new FileReader();
       reader.onloadend = () => {
-        setSelectedImage(reader.result as string);
+        setSelectedImagePreview(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const startRecording = async () => {
+  const createOrGetConversation = async () => {
+    if (conversationId) return conversationId;
+
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = new MediaRecorder(stream);
-      const audioChunks: Blob[] = [];
+      const { data, error } = await supabase
+        .from('conversations')
+        .insert({
+          user_id: user?.id || null,
+          title: 'Uusi keskustelu'
+        })
+        .select()
+        .single();
 
-      recorder.ondataavailable = (e) => {
-        audioChunks.push(e.data);
-      };
-
-      recorder.onstop = async () => {
-        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
-        const reader = new FileReader();
-        reader.readAsDataURL(audioBlob);
-        reader.onloadend = async () => {
-          const base64Audio = (reader.result as string).split(',')[1];
-          
-          try {
-            const { data, error } = await supabase.functions.invoke('transcribe-audio', {
-              body: { audio: base64Audio }
-            });
-
-            if (error) throw error;
-            
-            if (data?.text) {
-              setInput(data.text);
-              toast({
-                title: "Puhe tunnistettu",
-                description: "Voit nyt lähettää viestin.",
-              });
-            }
-          } catch (error) {
-            console.error('Transcription error:', error);
-            toast({
-              title: "Virhe",
-              description: "Puheen tunnistamisessa tapahtui virhe.",
-              variant: "destructive",
-            });
-          }
-        };
-        
-        stream.getTracks().forEach(track => track.stop());
-      };
-
-      recorder.start();
-      setMediaRecorder(recorder);
-      setIsRecording(true);
+      if (error) throw error;
+      setConversationId(data.id);
+      return data.id;
     } catch (error) {
-      console.error('Recording error:', error);
-      toast({
-        title: "Virhe",
-        description: "Mikrofonin käyttö epäonnistui.",
-        variant: "destructive",
-      });
+      console.error('Error creating conversation:', error);
+      return null;
     }
   };
 
-  const stopRecording = () => {
-    if (mediaRecorder && isRecording) {
-      mediaRecorder.stop();
-      setIsRecording(false);
-      setMediaRecorder(null);
+  const uploadImage = async (file: File) => {
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user?.id || 'anon'}/${Date.now()}.${fileExt}`;
+      
+      const { data, error } = await supabase.storage
+        .from('agent-images')
+        .upload(fileName, file);
+
+      if (error) throw error;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('agent-images')
+        .getPublicUrl(fileName);
+
+      return publicUrl;
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      return null;
     }
   };
+
+  const saveMessage = async (role: string, content: string, attachments: string[] = []) => {
+    const convId = await createOrGetConversation();
+    if (!convId) return;
+
+    try {
+      await supabase
+        .from('messages')
+        .insert({
+          conversation_id: convId,
+          role,
+          content,
+          attachments
+        });
+    } catch (error) {
+      console.error('Error saving message:', error);
+    }
+  };
+
 
   const sendMessage = async () => {
     if ((!input.trim() && !selectedImage) || isLoading) return;
@@ -262,29 +267,44 @@ export default function ChatUI({ template }: ChatUIProps) {
     setHasUserTyped(true);
     
     let userMessage: any;
+    let imageUrl: string | null = null;
     
+    // Upload image if present
     if (selectedImage) {
-      // Message with image
+      imageUrl = await uploadImage(selectedImage);
+    }
+    
+    if (selectedImagePreview) {
+      // Message with image for AI
       userMessage = {
         role: "user",
         content: [
           { type: "text", text: input || "Analysoi tämä kuva agentin luontia varten." },
-          { type: "image_url", image_url: { url: selectedImage } }
+          { type: "image_url", image_url: { url: selectedImagePreview } }
         ]
       };
       
       // For display purposes, create a simple text version
+      const displayContent = `${input || "Lähetin kuvan"} [Kuva liitetty]`;
       setMessages(prev => [...prev, { 
         role: "user", 
-        content: `${input || "Lähetin kuvan"} [Kuva liitetty]` 
+        content: displayContent,
+        attachments: imageUrl ? [imageUrl] : []
       }]);
+      
+      // Save to database
+      await saveMessage("user", input || "Kuva liitetty", imageUrl ? [imageUrl] : []);
     } else {
       userMessage = { role: "user", content: input };
       setMessages(prev => [...prev, userMessage]);
+      
+      // Save to database
+      await saveMessage("user", input);
     }
     
     setInput("");
     setSelectedImage(null);
+    setSelectedImagePreview(null);
     setIsLoading(true);
 
     await streamChat(userMessage);
@@ -325,11 +345,14 @@ export default function ChatUI({ template }: ChatUIProps) {
       </div>
 
       <div className="space-y-2">
-        {selectedImage && (
+        {selectedImagePreview && (
           <div className="relative inline-block">
-            <img src={selectedImage} alt="Preview" className="max-h-32 rounded-lg" />
+            <img src={selectedImagePreview} alt="Preview" className="max-h-32 rounded-lg" />
             <button
-              onClick={() => setSelectedImage(null)}
+              onClick={() => {
+                setSelectedImage(null);
+                setSelectedImagePreview(null);
+              }}
               className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full w-6 h-6 flex items-center justify-center"
             >
               ×
@@ -354,16 +377,6 @@ export default function ChatUI({ template }: ChatUIProps) {
             disabled={isLoading}
           >
             <ImageIcon className="h-4 w-4" />
-          </Button>
-          
-          <Button
-            type="button"
-            variant={isRecording ? "destructive" : "outline"}
-            size="icon"
-            onClick={isRecording ? stopRecording : startRecording}
-            disabled={isLoading}
-          >
-            {isRecording ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
           </Button>
           
           <input
