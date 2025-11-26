@@ -27,7 +27,7 @@ export default function Landing() {
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ delay: 0.5 }}
-        className="w-full max-w-2xl mt-10"
+        className="w-full max-w-3xl mt-10"
       >
         <ChatUI />
       </motion.div>

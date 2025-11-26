@@ -129,7 +129,7 @@ export default function ChatUI() {
   };
 
   return (
-    <div className="flex flex-col w-full max-w-xl mx-auto p-4 rounded-2xl border border-border shadow-lg bg-card h-[600px]">
+    <div className="flex flex-col w-full max-w-3xl mx-auto p-4 rounded-2xl border border-border shadow-lg bg-card h-[450px]">
       <div className="flex-1 overflow-y-auto space-y-4 p-4">
         {messages.map((m, i) => (
           <div
