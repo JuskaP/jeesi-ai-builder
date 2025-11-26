@@ -10,7 +10,7 @@ export default function Landing() {
         transition={{ duration: 0.6 }}
         className="text-4xl md:text-6xl font-bold text-center mt-10 text-foreground"
       >
-        Rakenna AI Agentti<br />Minuuteissa
+        Luo henkilökohtainen apurisi nopeasti ja helposti!
       </motion.h1>
 
       <motion.p
@@ -19,8 +19,8 @@ export default function Landing() {
         transition={{ delay: 0.3 }}
         className="text-muted-foreground text-lg md:text-2xl text-center mt-4 max-w-2xl"
       >
-        Jeesi.io tekee AI-ratkaisujen käyttöönotosta yhtä helppoa kuin viestin lähettämisestä.
-        Aloita keskustelemalla — alusta hoitaa loput.
+        Jeesi.io tekee AI-agenttien käyttöönotosta yhtä helppoa kuin viestien lähettämisestä. 
+        Kerro assistentille mitä haluat agentin tekevän ja alusta hoitaa loput!
       </motion.p>
 
       <motion.div
