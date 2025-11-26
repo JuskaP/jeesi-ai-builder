@@ -1,8 +1,11 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { useToast } from '@/hooks/use-toast';
 
 const templates = [
   {
@@ -60,6 +63,9 @@ const categories = ['Kaikki', 'Asiakaspalvelu', 'Myynti', 'Markkinointi', 'Tuott
 export default function Community() {
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Kaikki');
+  const [selectedTemplate, setSelectedTemplate] = useState<typeof templates[0] | null>(null);
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
   const filteredTemplates = templates.filter(template => {
     const matchesSearch = template.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -67,6 +73,20 @@ export default function Community() {
     const matchesCategory = selectedCategory === 'Kaikki' || template.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
+
+  const handleUseTemplate = (template: typeof templates[0]) => {
+    setSelectedTemplate(template);
+  };
+
+  const handleCustomize = () => {
+    if (selectedTemplate) {
+      toast({
+        title: 'Agentti ladattu!',
+        description: `${selectedTemplate.name} on ladattu. Aloita muokkaaminen assistentin kanssa.`,
+      });
+      navigate('/', { state: { template: selectedTemplate } });
+    }
+  };
 
   return (
     <div className='p-8 max-w-7xl mx-auto'>
@@ -101,36 +121,68 @@ export default function Community() {
 
       <div className='grid md:grid-cols-2 lg:grid-cols-3 gap-6'>
         {filteredTemplates.map(template => (
-          <Card 
-            key={template.id}
-            className='group cursor-pointer hover:border-primary/50 transition-all duration-300 hover:-translate-y-1'
-          >
-            <CardHeader>
-              <div className='flex items-start justify-between mb-2'>
-                <Badge variant='secondary' className='text-xs'>
-                  {template.category}
-                </Badge>
-                <div className='flex items-center gap-1 text-muted-foreground'>
-                  <svg className='w-4 h-4' fill='currentColor' viewBox='0 0 20 20'>
-                    <path d='M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z' />
-                  </svg>
-                  <span className='text-sm'>{template.likes}</span>
+          <Dialog key={template.id}>
+            <DialogTrigger asChild>
+              <Card 
+                className='group cursor-pointer hover:border-primary/50 transition-all duration-300 hover:-translate-y-1'
+                onClick={() => handleUseTemplate(template)}
+              >
+                <CardHeader>
+                  <div className='flex items-start justify-between mb-2'>
+                    <Badge variant='secondary' className='text-xs'>
+                      {template.category}
+                    </Badge>
+                    <div className='flex items-center gap-1 text-muted-foreground'>
+                      <svg className='w-4 h-4' fill='currentColor' viewBox='0 0 20 20'>
+                        <path d='M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z' />
+                      </svg>
+                      <span className='text-sm'>{template.likes}</span>
+                    </div>
+                  </div>
+                  <CardTitle className='text-xl'>{template.name}</CardTitle>
+                  <CardDescription>{template.description}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className='flex items-center justify-between'>
+                    <span className='text-sm text-muted-foreground'>
+                      Tekijä: {template.author}
+                    </span>
+                    <Button size='sm' variant='ghost' className='group-hover:bg-primary group-hover:text-primary-foreground'>
+                      Käytä
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </DialogTrigger>
+            <DialogContent className='max-w-md'>
+              <DialogHeader>
+                <DialogTitle>{template.name}</DialogTitle>
+                <DialogDescription>{template.description}</DialogDescription>
+              </DialogHeader>
+              <div className='space-y-4 py-4'>
+                <div className='flex items-center justify-between'>
+                  <span className='text-sm text-muted-foreground'>Kategoria:</span>
+                  <Badge variant='secondary'>{template.category}</Badge>
+                </div>
+                <div className='flex items-center justify-between'>
+                  <span className='text-sm text-muted-foreground'>Tekijä:</span>
+                  <span className='text-sm font-medium'>{template.author}</span>
+                </div>
+                <div className='flex items-center justify-between'>
+                  <span className='text-sm text-muted-foreground'>Tykkäykset:</span>
+                  <span className='text-sm font-medium'>{template.likes}</span>
                 </div>
               </div>
-              <CardTitle className='text-xl'>{template.name}</CardTitle>
-              <CardDescription>{template.description}</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className='flex items-center justify-between'>
-                <span className='text-sm text-muted-foreground'>
-                  Tekijä: {template.author}
-                </span>
-                <Button size='sm' variant='ghost' className='group-hover:bg-primary group-hover:text-primary-foreground'>
-                  Käytä
+              <div className='flex gap-3'>
+                <Button variant='outline' className='flex-1' onClick={() => setSelectedTemplate(null)}>
+                  Peruuta
+                </Button>
+                <Button className='flex-1' onClick={handleCustomize}>
+                  Muokkaa omaksesi
                 </Button>
               </div>
-            </CardContent>
-          </Card>
+            </DialogContent>
+          </Dialog>
         ))}
       </div>
 
