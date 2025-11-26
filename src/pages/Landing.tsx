@@ -2,6 +2,9 @@ import { motion } from "framer-motion";
 import { useLocation } from "react-router-dom";
 import ChatUI from "@/components/ChatUI";
 import UseCaseCarousel from "@/components/UseCaseCarousel";
+import Features from "@/components/Features";
+import Testimonials from "@/components/Testimonials";
+import FAQ from "@/components/FAQ";
 
 export default function Landing() {
   const location = useLocation();
@@ -49,17 +52,23 @@ export default function Landing() {
 
       <UseCaseCarousel />
 
+      <Features />
+
+      <Testimonials />
+
+      <FAQ />
+
       <motion.div 
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.2, duration: 0.5 }}
-        className="mt-12 text-center relative z-10"
+        transition={{ delay: 1.5, duration: 0.5 }}
+        className="mt-12 mb-16 text-center relative z-10"
       >
         <a 
           href="/auth" 
-          className="text-primary hover:text-primary/80 text-sm font-medium transition-all duration-300 inline-flex items-center gap-2 group"
+          className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground rounded-lg text-lg font-semibold hover:bg-primary/90 transition-all duration-300 hover:shadow-lg hover:shadow-primary/20 hover:-translate-y-0.5"
         >
-          <span>Kirjaudu tai luo tili</span>
+          <span>Aloita ilmaiseksi</span>
           <span className="group-hover:translate-x-1 transition-transform duration-300">→</span>
         </a>
       </motion.div>
