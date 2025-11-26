@@ -2,9 +2,13 @@ import { motion } from "framer-motion";
 import { useLocation } from "react-router-dom";
 import ChatUI from "@/components/ChatUI";
 import UseCaseCarousel from "@/components/UseCaseCarousel";
+import CTABanner from "@/components/CTABanner";
 import Features from "@/components/Features";
+import DemoSection from "@/components/DemoSection";
+import Integrations from "@/components/Integrations";
 import Testimonials from "@/components/Testimonials";
 import FAQ from "@/components/FAQ";
+import TrustBadges from "@/components/TrustBadges";
 
 export default function Landing() {
   const location = useLocation();
@@ -52,11 +56,19 @@ export default function Landing() {
 
       <UseCaseCarousel />
 
+      <CTABanner />
+
       <Features />
+
+      <DemoSection />
+
+      <Integrations />
 
       <Testimonials />
 
       <FAQ />
+
+      <TrustBadges />
 
       <motion.div 
         initial={{ opacity: 0, y: 10 }}
