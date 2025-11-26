@@ -33,14 +33,21 @@ const useCases = [
 
 export default function UseCaseCarousel() {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [shuffledUseCases, setShuffledUseCases] = useState(useCases);
+
+  useEffect(() => {
+    // Shuffle use cases on mount
+    const shuffled = [...useCases].sort(() => Math.random() - 0.5);
+    setShuffledUseCases(shuffled);
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % useCases.length);
+      setCurrentIndex((prev) => (prev + 1) % shuffledUseCases.length);
     }, 15000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [shuffledUseCases.length]);
 
   return (
     <motion.div
@@ -50,7 +57,7 @@ export default function UseCaseCarousel() {
       className="mt-16 md:mt-24 w-full max-w-5xl relative z-10 px-4"
     >
       <div className="grid md:grid-cols-3 gap-6">
-        {useCases.map((useCase, index) => (
+        {shuffledUseCases.map((useCase, index) => (
           <AnimatePresence key={index} mode="wait">
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}

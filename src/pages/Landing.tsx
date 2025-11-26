@@ -1,8 +1,12 @@
 import { motion } from "framer-motion";
+import { useLocation } from "react-router-dom";
 import ChatUI from "@/components/ChatUI";
 import UseCaseCarousel from "@/components/UseCaseCarousel";
 
 export default function Landing() {
+  const location = useLocation();
+  const template = location.state?.template;
+  
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/50 flex flex-col items-center px-4 py-6 relative overflow-hidden">
       {/* Premium background effects */}
@@ -38,7 +42,7 @@ export default function Landing() {
         <div className="relative">
           <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-accent/20 to-primary/10 rounded-xl blur-xl" />
           <div className="relative">
-            <ChatUI />
+            <ChatUI template={template} />
           </div>
         </div>
       </motion.div>

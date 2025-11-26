@@ -9,6 +9,19 @@ interface Message {
   content: string;
 }
 
+interface Template {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  author: string;
+  likes: number;
+}
+
+interface ChatUIProps {
+  template?: Template;
+}
+
 const formatMessage = (content: string) => {
   return content
     .replace(/\*\*/g, '')
@@ -26,7 +39,7 @@ const rotatingGreetings = [
   "Moikka! Jeesi.io vie ideasi todellisuudeksi minuuteissa! ⚡"
 ];
 
-export default function ChatUI() {
+export default function ChatUI({ template }: ChatUIProps) {
   const { user } = useAuth();
   const [greetingIndex, setGreetingIndex] = useState(0);
   const [initialGreeting, setInitialGreeting] = useState<string>("");
@@ -39,7 +52,12 @@ export default function ChatUI() {
 
   // Initialize greeting based on user status
   useEffect(() => {
-    if (user) {
+    if (template) {
+      const templateMessage = `Loistavaa! Aloitetaan "${template.name}" -agentin muokkaus. ${template.description}\n\nKerro tarkemmin, mitä haluat tämän agentin tekevän ja miten se palvelee tarpeitasi?`;
+      setInitialGreeting(templateMessage);
+      setMessages([{ role: "assistant", content: templateMessage }]);
+      setHasUserTyped(true);
+    } else if (user) {
       const greeting = `Hei ${user.email?.split('@')[0] || 'siellä'}! Mitä haluaisit luoda tänään? 🎉`;
       setInitialGreeting(greeting);
       setMessages([{ role: "assistant", content: greeting }]);
@@ -47,7 +65,7 @@ export default function ChatUI() {
       setInitialGreeting(rotatingGreetings[0]);
       setMessages([{ role: "assistant", content: rotatingGreetings[0] }]);
     }
-  }, [user]);
+  }, [user, template]);
 
   // Rotate greetings for non-logged in users
   useEffect(() => {
