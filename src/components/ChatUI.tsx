@@ -44,7 +44,7 @@ const rotatingGreetings = [
 export default function ChatUI({ template }: ChatUIProps) {
   const { user } = useAuth();
   const [greetingIndex, setGreetingIndex] = useState(0);
-  const [initialGreeting, setInitialGreeting] = useState<string>("");
+  const [currentGreeting, setCurrentGreeting] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -60,15 +60,15 @@ export default function ChatUI({ template }: ChatUIProps) {
   useEffect(() => {
     if (template) {
       const templateMessage = `Loistavaa! Aloitetaan "${template.name}" -agentin muokkaus. ${template.description}\n\nKerro tarkemmin, mitä haluat tämän agentin tekevän ja miten se palvelee tarpeitasi?`;
-      setInitialGreeting(templateMessage);
+      setCurrentGreeting(templateMessage);
       setMessages([{ role: "assistant", content: templateMessage }]);
       setHasUserTyped(true);
     } else if (user) {
       const greeting = `Hei ${user.email?.split('@')[0] || 'siellä'}! Mitä haluaisit luoda tänään? 🎉`;
-      setInitialGreeting(greeting);
+      setCurrentGreeting(greeting);
       setMessages([{ role: "assistant", content: greeting }]);
     } else {
-      setInitialGreeting(rotatingGreetings[0]);
+      setCurrentGreeting(rotatingGreetings[0]);
       setMessages([{ role: "assistant", content: rotatingGreetings[0] }]);
     }
   }, [user, template]);
@@ -77,16 +77,19 @@ export default function ChatUI({ template }: ChatUIProps) {
   useEffect(() => {
     if (!user && !hasUserTyped && messages.length === 1) {
       const interval = setInterval(() => {
-        setGreetingIndex((prev) => {
-          const nextIndex = (prev + 1) % rotatingGreetings.length;
-          setMessages([{ role: "assistant", content: rotatingGreetings[nextIndex] }]);
-          return nextIndex;
-        });
+        setGreetingIndex((prev) => (prev + 1) % rotatingGreetings.length);
       }, 20000);
 
       return () => clearInterval(interval);
     }
   }, [user, hasUserTyped, messages.length]);
+
+  // Update greeting text when index changes
+  useEffect(() => {
+    if (!user && !hasUserTyped && messages.length === 1) {
+      setCurrentGreeting(rotatingGreetings[greetingIndex]);
+    }
+  }, [greetingIndex, user, hasUserTyped, messages.length]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -321,20 +324,28 @@ export default function ChatUI({ template }: ChatUIProps) {
   return (
     <div className="flex flex-col w-full max-w-3xl mx-auto p-4 rounded-2xl border border-border/20 shadow-lg bg-card/10 backdrop-blur-sm min-h-[200px] max-h-[600px]">
       <div className="flex-1 overflow-y-auto space-y-4 p-4">
-        {messages.map((m, i) => (
-          <div
-            key={i}
-            className={`p-4 rounded-xl max-w-[85%] ${
-              m.role === "assistant" 
-                ? "bg-muted text-foreground" 
-                : "bg-primary text-primary-foreground ml-auto"
-            }`}
-          >
+        {messages.length === 1 && !hasUserTyped ? (
+          <div className="p-4 rounded-xl max-w-[85%] bg-muted text-foreground">
             <div className="whitespace-pre-wrap leading-relaxed text-sm">
-              {formatMessage(m.content)}
+              {formatMessage(currentGreeting)}
             </div>
           </div>
-        ))}
+        ) : (
+          messages.map((m, i) => (
+            <div
+              key={i}
+              className={`p-4 rounded-xl max-w-[85%] ${
+                m.role === "assistant" 
+                  ? "bg-muted text-foreground" 
+                  : "bg-primary text-primary-foreground ml-auto"
+              }`}
+            >
+              <div className="whitespace-pre-wrap leading-relaxed text-sm">
+                {formatMessage(m.content)}
+              </div>
+            </div>
+          ))
+        )}
         {isLoading && (
           <div className="flex items-center gap-2 text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" />
