@@ -17,8 +17,8 @@ export default function Billing() {
 
   return (
     <div className='p-8 max-w-7xl mx-auto'>
-      <h2 className='text-2xl font-semibold text-foreground'>Billing</h2>
-      <p className='mt-2 text-sm text-muted-foreground'>Hallinnoi tilaustasi ja maksuja.</p>
+      <h2 className='text-2xl font-semibold text-foreground'>Hinnasto</h2>
+      <p className='mt-2 text-sm text-muted-foreground'>Valitse sinulle sopiva paketti.</p>
       <div className='mt-6 grid md:grid-cols-2 gap-6'>
         <Card>
           <CardHeader>

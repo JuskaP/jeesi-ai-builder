@@ -15,8 +15,8 @@ export default function Dashboard() {
 
   return (
     <div className='p-8 max-w-7xl mx-auto'>
-      <h2 className='text-2xl font-semibold text-foreground'>Dashboard</h2>
-      <p className='mt-2 text-sm text-muted-foreground'>Omat agentit ja niiden tila.</p>
+      <h2 className='text-2xl font-semibold text-foreground'>Omat Agentit</h2>
+      <p className='mt-2 text-sm text-muted-foreground'>Agentit ja niiden tila.</p>
       <div className='mt-6 space-y-4'>
         {agents.map(a => (
           <Card key={a.id}>
@@ -34,7 +34,7 @@ export default function Dashboard() {
         ))}
         <div className='pt-4'>
           <Button asChild>
-            <Link to='/builder'>Create new agent</Link>
+            <Link to='/community'>Luo uusi agentti</Link>
           </Button>
         </div>
       </div>

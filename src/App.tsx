@@ -27,9 +27,9 @@ const App = () => (
           <Route path="/" element={<Landing />} />
           <Route path="/auth" element={<Auth />} />
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-          <Route path="/builder" element={<ProtectedRoute><AgentBuilderHome /></ProtectedRoute>} />
+          <Route path="/community" element={<ProtectedRoute><AgentBuilderHome /></ProtectedRoute>} />
           <Route path="/workspaces" element={<ProtectedRoute><Workspaces /></ProtectedRoute>} />
-          <Route path="/billing" element={<ProtectedRoute><Billing /></ProtectedRoute>} />
+          <Route path="/billing" element={<Billing />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
