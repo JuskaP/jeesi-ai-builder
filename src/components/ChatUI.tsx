@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/hooks/useAuth";
 import { Loader2 } from "lucide-react";
 
 interface Message {
@@ -16,14 +17,52 @@ const formatMessage = (content: string) => {
     .trim();
 };
 
+const rotatingGreetings = [
+  "Hei! Mitä AI-agenttia haluaisit rakentaa tänään? 🤖",
+  "Terve! Kuvaile unelmiesi agentti, niin minä rakennan sen! ✨",
+  "Moi! Kerro mitä haluat automatisoida, minä hoidan loput! 🚀",
+  "Hei taas! Luodaan yhdessä jotain mahtavaa? 💡",
+  "Tervehdys! Valmis tekemään AI:sta helppoa? 🎯",
+  "Moikka! Jeesi.io vie ideasi todellisuudeksi minuuteissa! ⚡"
+];
+
 export default function ChatUI() {
-  const [messages, setMessages] = useState<Message[]>([
-    { role: "assistant", content: "Hei! Mitä haluaisit luoda tänään?" }
-  ]);
+  const { user } = useAuth();
+  const [greetingIndex, setGreetingIndex] = useState(0);
+  const [initialGreeting, setInitialGreeting] = useState<string>("");
+  const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [hasUserTyped, setHasUserTyped] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+
+  // Initialize greeting based on user status
+  useEffect(() => {
+    if (user) {
+      const greeting = `Hei ${user.email?.split('@')[0] || 'siellä'}! Mitä haluaisit luoda tänään? 🎉`;
+      setInitialGreeting(greeting);
+      setMessages([{ role: "assistant", content: greeting }]);
+    } else {
+      setInitialGreeting(rotatingGreetings[0]);
+      setMessages([{ role: "assistant", content: rotatingGreetings[0] }]);
+    }
+  }, [user]);
+
+  // Rotate greetings for non-logged in users
+  useEffect(() => {
+    if (!user && !hasUserTyped && messages.length === 1) {
+      const interval = setInterval(() => {
+        setGreetingIndex((prev) => {
+          const nextIndex = (prev + 1) % rotatingGreetings.length;
+          setMessages([{ role: "assistant", content: rotatingGreetings[nextIndex] }]);
+          return nextIndex;
+        });
+      }, 10000);
+
+      return () => clearInterval(interval);
+    }
+  }, [user, hasUserTyped, messages.length]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -112,6 +151,7 @@ export default function ChatUI() {
   const sendMessage = async () => {
     if (!input.trim() || isLoading) return;
     
+    setHasUserTyped(true);
     const userMessage: Message = { role: "user", content: input };
     setMessages(prev => [...prev, userMessage]);
     setInput("");
@@ -158,7 +198,10 @@ export default function ChatUI() {
         <input
           className="flex-1 border border-border rounded-xl p-3 bg-background text-foreground"
           value={input}
-          onChange={(e) => setInput(e.target.value)}
+          onChange={(e) => {
+            setInput(e.target.value);
+            if (e.target.value.length > 0) setHasUserTyped(true);
+          }}
           onKeyPress={handleKeyPress}
           placeholder="Kerro, millaisen agentin haluat..."
           disabled={isLoading}
