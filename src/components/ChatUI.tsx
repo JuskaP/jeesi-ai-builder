@@ -2,7 +2,8 @@ import React, { useState, useRef, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import { Loader2 } from "lucide-react";
+import { Loader2, Image as ImageIcon, Mic, MicOff } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface Message {
   role: "user" | "assistant";
@@ -47,7 +48,11 @@ export default function ChatUI({ template }: ChatUIProps) {
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [hasUserTyped, setHasUserTyped] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [isRecording, setIsRecording] = useState(false);
+  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   // Initialize greeting based on user status
@@ -90,9 +95,18 @@ export default function ChatUI({ template }: ChatUIProps) {
     scrollToBottom();
   }, [messages]);
 
-  const streamChat = async (userMessage: Message) => {
+  const streamChat = async (userMessage: Message | any) => {
     try {
       const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/agent-chat`;
+      
+      // Build messages array with proper format for images
+      const formattedMessages = [...messages, userMessage].map(msg => {
+        if (typeof msg.content === 'string') {
+          return msg;
+        }
+        // Message with image
+        return msg;
+      });
       
       const response = await fetch(CHAT_URL, {
         method: 'POST',
@@ -100,7 +114,7 @@ export default function ChatUI({ template }: ChatUIProps) {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
-        body: JSON.stringify({ messages: [...messages, userMessage] }),
+        body: JSON.stringify({ messages: formattedMessages }),
       });
 
       if (!response.ok || !response.body) {
@@ -166,13 +180,111 @@ export default function ChatUI({ template }: ChatUIProps) {
     }
   };
 
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setSelectedImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const startRecording = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      const audioChunks: Blob[] = [];
+
+      recorder.ondataavailable = (e) => {
+        audioChunks.push(e.data);
+      };
+
+      recorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        const reader = new FileReader();
+        reader.readAsDataURL(audioBlob);
+        reader.onloadend = async () => {
+          const base64Audio = (reader.result as string).split(',')[1];
+          
+          try {
+            const { data, error } = await supabase.functions.invoke('transcribe-audio', {
+              body: { audio: base64Audio }
+            });
+
+            if (error) throw error;
+            
+            if (data?.text) {
+              setInput(data.text);
+              toast({
+                title: "Puhe tunnistettu",
+                description: "Voit nyt lähettää viestin.",
+              });
+            }
+          } catch (error) {
+            console.error('Transcription error:', error);
+            toast({
+              title: "Virhe",
+              description: "Puheen tunnistamisessa tapahtui virhe.",
+              variant: "destructive",
+            });
+          }
+        };
+        
+        stream.getTracks().forEach(track => track.stop());
+      };
+
+      recorder.start();
+      setMediaRecorder(recorder);
+      setIsRecording(true);
+    } catch (error) {
+      console.error('Recording error:', error);
+      toast({
+        title: "Virhe",
+        description: "Mikrofonin käyttö epäonnistui.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorder && isRecording) {
+      mediaRecorder.stop();
+      setIsRecording(false);
+      setMediaRecorder(null);
+    }
+  };
+
   const sendMessage = async () => {
-    if (!input.trim() || isLoading) return;
+    if ((!input.trim() && !selectedImage) || isLoading) return;
     
     setHasUserTyped(true);
-    const userMessage: Message = { role: "user", content: input };
-    setMessages(prev => [...prev, userMessage]);
+    
+    let userMessage: any;
+    
+    if (selectedImage) {
+      // Message with image
+      userMessage = {
+        role: "user",
+        content: [
+          { type: "text", text: input || "Analysoi tämä kuva agentin luontia varten." },
+          { type: "image_url", image_url: { url: selectedImage } }
+        ]
+      };
+      
+      // For display purposes, create a simple text version
+      setMessages(prev => [...prev, { 
+        role: "user", 
+        content: `${input || "Lähetin kuvan"} [Kuva liitetty]` 
+      }]);
+    } else {
+      userMessage = { role: "user", content: input };
+      setMessages(prev => [...prev, userMessage]);
+    }
+    
     setInput("");
+    setSelectedImage(null);
     setIsLoading(true);
 
     await streamChat(userMessage);
@@ -212,25 +324,68 @@ export default function ChatUI({ template }: ChatUIProps) {
         <div ref={messagesEndRef} />
       </div>
 
-      <div className="flex gap-2 mt-3">
-        <input
-          className="flex-1 border border-border rounded-xl p-3 bg-background text-foreground"
-          value={input}
-          onChange={(e) => {
-            setInput(e.target.value);
-            if (e.target.value.length > 0) setHasUserTyped(true);
-          }}
-          onKeyPress={handleKeyPress}
-          placeholder="Kerro, millaisen agentin haluat..."
-          disabled={isLoading}
-        />
-        <button
-          onClick={sendMessage}
-          disabled={isLoading || !input.trim()}
-          className="px-4 py-2 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          Lähetä
-        </button>
+      <div className="space-y-2">
+        {selectedImage && (
+          <div className="relative inline-block">
+            <img src={selectedImage} alt="Preview" className="max-h-32 rounded-lg" />
+            <button
+              onClick={() => setSelectedImage(null)}
+              className="absolute -top-2 -right-2 bg-destructive text-destructive-foreground rounded-full w-6 h-6 flex items-center justify-center"
+            >
+              ×
+            </button>
+          </div>
+        )}
+        
+        <div className="flex gap-2">
+          <input
+            type="file"
+            ref={fileInputRef}
+            accept="image/*"
+            className="hidden"
+            onChange={handleImageSelect}
+          />
+          
+          <Button
+            type="button"
+            variant="outline"
+            size="icon"
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isLoading}
+          >
+            <ImageIcon className="h-4 w-4" />
+          </Button>
+          
+          <Button
+            type="button"
+            variant={isRecording ? "destructive" : "outline"}
+            size="icon"
+            onClick={isRecording ? stopRecording : startRecording}
+            disabled={isLoading}
+          >
+            {isRecording ? <MicOff className="h-4 w-4" /> : <Mic className="h-4 w-4" />}
+          </Button>
+          
+          <input
+            className="flex-1 border border-border rounded-xl p-3 bg-background text-foreground"
+            value={input}
+            onChange={(e) => {
+              setInput(e.target.value);
+              if (e.target.value.length > 0) setHasUserTyped(true);
+            }}
+            onKeyPress={handleKeyPress}
+            placeholder="Kerro, millaisen agentin haluat..."
+            disabled={isLoading}
+          />
+          
+          <button
+            onClick={sendMessage}
+            disabled={isLoading || (!input.trim() && !selectedImage)}
+            className="px-4 py-2 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Lähetä
+          </button>
+        </div>
       </div>
     </div>
   );

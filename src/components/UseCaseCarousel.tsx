@@ -42,9 +42,10 @@ export default function UseCaseCarousel() {
   }, []);
 
   useEffect(() => {
+    // Change use case every 10 seconds
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % shuffledUseCases.length);
-    }, 15000);
+    }, 10000);
 
     return () => clearInterval(interval);
   }, [shuffledUseCases.length]);
@@ -84,9 +85,10 @@ export default function UseCaseCarousel() {
               <p className="text-sm text-muted-foreground">{useCase.description}</p>
               {currentIndex === index && (
                 <motion.div
+                  key={`progress-${currentIndex}`}
                   initial={{ width: 0 }}
                   animate={{ width: '100%' }}
-                  transition={{ duration: 15, ease: 'linear' }}
+                  transition={{ duration: 10, ease: 'linear' }}
                   className="h-1 bg-primary/50 rounded-full mt-4"
                 />
               )}

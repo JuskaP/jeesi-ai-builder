@@ -20,6 +20,16 @@ serve(async (req) => {
     }
 
     console.log('Processing agent chat request with', messages.length, 'messages');
+    
+    // Check if any message contains images
+    const hasImages = messages.some((msg: any) => 
+      Array.isArray(msg.content) && 
+      msg.content.some((part: any) => part.type === 'image_url')
+    );
+    
+    if (hasImages) {
+      console.log('Request contains images - using multimodal capabilities');
+    }
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -45,6 +55,12 @@ KESKUSTELUN VAIHEET:
 2. Tarkennus: Kun asiakas vastaa, kysy yhdestä tärkeimmästä yksityiskohdasta ja ehdota 2-3 tapaa miten agentti voisi toimia
 3. Ominaisuudet: Ehdota konkreettisia ominaisuuksia asiakkaan kuvauksen perusteella
 4. Yhteenveto: Kerää tiedot yhteen ja ehdota seuraavia askeleita
+
+KUVA-ANALYYSI:
+- Jos asiakas lähettää kuvan, analysoi se huolellisesti
+- Tunnista kuvasta elementit, jotka voivat auttaa agentin suunnittelussa (esim. tuotteet, palvelut, käyttöliittymät, prosessit)
+- Ehdota konkreettisia tapoja, miten AI-agentti voisi hyödyntää kuvan sisältöä
+- Kysy tarkentavia kysymyksiä kuvan kontekstista
 
 ESIMERKKI HYVÄSTÄ VASTAUKSESTA:
 Käyttäjä: "Haluaisin asiakaspalvelubottia"
