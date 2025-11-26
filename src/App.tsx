@@ -10,7 +10,7 @@ import PageTransition from "./components/PageTransition";
 import Landing from "./pages/Landing";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
-import AgentBuilderHome from "./pages/AgentBuilder/BuilderHome";
+import Community from "./pages/Community";
 import Workspaces from "./pages/Workspaces";
 import Billing from "./pages/Billing";
 import NotFound from "./pages/NotFound";
@@ -26,9 +26,9 @@ function AnimatedRoutes() {
       <Routes location={location} key={location.pathname}>
         <Route path="/" element={<PageTransition><Landing /></PageTransition>} />
         <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
-        <Route path="/dashboard" element={<PageTransition><ProtectedRoute><Dashboard /></ProtectedRoute></PageTransition>} />
-        <Route path="/community" element={<PageTransition><ProtectedRoute><AgentBuilderHome /></ProtectedRoute></PageTransition>} />
-        <Route path="/workspaces" element={<PageTransition><ProtectedRoute><Workspaces /></ProtectedRoute></PageTransition>} />
+        <Route path="/dashboard" element={<PageTransition><Dashboard /></PageTransition>} />
+        <Route path="/community" element={<PageTransition><Community /></PageTransition>} />
+        <Route path="/workspaces" element={<PageTransition><Workspaces /></PageTransition>} />
         <Route path="/billing" element={<PageTransition><Billing /></PageTransition>} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
