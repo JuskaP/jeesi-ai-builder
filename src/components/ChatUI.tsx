@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
@@ -32,16 +33,8 @@ const formatMessage = (content: string) => {
     .trim();
 };
 
-const rotatingGreetings = [
-  "Hei! Mitä AI-agenttia haluaisit rakentaa tänään? 🤖",
-  "Terve! Kuvaile unelmiesi agentti, niin minä rakennan sen! ✨",
-  "Moi! Kerro mitä haluat automatisoida, minä hoidan loput! 🚀",
-  "Hei taas! Luodaan yhdessä jotain mahtavaa? 💡",
-  "Tervehdys! Valmis tekemään AI:sta helppoa? 🎯",
-  "Moikka! Jeesi.io vie ideasi todellisuudeksi minuuteissa! ⚡"
-];
-
 export default function ChatUI({ template }: ChatUIProps) {
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const [greetingIndex, setGreetingIndex] = useState(0);
   const [currentGreeting, setCurrentGreeting] = useState<string>("");
@@ -56,22 +49,29 @@ export default function ChatUI({ template }: ChatUIProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
+  const rotatingGreetings = t('landing.greetings.loggedOut', { returnObjects: true }) as string[];
+
   // Initialize greeting based on user status
   useEffect(() => {
     if (template) {
-      const templateMessage = `Loistavaa! Aloitetaan "${template.name}" -agentin muokkaus. ${template.description}\n\nKerro tarkemmin, mitä haluat tämän agentin tekevän ja miten se palvelee tarpeitasi?`;
+      const templateMessage = t('landing.greetings.template', {
+        name: template.name,
+        description: template.description
+      });
       setCurrentGreeting(templateMessage);
       setMessages([{ role: "assistant", content: templateMessage }]);
       setHasUserTyped(true);
     } else if (user) {
-      const greeting = `Hei ${user.email?.split('@')[0] || 'siellä'}! Mitä haluaisit luoda tänään? 🎉`;
+      const greeting = t('landing.greetings.loggedIn', { 
+        email: user.email?.split('@')[0] || ''
+      });
       setCurrentGreeting(greeting);
       setMessages([{ role: "assistant", content: greeting }]);
     } else {
       setCurrentGreeting(rotatingGreetings[0]);
       setMessages([{ role: "assistant", content: rotatingGreetings[0] }]);
     }
-  }, [user, template]);
+  }, [user, template, t, i18n.language]);
 
   // Rotate greetings for non-logged in users
   useEffect(() => {
@@ -82,14 +82,14 @@ export default function ChatUI({ template }: ChatUIProps) {
 
       return () => clearInterval(interval);
     }
-  }, [user, hasUserTyped, messages.length]);
+  }, [user, hasUserTyped, messages.length, rotatingGreetings.length]);
 
   // Update greeting text when index changes
   useEffect(() => {
     if (!user && !hasUserTyped && messages.length === 1) {
       setCurrentGreeting(rotatingGreetings[greetingIndex]);
     }
-  }, [greetingIndex, user, hasUserTyped, messages.length]);
+  }, [greetingIndex, user, hasUserTyped, messages.length, rotatingGreetings]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ 
@@ -107,12 +107,10 @@ export default function ChatUI({ template }: ChatUIProps) {
     try {
       const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/agent-chat`;
       
-      // Build messages array with proper format for images
       const formattedMessages = [...messages, userMessage].map(msg => {
         if (typeof msg.content === 'string') {
           return msg;
         }
-        // Message with image
         return msg;
       });
       
@@ -179,15 +177,14 @@ export default function ChatUI({ template }: ChatUIProps) {
         }
       }
       
-      // Save assistant message after streaming completes
       if (assistantContent) {
         await saveMessage("assistant", assistantContent);
       }
     } catch (error) {
       console.error('Chat error:', error);
       toast({
-        title: "Virhe",
-        description: "Viestien lähetyksessä tapahtui virhe. Yritä uudelleen.",
+        title: t('common.error'),
+        description: t('chat.sendError'),
         variant: "destructive",
       });
     }
@@ -213,7 +210,7 @@ export default function ChatUI({ template }: ChatUIProps) {
         .from('conversations')
         .insert({
           user_id: user?.id || null,
-          title: 'Uusi keskustelu'
+          title: t('chat.newConversation')
         })
         .select()
         .single();
@@ -267,7 +264,6 @@ export default function ChatUI({ template }: ChatUIProps) {
     }
   };
 
-
   const sendMessage = async () => {
     if ((!input.trim() && !selectedImage) || isLoading) return;
     
@@ -276,36 +272,30 @@ export default function ChatUI({ template }: ChatUIProps) {
     let userMessage: any;
     let imageUrl: string | null = null;
     
-    // Upload image if present
     if (selectedImage) {
       imageUrl = await uploadImage(selectedImage);
     }
     
     if (selectedImagePreview) {
-      // Message with image for AI
       userMessage = {
         role: "user",
         content: [
-          { type: "text", text: input || "Analysoi tämä kuva agentin luontia varten." },
+          { type: "text", text: input || t('chat.analyzeImage') },
           { type: "image_url", image_url: { url: selectedImagePreview } }
         ]
       };
       
-      // For display purposes, create a simple text version
-      const displayContent = `${input || "Lähetin kuvan"} [Kuva liitetty]`;
+      const displayContent = `${input || t('chat.imageSent')} ${t('chat.imageAttached')}`;
       setMessages(prev => [...prev, { 
         role: "user", 
         content: displayContent,
         attachments: imageUrl ? [imageUrl] : []
       }]);
       
-      // Save to database
-      await saveMessage("user", input || "Kuva liitetty", imageUrl ? [imageUrl] : []);
+      await saveMessage("user", input || t('chat.imageAttached'), imageUrl ? [imageUrl] : []);
     } else {
       userMessage = { role: "user", content: input };
       setMessages(prev => [...prev, userMessage]);
-      
-      // Save to database
       await saveMessage("user", input);
     }
     
@@ -353,7 +343,7 @@ export default function ChatUI({ template }: ChatUIProps) {
         {isLoading && (
           <div className="flex items-center gap-2 text-muted-foreground">
             <Loader2 className="h-4 w-4 animate-spin" />
-            <span>Kirjoittaa...</span>
+            <span>{t('chat.typing')}</span>
           </div>
         )}
         <div ref={messagesEndRef} />
@@ -402,7 +392,7 @@ export default function ChatUI({ template }: ChatUIProps) {
               if (e.target.value.length > 0) setHasUserTyped(true);
             }}
             onKeyPress={handleKeyPress}
-            placeholder="Kerro, millaisen agentin haluat..."
+            placeholder={t('chat.placeholder')}
             disabled={isLoading}
           />
           
@@ -411,7 +401,7 @@ export default function ChatUI({ template }: ChatUIProps) {
             disabled={isLoading || (!input.trim() && !selectedImage)}
             className="px-4 py-2 bg-primary text-primary-foreground rounded-xl hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Lähetä
+            {t('common.send')}
           </button>
         </div>
       </div>

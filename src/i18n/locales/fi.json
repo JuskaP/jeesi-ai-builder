@@ -191,6 +191,7 @@
     "add": "Lisää",
     "remove": "Poista",
     "close": "Sulje",
-    "back": "Takaisin"
+    "back": "Takaisin",
+    "send": "Lähetä"
   }
 }

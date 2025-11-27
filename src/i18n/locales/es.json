@@ -191,6 +191,7 @@
     "add": "Agregar",
     "remove": "Quitar",
     "close": "Cerrar",
-    "back": "Atrás"
+    "back": "Atrás",
+    "send": "Enviar"
   }
 }
