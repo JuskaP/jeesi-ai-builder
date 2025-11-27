@@ -19,13 +19,19 @@
     },
     "greetings": {
       "loggedOut": [
-        "👋 Hi! I'm Helpie, your AI agent builder assistant.",
-        "🚀 Ready to create something amazing? Let's start!",
-        "💡 Got an idea? Let's turn it into an AI agent!",
-        "✨ Tell me what kind of agent you'd like to build.",
-        "🎯 Let's build your custom AI agent together!"
+        "Hi! I'm Helpie 👋 Ready to build something extraordinary together?",
+        "Hey there! 🚀 Let's craft your perfect AI assistant—no code required!",
+        "Welcome! ✨ Tell me about your dream AI agent and watch it come to life.",
+        "Hello friend! 🎯 What AI magic shall we create for your business today?",
+        "Greetings! 💡 I'm here to turn your ideas into powerful AI agents.",
+        "Hi! 🌟 Describe what you need, and I'll build an agent that actually works.",
+        "Hey! 🎨 Ready to automate your workflow with a custom AI assistant?",
+        "Welcome! 🔮 Let's build an AI agent that feels like you hired a genius.",
+        "Hello! ⚡ From idea to deployment—let's create your AI agent right now.",
+        "Hi there! 🎪 Tell me your challenge, and I'll design the perfect AI solution."
       ],
-      "loggedIn": "Welcome back, {email}! Ready to continue building?"
+      "loggedIn": "Welcome back, {{email}}! 🎉 Ready to create more AI magic?",
+      "template": "Great choice! 🎯 I see you're interested in the {{name}} template. This agent is perfect for {{description}}. How would you like me to customize it for your specific needs?"
     }
   },
   "dashboard": {
@@ -130,8 +136,19 @@
   },
   "community": {
     "title": "Community Templates",
+    "description": "Discover and use AI agent templates shared by our community. Start with a proven template and customize it to your needs.",
     "search": "Search templates...",
-    "empty": "No templates found"
+    "category": "Category",
+    "author": "Author",
+    "likes": "Likes",
+    "use": "Use Template",
+    "customize": "Customize & Build",
+    "templateLoaded": "Template Loaded",
+    "startCustomizing": "Let's customize the {{name}} template together!",
+    "noResults": "No templates found matching '{{search}}'",
+    "loading": "Loading amazing templates...",
+    "error": "Couldn't load templates. Please try again.",
+    "allCategories": "All Categories"
   },
   "workspaces": {
     "title": "Workspaces",
