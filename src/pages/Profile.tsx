@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -27,6 +28,7 @@ interface Stats {
 }
 
 export default function Profile() {
+  const { t } = useTranslation();
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -48,7 +50,6 @@ export default function Profile() {
 
     const fetchProfileData = async () => {
       try {
-        // Fetch profile
         const { data: profileData } = await supabase
           .from('profiles')
           .select('*')
@@ -57,7 +58,6 @@ export default function Profile() {
 
         setProfile(profileData);
 
-        // Fetch agents
         const { data: agentsData } = await supabase
           .from('agents')
           .select('*')
@@ -81,8 +81,8 @@ export default function Profile() {
       } catch (error) {
         console.error('Error fetching profile:', error);
         toast({
-          title: 'Virhe',
-          description: 'Profiilin lataaminen epäonnistui',
+          title: t('common.error'),
+          description: t('profile.loadError'),
           variant: 'destructive'
         });
       } finally {
@@ -91,7 +91,7 @@ export default function Profile() {
     };
 
     fetchProfileData();
-  }, [user, navigate, toast]);
+  }, [user, navigate, toast, t]);
 
   const handleSignOut = async () => {
     await signOut();
@@ -116,25 +116,24 @@ export default function Profile() {
         >
           <div className="flex justify-between items-center mb-8">
             <div>
-              <h1 className="text-3xl font-bold text-foreground">Profiili</h1>
+              <h1 className="text-3xl font-bold text-foreground">{t('profile.title')}</h1>
               <p className="text-muted-foreground mt-1">
-                Hallinnoi tietojasi ja agenttiasi
+                {t('profile.subtitle')}
               </p>
             </div>
             <Button onClick={handleSignOut} variant="outline">
-              Kirjaudu ulos
+              {t('profile.signOut')}
             </Button>
           </div>
 
           <Tabs defaultValue="overview" className="space-y-6">
             <TabsList className="grid w-full grid-cols-3">
-              <TabsTrigger value="overview">Yleiskatsaus</TabsTrigger>
-              <TabsTrigger value="api-keys">API-avaimet</TabsTrigger>
-              <TabsTrigger value="settings">Asetukset</TabsTrigger>
+              <TabsTrigger value="overview">{t('profile.tabs.overview')}</TabsTrigger>
+              <TabsTrigger value="api-keys">{t('profile.tabs.apiKeys')}</TabsTrigger>
+              <TabsTrigger value="settings">{t('profile.tabs.settings')}</TabsTrigger>
             </TabsList>
 
             <TabsContent value="overview" className="space-y-6">
-              {/* User Info Card */}
               <Card>
                 <CardHeader>
                   <div className="flex items-center gap-4">
@@ -142,105 +141,50 @@ export default function Profile() {
                       <User className="w-8 h-8 text-primary" />
                     </div>
                     <div>
-                      <CardTitle>{profile?.full_name || 'Käyttäjä'}</CardTitle>
+                      <CardTitle>{profile?.full_name || t('profile.user')}</CardTitle>
                       <CardDescription>{user?.email}</CardDescription>
                     </div>
                   </div>
                 </CardHeader>
               </Card>
 
-              {/* Credit Balance */}
               <CreditBalance />
 
-              {/* Stats Grid */}
               <div className="grid md:grid-cols-4 gap-6">
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 }}
-                >
-                  <Card className="hover:border-primary/50 transition-all duration-300">
-                    <CardContent className="pt-6">
-                      <div className="flex items-center gap-3">
-                        <div className="p-3 rounded-lg bg-primary/10">
-                          <Bot className="w-6 h-6 text-primary" />
+                {[
+                  { icon: Bot, label: t('profile.stats.totalAgents'), value: stats.totalAgents, delay: 0.1 },
+                  { icon: TrendingUp, label: t('profile.stats.active'), value: stats.activeAgents, delay: 0.2 },
+                  { icon: Zap, label: t('profile.stats.credits'), value: stats.credits, delay: 0.3 },
+                  { icon: TrendingUp, label: t('profile.stats.weeklyActivity'), value: stats.weeklyActivity, delay: 0.4 }
+                ].map(({ icon: Icon, label, value, delay }) => (
+                  <motion.div
+                    key={label}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay }}
+                  >
+                    <Card className="hover:border-primary/50 transition-all duration-300">
+                      <CardContent className="pt-6">
+                        <div className="flex items-center gap-3">
+                          <div className="p-3 rounded-lg bg-primary/10">
+                            <Icon className="w-6 h-6 text-primary" />
+                          </div>
+                          <div>
+                            <p className="text-sm text-muted-foreground">{label}</p>
+                            <p className="text-2xl font-bold text-foreground">{value}</p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="text-sm text-muted-foreground">Agentit yhteensä</p>
-                          <p className="text-2xl font-bold text-foreground">{stats.totalAgents}</p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 }}
-                >
-                  <Card className="hover:border-primary/50 transition-all duration-300">
-                    <CardContent className="pt-6">
-                      <div className="flex items-center gap-3">
-                        <div className="p-3 rounded-lg bg-accent/10">
-                          <TrendingUp className="w-6 h-6 text-accent" />
-                        </div>
-                        <div>
-                          <p className="text-sm text-muted-foreground">Aktiiviset</p>
-                          <p className="text-2xl font-bold text-foreground">{stats.activeAgents}</p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
-                >
-                  <Card className="hover:border-primary/50 transition-all duration-300">
-                    <CardContent className="pt-6">
-                      <div className="flex items-center gap-3">
-                        <div className="p-3 rounded-lg bg-primary/10">
-                          <Zap className="w-6 h-6 text-primary" />
-                        </div>
-                        <div>
-                          <p className="text-sm text-muted-foreground">Krediitit</p>
-                          <p className="text-2xl font-bold text-foreground">{stats.credits}</p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                >
-                  <Card className="hover:border-primary/50 transition-all duration-300">
-                    <CardContent className="pt-6">
-                      <div className="flex items-center gap-3">
-                        <div className="p-3 rounded-lg bg-accent/10">
-                          <TrendingUp className="w-6 h-6 text-accent" />
-                        </div>
-                        <div>
-                          <p className="text-sm text-muted-foreground">Viikon aktiivisuus</p>
-                          <p className="text-2xl font-bold text-foreground">{stats.weeklyActivity}</p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                ))}
               </div>
 
-              {/* Recent Agents */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Viimeisimmät agentit</CardTitle>
+                  <CardTitle>{t('profile.recentAgents.title')}</CardTitle>
                   <CardDescription>
-                    Äskettäin luodut ja päivitetyt agentit
+                    {t('profile.recentAgents.description')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -261,12 +205,12 @@ export default function Profile() {
                             <div>
                               <p className="font-medium text-foreground">{agent.name}</p>
                               <p className="text-sm text-muted-foreground">
-                                Luotu {new Date(agent.created_at).toLocaleDateString('fi-FI')}
+                                {t('profile.recentAgents.created')} {new Date(agent.created_at).toLocaleDateString()}
                               </p>
                             </div>
                           </div>
                           <Badge variant={agent.status === 'active' ? 'default' : 'secondary'}>
-                            {agent.status === 'active' ? 'Aktiivinen' : 'Luonnos'}
+                            {agent.status === 'active' ? t('profile.agentStatus.active') : t('profile.agentStatus.draft')}
                           </Badge>
                         </motion.div>
                       ))}
@@ -274,9 +218,9 @@ export default function Profile() {
                   ) : (
                     <div className="text-center py-8">
                       <Bot className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-                      <p className="text-muted-foreground">Ei vielä agentteja</p>
+                      <p className="text-muted-foreground">{t('profile.recentAgents.noAgents')}</p>
                       <Button className="mt-4" onClick={() => navigate('/')}>
-                        Luo ensimmäinen agentti
+                        {t('profile.recentAgents.createFirst')}
                       </Button>
                     </div>
                   )}
@@ -291,13 +235,13 @@ export default function Profile() {
             <TabsContent value="settings">
               <Card>
                 <CardHeader>
-                  <CardTitle>Asetukset</CardTitle>
+                  <CardTitle>{t('profile.settings.title')}</CardTitle>
                   <CardDescription>
-                    Profiilin ja tilin asetukset
+                    {t('profile.settings.description')}
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-muted-foreground">Asetukset tulossa pian...</p>
+                  <p className="text-muted-foreground">{t('profile.settings.comingSoon')}</p>
                 </CardContent>
               </Card>
             </TabsContent>

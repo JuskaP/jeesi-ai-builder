@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,10 +10,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useToast } from '@/hooks/use-toast';
 import { z } from 'zod';
 
-const emailSchema = z.string().email('Virheellinen sähköpostiosoite');
-const passwordSchema = z.string().min(6, 'Salasanan tulee olla vähintään 6 merkkiä');
-
 export default function Auth() {
+  const { t } = useTranslation();
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -22,25 +21,28 @@ export default function Auth() {
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  const emailSchema = z.string().email(t('auth.errors.invalidEmail'));
+  const passwordSchema = z.string().min(6, t('auth.errors.passwordTooShort'));
+
   const validateInputs = () => {
     try {
       emailSchema.parse(email);
       passwordSchema.parse(password);
       if (!isLogin && !fullName.trim()) {
-        throw new Error('Nimi on pakollinen');
+        throw new Error(t('auth.errors.nameRequired'));
       }
       return true;
     } catch (error) {
       if (error instanceof z.ZodError) {
         toast({
           variant: 'destructive',
-          title: 'Virheellinen syöte',
+          title: t('auth.errors.invalidInput'),
           description: error.errors[0].message,
         });
       } else if (error instanceof Error) {
         toast({
           variant: 'destructive',
-          title: 'Virhe',
+          title: t('common.error'),
           description: error.message,
         });
       }
@@ -59,46 +61,30 @@ export default function Auth() {
       if (isLogin) {
         const { error } = await signIn(email, password);
         if (error) {
-          if (error.message.includes('Invalid login credentials')) {
-            toast({
-              variant: 'destructive',
-              title: 'Kirjautuminen epäonnistui',
-              description: 'Tarkista sähköpostiosoite ja salasana.',
-            });
-          } else {
-            toast({
-              variant: 'destructive',
-              title: 'Virhe',
-              description: error.message,
-            });
-          }
+          toast({
+            variant: 'destructive',
+            title: t('auth.errors.loginFailed'),
+            description: t('auth.errors.checkCredentials'),
+          });
         } else {
           toast({
-            title: 'Tervetuloa takaisin!',
-            description: 'Kirjautuminen onnistui.',
+            title: t('auth.welcomeBack'),
+            description: t('auth.loginSuccess'),
           });
           navigate('/dashboard');
         }
       } else {
         const { error } = await signUp(email, password, fullName);
         if (error) {
-          if (error.message.includes('already registered')) {
-            toast({
-              variant: 'destructive',
-              title: 'Käyttäjä on jo olemassa',
-              description: 'Tämä sähköpostiosoite on jo rekisteröity. Kirjaudu sisään.',
-            });
-          } else {
-            toast({
-              variant: 'destructive',
-              title: 'Rekisteröinti epäonnistui',
-              description: error.message,
-            });
-          }
+          toast({
+            variant: 'destructive',
+            title: t('auth.errors.signupFailed'),
+            description: error.message,
+          });
         } else {
           toast({
-            title: 'Tervetuloa!',
-            description: 'Tili luotu onnistuneesti.',
+            title: t('auth.welcome'),
+            description: t('auth.accountCreated'),
           });
           navigate('/dashboard');
         }
@@ -106,8 +92,8 @@ export default function Auth() {
     } catch (error) {
       toast({
         variant: 'destructive',
-        title: 'Odottamaton virhe',
-        description: 'Yritä uudelleen myöhemmin.',
+        title: t('auth.errors.unexpected'),
+        description: t('auth.errors.tryAgain'),
       });
     } finally {
       setIsLoading(false);
@@ -124,22 +110,22 @@ export default function Auth() {
       >
         <Card>
           <CardHeader>
-            <CardTitle>{isLogin ? 'Kirjaudu sisään' : 'Luo tili'}</CardTitle>
+            <CardTitle>{isLogin ? t('auth.signIn') : t('auth.signUp')}</CardTitle>
             <CardDescription>
               {isLogin 
-                ? 'Kirjaudu sisään jatkaaksesi Jeesi.io -alustalle' 
-                : 'Aloita AI-agenttien rakentaminen'}
+                ? t('auth.signInDescription') 
+                : t('auth.signUpDescription')}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               {!isLogin && (
                 <div className="space-y-2">
-                  <Label htmlFor="fullName">Nimi</Label>
+                  <Label htmlFor="fullName">{t('auth.fullName')}</Label>
                   <Input
                     id="fullName"
                     type="text"
-                    placeholder="Koko nimesi"
+                    placeholder={t('auth.fullNamePlaceholder')}
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     required={!isLogin}
@@ -148,11 +134,11 @@ export default function Auth() {
               )}
               
               <div className="space-y-2">
-                <Label htmlFor="email">Sähköposti</Label>
+                <Label htmlFor="email">{t('auth.email')}</Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="nimi@yritys.fi"
+                  placeholder={t('auth.emailPlaceholder')}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -160,11 +146,11 @@ export default function Auth() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">Salasana</Label>
+                <Label htmlFor="password">{t('auth.password')}</Label>
                 <Input
                   id="password"
                   type="password"
-                  placeholder="Vähintään 6 merkkiä"
+                  placeholder={t('auth.passwordPlaceholder')}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
@@ -177,8 +163,8 @@ export default function Auth() {
                 disabled={isLoading}
               >
                 {isLoading 
-                  ? 'Ladataan...' 
-                  : isLogin ? 'Kirjaudu sisään' : 'Luo tili'}
+                  ? t('common.loading') 
+                  : isLogin ? t('auth.signIn') : t('auth.signUp')}
               </Button>
             </form>
 
@@ -189,8 +175,8 @@ export default function Auth() {
                 className="text-primary hover:underline"
               >
                 {isLogin 
-                  ? 'Ei vielä tiliä? Rekisteröidy' 
-                  : 'Onko sinulla jo tili? Kirjaudu sisään'}
+                  ? t('auth.noAccount') 
+                  : t('auth.hasAccount')}
               </button>
             </div>
           </CardContent>

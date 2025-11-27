@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -10,59 +11,60 @@ import { useToast } from '@/hooks/use-toast';
 const templates = [
   {
     id: '1',
-    name: 'Asiakaspalvelu Botti',
-    description: 'Vastaa asiakkaiden kysymyksiin 24/7 ja ohjaa tarvittaessa oikealle henkilölle.',
-    category: 'Asiakaspalvelu',
-    author: 'Jeesi Team',
+    name: 'Customer Service Bot',
+    description: 'Answers customer questions 24/7 and routes to the right person when needed.',
+    category: 'Customer Service',
+    author: 'jeesi.ai Team',
     likes: 42
   },
   {
     id: '2',
-    name: 'Myyntiagentti',
-    description: 'Automatisoi myyntikeskustelut ja varaa tapaamisia potentiaalisille asiakkaille.',
-    category: 'Myynti',
-    author: 'Jeesi Team',
+    name: 'Sales Agent',
+    description: 'Automates sales conversations and books meetings with potential customers.',
+    category: 'Sales',
+    author: 'jeesi.ai Team',
     likes: 38
   },
   {
     id: '3',
-    name: 'Ajanvaraaja',
-    description: 'Hallinnoi kalenteria ja varaa tapaamisia automaattisesti.',
-    category: 'Tuottavuus',
-    author: 'Jeesi Team',
+    name: 'Appointment Scheduler',
+    description: 'Manages calendar and automatically books appointments.',
+    category: 'Productivity',
+    author: 'jeesi.ai Team',
     likes: 31
   },
   {
     id: '4',
-    name: 'Sisällön Luoja',
-    description: 'Luo blogipostauksia, sosiaalisen median sisältöä ja markkinointimateriaaleja.',
-    category: 'Markkinointi',
-    author: 'Jeesi Team',
+    name: 'Content Creator',
+    description: 'Creates blog posts, social media content and marketing materials.',
+    category: 'Marketing',
+    author: 'jeesi.ai Team',
     likes: 27
   },
   {
     id: '5',
-    name: 'Tietoanalysoija',
-    description: 'Analysoi dataa ja luo raportteja liiketoiminnan päätöksenteon tueksi.',
-    category: 'Analytiikka',
-    author: 'Jeesi Team',
+    name: 'Data Analyzer',
+    description: 'Analyzes data and creates reports to support business decisions.',
+    category: 'Analytics',
+    author: 'jeesi.ai Team',
     likes: 19
   },
   {
     id: '6',
-    name: 'HR Assistentti',
-    description: 'Auttaa rekrytoinnissa, perehdytyksessä ja henkilöstöhallinnossa.',
+    name: 'HR Assistant',
+    description: 'Helps with recruitment, onboarding and HR management.',
     category: 'HR',
-    author: 'Jeesi Team',
+    author: 'jeesi.ai Team',
     likes: 15
   }
 ];
 
-const categories = ['Kaikki', 'Asiakaspalvelu', 'Myynti', 'Markkinointi', 'Tuottavuus', 'Analytiikka', 'HR'];
+const categories = ['All', 'Customer Service', 'Sales', 'Marketing', 'Productivity', 'Analytics', 'HR'];
 
 export default function Community() {
+  const { t } = useTranslation();
   const [search, setSearch] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('Kaikki');
+  const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedTemplate, setSelectedTemplate] = useState<typeof templates[0] | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -70,7 +72,7 @@ export default function Community() {
   const filteredTemplates = templates.filter(template => {
     const matchesSearch = template.name.toLowerCase().includes(search.toLowerCase()) ||
                          template.description.toLowerCase().includes(search.toLowerCase());
-    const matchesCategory = selectedCategory === 'Kaikki' || template.category === selectedCategory;
+    const matchesCategory = selectedCategory === 'All' || template.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
@@ -81,8 +83,8 @@ export default function Community() {
   const handleCustomize = () => {
     if (selectedTemplate) {
       toast({
-        title: 'Agentti ladattu!',
-        description: `${selectedTemplate.name} on ladattu. Aloita muokkaaminen assistentin kanssa.`,
+        title: t('community.templateLoaded'),
+        description: t('community.startCustomizing', { name: selectedTemplate.name }),
       });
       navigate('/', { state: { template: selectedTemplate } });
     }
@@ -91,15 +93,15 @@ export default function Community() {
   return (
     <div className='p-8 max-w-7xl mx-auto'>
       <div className='mb-8'>
-        <h2 className='text-3xl font-bold text-foreground mb-2'>Yhteisö</h2>
+        <h2 className='text-3xl font-bold text-foreground mb-2'>{t('community.title')}</h2>
         <p className='text-muted-foreground'>
-          Löydä ja jaa valmiita agenttimalleja yhteisön kanssa
+          {t('community.description')}
         </p>
       </div>
 
       <div className='mb-8 space-y-4'>
         <Input
-          placeholder='Etsi agenttimalleja...'
+          placeholder={t('community.search')}
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           className='max-w-md'
@@ -145,10 +147,10 @@ export default function Community() {
                 <CardContent>
                   <div className='flex items-center justify-between'>
                     <span className='text-sm text-muted-foreground'>
-                      Tekijä: {template.author}
+                      {t('community.author')}: {template.author}
                     </span>
                     <Button size='sm' variant='ghost' className='group-hover:bg-primary group-hover:text-primary-foreground'>
-                      Käytä
+                      {t('community.use')}
                     </Button>
                   </div>
                 </CardContent>
@@ -161,24 +163,24 @@ export default function Community() {
               </DialogHeader>
               <div className='space-y-4 py-4'>
                 <div className='flex items-center justify-between'>
-                  <span className='text-sm text-muted-foreground'>Kategoria:</span>
+                  <span className='text-sm text-muted-foreground'>{t('community.category')}:</span>
                   <Badge variant='secondary'>{template.category}</Badge>
                 </div>
                 <div className='flex items-center justify-between'>
-                  <span className='text-sm text-muted-foreground'>Tekijä:</span>
+                  <span className='text-sm text-muted-foreground'>{t('community.author')}:</span>
                   <span className='text-sm font-medium'>{template.author}</span>
                 </div>
                 <div className='flex items-center justify-between'>
-                  <span className='text-sm text-muted-foreground'>Tykkäykset:</span>
+                  <span className='text-sm text-muted-foreground'>{t('community.likes')}:</span>
                   <span className='text-sm font-medium'>{template.likes}</span>
                 </div>
               </div>
               <div className='flex gap-3'>
                 <Button variant='outline' className='flex-1' onClick={() => setSelectedTemplate(null)}>
-                  Peruuta
+                  {t('common.cancel')}
                 </Button>
                 <Button className='flex-1' onClick={handleCustomize}>
-                  Muokkaa omaksesi
+                  {t('community.customize')}
                 </Button>
               </div>
             </DialogContent>
@@ -188,7 +190,7 @@ export default function Community() {
 
       {filteredTemplates.length === 0 && (
         <div className='text-center py-12'>
-          <p className='text-muted-foreground text-lg'>Ei tuloksia haulle "{search}"</p>
+          <p className='text-muted-foreground text-lg'>{t('community.noResults', { search })}</p>
         </div>
       )}
     </div>

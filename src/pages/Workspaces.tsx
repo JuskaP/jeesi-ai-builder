@@ -1,43 +1,42 @@
 import { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 
 export default function Workspaces() {
+  const { t } = useTranslation();
   const [workspaces, setWorkspaces] = useState<any[]>([]);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
   useEffect(() => {
-    // In production, check auth status
-    // For now, showing public view
     setIsAuthenticated(false);
     setWorkspaces([
-      { id: 'w1', name: 'Esimerkki Työtila', members: 3, credits: 200, isPublic: true }
+      { id: 'w1', name: t('workspaces.example'), members: 3, credits: 200, isPublic: true }
     ]);
-  }, []);
+  }, [t]);
 
   const handleCreateWorkspace = () => {
     if (!isAuthenticated) {
       toast({
-        title: "Kirjautuminen vaaditaan",
-        description: "Sinun täytyy kirjautua sisään tai luoda tili luodaksesi työtilan.",
+        title: t('workspaces.loginRequired'),
+        description: t('workspaces.loginDescription'),
       });
       navigate('/auth');
       return;
     }
-    // Create workspace logic
   };
 
   return (
     <div className='p-8 max-w-7xl mx-auto'>
       <div className='mb-8'>
-        <h2 className='text-3xl font-bold text-foreground mb-2'>Työtilat</h2>
+        <h2 className='text-3xl font-bold text-foreground mb-2'>{t('workspaces.title')}</h2>
         <p className='text-muted-foreground'>
-          Hallinnoi työtiloja ja tiimien käyttöoikeuksia. Luo yhteistyöhön perustuva ympäristö agenttien kehittämiseen.
+          {t('workspaces.description')}
         </p>
       </div>
 
@@ -52,22 +51,22 @@ export default function Workspaces() {
                 <CardTitle className='text-xl'>{workspace.name}</CardTitle>
                 {workspace.isPublic && (
                   <Badge variant='secondary' className='text-xs'>
-                    Julkinen
+                    {t('workspaces.public')}
                   </Badge>
                 )}
               </div>
               <CardDescription>
-                {workspace.members} jäsentä • {workspace.credits} krediittiä
+                {t('workspaces.members', { count: workspace.members })} • {t('workspaces.credits', { count: workspace.credits })}
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className='space-y-2'>
                 <Button variant='outline' size='sm' className='w-full'>
-                  Näytä tiedot
+                  {t('workspaces.viewDetails')}
                 </Button>
                 {!isAuthenticated && (
                   <p className='text-xs text-muted-foreground text-center'>
-                    Kirjaudu sisään hallinnoidaksesi
+                    {t('workspaces.loginToManage')}
                   </p>
                 )}
               </div>
@@ -85,9 +84,9 @@ export default function Workspaces() {
                 <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 4v16m8-8H4' />
               </svg>
             </div>
-            <h3 className='font-semibold text-foreground mb-2'>Luo uusi työtila</h3>
+            <h3 className='font-semibold text-foreground mb-2'>{t('workspaces.create')}</h3>
             <p className='text-sm text-muted-foreground'>
-              Aloita yhteistyö tiimisi kanssa
+              {t('workspaces.startCollaboration')}
             </p>
           </CardContent>
         </Card>
@@ -102,12 +101,12 @@ export default function Workspaces() {
               </svg>
             </div>
             <div className='flex-1'>
-              <h3 className='font-semibold text-foreground mb-1'>Aloita yhteistyö</h3>
+              <h3 className='font-semibold text-foreground mb-1'>{t('workspaces.collaborationTitle')}</h3>
               <p className='text-sm text-muted-foreground mb-3'>
-                Kirjaudu sisään tai luo tili luodaksesi oman työtilan ja kutsuaksesi tiimisi jäseniä.
+                {t('workspaces.collaborationText')}
               </p>
               <Button asChild>
-                <Link to='/auth'>Kirjaudu tai luo tili</Link>
+                <Link to='/auth'>{t('nav.signIn')}</Link>
               </Button>
             </div>
           </div>
