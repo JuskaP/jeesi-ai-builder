@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,76 +7,81 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+import { Loader2, Heart } from 'lucide-react';
 
-const templates = [
-  {
-    id: '1',
-    name: 'Customer Service Bot',
-    description: 'Answers customer questions 24/7 and routes to the right person when needed.',
-    category: 'Customer Service',
-    author: 'jeesi.ai Team',
-    likes: 42
-  },
-  {
-    id: '2',
-    name: 'Sales Agent',
-    description: 'Automates sales conversations and books meetings with potential customers.',
-    category: 'Sales',
-    author: 'jeesi.ai Team',
-    likes: 38
-  },
-  {
-    id: '3',
-    name: 'Appointment Scheduler',
-    description: 'Manages calendar and automatically books appointments.',
-    category: 'Productivity',
-    author: 'jeesi.ai Team',
-    likes: 31
-  },
-  {
-    id: '4',
-    name: 'Content Creator',
-    description: 'Creates blog posts, social media content and marketing materials.',
-    category: 'Marketing',
-    author: 'jeesi.ai Team',
-    likes: 27
-  },
-  {
-    id: '5',
-    name: 'Data Analyzer',
-    description: 'Analyzes data and creates reports to support business decisions.',
-    category: 'Analytics',
-    author: 'jeesi.ai Team',
-    likes: 19
-  },
-  {
-    id: '6',
-    name: 'HR Assistant',
-    description: 'Helps with recruitment, onboarding and HR management.',
-    category: 'HR',
-    author: 'jeesi.ai Team',
-    likes: 15
-  }
-];
-
-const categories = ['All', 'Customer Service', 'Sales', 'Marketing', 'Productivity', 'Analytics', 'HR'];
+interface Agent {
+  id: string;
+  name: string;
+  description: string | null;
+  purpose: string;
+  category?: string;
+  author?: string;
+  likes?: number;
+}
 
 export default function Community() {
   const { t } = useTranslation();
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
-  const [selectedTemplate, setSelectedTemplate] = useState<typeof templates[0] | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<Agent | null>(null);
+  const [templates, setTemplates] = useState<Agent[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [categories, setCategories] = useState<string[]>(['All']);
   const navigate = useNavigate();
   const { toast } = useToast();
 
+  // Fetch published agents from database
+  useEffect(() => {
+    const fetchTemplates = async () => {
+      try {
+        setLoading(true);
+        const { data, error } = await supabase
+          .from('agents')
+          .select('id, name, description, purpose')
+          .eq('is_published', true)
+          .order('created_at', { ascending: false });
+
+        if (error) throw error;
+
+        if (data) {
+          // Transform data and extract categories
+          const transformedData = data.map(agent => ({
+            ...agent,
+            category: agent.purpose || 'General',
+            author: 'jeesi.ai Community',
+            likes: Math.floor(Math.random() * 50) + 10 // Placeholder likes
+          }));
+          
+          setTemplates(transformedData);
+          
+          // Extract unique categories
+          const uniqueCategories = ['All', ...new Set(transformedData.map(t => t.category).filter(Boolean))];
+          setCategories(uniqueCategories as string[]);
+        }
+      } catch (error) {
+        console.error('Error fetching templates:', error);
+        toast({
+          title: t('common.error'),
+          description: t('community.error'),
+          variant: 'destructive'
+        });
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTemplates();
+  }, [t, toast]);
+
   const filteredTemplates = templates.filter(template => {
     const matchesSearch = template.name.toLowerCase().includes(search.toLowerCase()) ||
-                         template.description.toLowerCase().includes(search.toLowerCase());
+                         template.description?.toLowerCase().includes(search.toLowerCase());
     const matchesCategory = selectedCategory === 'All' || template.category === selectedCategory;
     return matchesSearch && matchesCategory;
   });
 
-  const handleUseTemplate = (template: typeof templates[0]) => {
+  const handleUseTemplate = (template: Agent) => {
     setSelectedTemplate(template);
   };
 
@@ -89,6 +94,17 @@ export default function Community() {
       navigate('/', { state: { template: selectedTemplate } });
     }
   };
+
+  if (loading) {
+    return (
+      <div className='p-8 max-w-7xl mx-auto flex items-center justify-center min-h-[60vh]'>
+        <div className='flex flex-col items-center gap-4'>
+          <Loader2 className='h-8 w-8 animate-spin text-primary' />
+          <p className='text-muted-foreground'>{t('community.loading')}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className='p-8 max-w-7xl mx-auto'>
@@ -135,14 +151,12 @@ export default function Community() {
                       {template.category}
                     </Badge>
                     <div className='flex items-center gap-1 text-muted-foreground'>
-                      <svg className='w-4 h-4' fill='currentColor' viewBox='0 0 20 20'>
-                        <path d='M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z' />
-                      </svg>
+                      <Heart className='w-4 h-4' fill='currentColor' />
                       <span className='text-sm'>{template.likes}</span>
                     </div>
                   </div>
                   <CardTitle className='text-xl'>{template.name}</CardTitle>
-                  <CardDescription>{template.description}</CardDescription>
+                  <CardDescription>{template.description || template.purpose}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <div className='flex items-center justify-between'>
@@ -159,7 +173,7 @@ export default function Community() {
             <DialogContent className='max-w-md'>
               <DialogHeader>
                 <DialogTitle>{template.name}</DialogTitle>
-                <DialogDescription>{template.description}</DialogDescription>
+                <DialogDescription>{template.description || template.purpose}</DialogDescription>
               </DialogHeader>
               <div className='space-y-4 py-4'>
                 <div className='flex items-center justify-between'>

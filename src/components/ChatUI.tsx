@@ -15,10 +15,11 @@ interface Message {
 interface Template {
   id: string;
   name: string;
-  description: string;
-  category: string;
-  author: string;
-  likes: number;
+  description: string | null;
+  purpose: string;
+  category?: string;
+  author?: string;
+  likes?: number;
 }
 
 interface ChatUIProps {
@@ -56,7 +57,7 @@ export default function ChatUI({ template }: ChatUIProps) {
     if (template) {
       const templateMessage = t('landing.greetings.template', {
         name: template.name,
-        description: template.description
+        description: template.description || template.purpose
       });
       setCurrentGreeting(templateMessage);
       setMessages([{ role: "assistant", content: templateMessage }]);
