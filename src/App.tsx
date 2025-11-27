@@ -17,6 +17,7 @@ import Community from "./pages/Community";
 import Workspaces from "./pages/Workspaces";
 import Billing from "./pages/Billing";
 import Profile from "./pages/Profile";
+import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 
@@ -59,6 +60,14 @@ function AnimatedRoutes() {
         <Route path="/workspaces" element={<PageTransition><Workspaces /></PageTransition>} />
         <Route path="/billing" element={<PageTransition><Billing /></PageTransition>} />
         <Route path="/profile" element={<PageTransition><Profile /></PageTransition>} />
+        <Route 
+          path="/admin" 
+          element={
+            <ProtectedRoute>
+              <PageTransition><Admin /></PageTransition>
+            </ProtectedRoute>
+          } 
+        />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
       </Routes>
