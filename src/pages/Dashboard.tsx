@@ -1,17 +1,51 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { toast } from 'sonner';
 
 export default function Dashboard() {
+  const { user } = useAuth();
   const [agents, setAgents] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // In production, fetch from database
-    // For now, show empty state
-    setAgents([]);
-  }, []);
+    if (user) {
+      fetchAgents();
+    } else {
+      setLoading(false);
+    }
+  }, [user]);
+
+  const fetchAgents = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('agents')
+        .select('*')
+        .eq('user_id', user?.id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      
+      setAgents(data || []);
+    } catch (error) {
+      console.error('Error fetching agents:', error);
+      toast.error('Agenttien lataaminen epäonnistui');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-muted-foreground">Ladataan...</div>
+      </div>
+    );
+  }
 
   if (agents.length === 0) {
     return (
@@ -67,10 +101,10 @@ export default function Dashboard() {
             </CardHeader>
             <CardContent>
               <div className='flex gap-2'>
-                <Button variant='outline' size='sm' className='flex-1'>
-                  Muokkaa
+                <Button variant='outline' size='sm' className='flex-1' asChild>
+                  <Link to={`/agents/${agent.id}/settings`}>Muokkaa</Link>
                 </Button>
-                <Button size='sm' className='flex-1'>
+                <Button size='sm' className='flex-1' disabled>
                   Käynnistä
                 </Button>
               </div>
