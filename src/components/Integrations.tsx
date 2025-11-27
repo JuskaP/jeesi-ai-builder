@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Slack, Chrome, Mail, Zap, ShoppingBag, MessageCircle, Cloud, Database } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const integrations = [
   { name: "Slack", Icon: Slack },
@@ -13,6 +14,8 @@ const integrations = [
 ];
 
 export default function Integrations() {
+  const { t } = useTranslation();
+
   return (
     <section className="w-full max-w-6xl mx-auto px-4 my-24 relative z-10">
       <motion.div
@@ -23,10 +26,10 @@ export default function Integrations() {
         className="text-center mb-12"
       >
         <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">
-          Yhteensopiva suosituimpien työkalujen kanssa
+          {t('integrations.title')}
         </h2>
         <p className="text-muted-foreground text-lg">
-          Integroidu saumattomasti olemassa oleviin järjestelmiisi
+          {t('integrations.subtitle')}
         </p>
       </motion.div>
 
@@ -64,7 +67,7 @@ export default function Integrations() {
         transition={{ delay: 0.4, duration: 0.6 }}
         className="text-center text-sm text-muted-foreground mt-8"
       >
-        Ja satoja muita integraatioita API:n kautta
+        {t('integrations.moreIntegrations')}
       </motion.p>
     </section>
   );

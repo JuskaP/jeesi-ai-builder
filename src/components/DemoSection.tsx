@@ -1,30 +1,33 @@
 import { motion } from "framer-motion";
 import { MessageSquare, Cpu, TestTube, Rocket } from "lucide-react";
-
-const steps = [
-  {
-    icon: MessageSquare,
-    title: "1. Kerro tarpeesi",
-    description: "Kuvaile mitä haluat agentin tekevän - käytä ääntä tai tekstiä",
-  },
-  {
-    icon: Cpu,
-    title: "2. AI rakentaa",
-    description: "Tekoäly luo agentin automaattisesti perustuen kuvaukseen",
-  },
-  {
-    icon: TestTube,
-    title: "3. Testaa ja muokkaa",
-    description: "Kokeile agenttia ja tee tarvittavat muutokset keskustelemalla",
-  },
-  {
-    icon: Rocket,
-    title: "4. Julkaise",
-    description: "Julkaise agentti verkkosivulle tai integroituna järjestelmiin",
-  },
-];
+import { useTranslation } from "react-i18next";
 
 export default function DemoSection() {
+  const { t } = useTranslation();
+
+  const steps = [
+    {
+      icon: MessageSquare,
+      titleKey: "demo.step1Title",
+      descriptionKey: "demo.step1Description",
+    },
+    {
+      icon: Cpu,
+      titleKey: "demo.step2Title",
+      descriptionKey: "demo.step2Description",
+    },
+    {
+      icon: TestTube,
+      titleKey: "demo.step3Title",
+      descriptionKey: "demo.step3Description",
+    },
+    {
+      icon: Rocket,
+      titleKey: "demo.step4Title",
+      descriptionKey: "demo.step4Description",
+    },
+  ];
+
   return (
     <section className="w-full max-w-6xl mx-auto px-4 my-24 relative z-10">
       <motion.div
@@ -35,10 +38,10 @@ export default function DemoSection() {
         className="text-center mb-16"
       >
         <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-          Näin helppoa agentin luominen on
+          {t('demo.title')}
         </h2>
         <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto">
-          Katso video ja opi luomaan oma AI-agentti minuuteissa
+          {t('demo.subtitle')}
         </p>
       </motion.div>
 
@@ -57,26 +60,16 @@ export default function DemoSection() {
           {/* Video container */}
           <div className="relative bg-background/80 backdrop-blur-sm border border-border/50 rounded-xl overflow-hidden">
             <div className="aspect-video bg-muted/30 flex items-center justify-center">
-              {/* Placeholder - korvaa tämä oikealla videolla */}
+              {/* Placeholder */}
               <div className="text-center p-8">
                 <div className="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
                   <svg className="w-10 h-10 text-primary" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M8 5v14l11-7z"/>
                   </svg>
                 </div>
-                <p className="text-muted-foreground text-lg mb-2">Demo-video tulossa pian</p>
-                <p className="text-muted-foreground text-sm">Tähän tulee video agentin luomisesta alusta loppuun</p>
+                <p className="text-muted-foreground text-lg mb-2">{t('demo.videoPlaceholder')}</p>
+                <p className="text-muted-foreground text-sm">{t('demo.videoDescription')}</p>
               </div>
-              {/* Kun video on valmis, korvaa yllä oleva tällä:
-              <video 
-                controls 
-                className="w-full h-full"
-                poster="/path-to-thumbnail.jpg"
-              >
-                <source src="/path-to-video.mp4" type="video/mp4" />
-                Selaimesi ei tue video-elementtiä.
-              </video>
-              */}
             </div>
           </div>
         </div>
@@ -91,10 +84,10 @@ export default function DemoSection() {
         className="text-center mb-12"
       >
         <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
-          Neljä yksinkertaista vaihetta
+          {t('demo.stepsTitle')}
         </h3>
         <p className="text-muted-foreground text-base md:text-lg">
-          Ideasta toimivaan AI-agenttiin käden käänteessä
+          {t('demo.stepsSubtitle')}
         </p>
       </motion.div>
 
@@ -127,10 +120,10 @@ export default function DemoSection() {
 
                   {/* Content */}
                   <h3 className="text-xl font-semibold text-foreground mb-2 text-center">
-                    {step.title}
+                    {t(step.titleKey)}
                   </h3>
                   <p className="text-muted-foreground text-sm text-center">
-                    {step.description}
+                    {t(step.descriptionKey)}
                   </p>
                 </div>
 
@@ -156,13 +149,13 @@ export default function DemoSection() {
         className="text-center mt-12"
       >
         <p className="text-muted-foreground mb-6">
-          Koko prosessi keskimäärin alle 5 minuuttia
+          {t('demo.processTime')}
         </p>
         <a
           href="/auth"
           className="inline-flex items-center gap-2 px-6 py-3 bg-primary text-primary-foreground rounded-lg font-semibold hover:bg-primary/90 transition-all duration-300 hover:shadow-lg hover:shadow-primary/20"
         >
-          Kokeile nyt ilmaiseksi
+          {t('demo.tryNow')}
         </a>
       </motion.div>
     </section>

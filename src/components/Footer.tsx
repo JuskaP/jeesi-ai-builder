@@ -1,7 +1,10 @@
 import { Link } from "react-router-dom";
 import { Mail, Twitter, Linkedin, Github } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function Footer() {
+  const { t } = useTranslation();
+
   return (
     <footer className="w-full bg-card border-t border-border mt-auto">
       <div className="max-w-7xl mx-auto px-4 py-12">
@@ -12,67 +15,67 @@ export default function Footer() {
               jeesi.ai
             </Link>
             <p className="mt-4 text-sm text-muted-foreground">
-              Luo henkilökohtainen AI-apurisi nopeasti ja helposti.
+              {t('footer.tagline')}
             </p>
           </div>
 
-          {/* Tuotteet */}
+          {/* Products */}
           <div>
-            <h3 className="font-semibold text-foreground mb-4">Tuotteet</h3>
+            <h3 className="font-semibold text-foreground mb-4">{t('footer.productsTitle')}</h3>
             <ul className="space-y-2">
               <li>
                 <Link to="/dashboard" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Omat Agentit
+                  {t('footer.myAgents')}
                 </Link>
               </li>
               <li>
                 <Link to="/community" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Yhteisö
+                  {t('footer.community')}
                 </Link>
               </li>
               <li>
                 <Link to="/workspaces" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Työtilat
+                  {t('footer.workspaces')}
                 </Link>
               </li>
               <li>
                 <Link to="/billing" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Hinnasto
+                  {t('footer.pricing')}
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Yritys */}
+          {/* Company */}
           <div>
-            <h3 className="font-semibold text-foreground mb-4">Yritys</h3>
+            <h3 className="font-semibold text-foreground mb-4">{t('footer.companyTitle')}</h3>
             <ul className="space-y-2">
               <li>
                 <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Tietoa meistä
+                  {t('footer.about')}
                 </a>
               </li>
               <li>
                 <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Blogi
+                  {t('footer.blog')}
                 </a>
               </li>
               <li>
                 <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Tietosuoja
+                  {t('footer.privacy')}
                 </a>
               </li>
               <li>
                 <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">
-                  Käyttöehdot
+                  {t('footer.terms')}
                 </a>
               </li>
             </ul>
           </div>
 
-          {/* Yhteystiedot */}
+          {/* Contact */}
           <div>
-            <h3 className="font-semibold text-foreground mb-4">Yhteystiedot</h3>
+            <h3 className="font-semibold text-foreground mb-4">{t('footer.contactTitle')}</h3>
             <ul className="space-y-2">
               <li>
                 <a 
@@ -118,7 +121,7 @@ export default function Footer() {
 
         <div className="pt-8 border-t border-border">
           <p className="text-sm text-muted-foreground text-center">
-            © {new Date().getFullYear()} jeesi.ai — Rakennettu pk-yrityksille Suomessa 🇫🇮
+            © {new Date().getFullYear()} jeesi.ai — {t('footer.copyright')} 🇫🇮
           </p>
         </div>
       </div>

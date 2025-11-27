@@ -1,31 +1,34 @@
 import { motion } from "framer-motion";
 import { Star } from "lucide-react";
-
-const testimonials = [
-  {
-    name: "Maria Virtanen",
-    role: "Toimitusjohtaja, Verkkokauppa Oy",
-    content: "Jeesi.ai auttoi meitä automatisoimaan asiakaspalvelun ilman teknistä osaamista. Säästimme 40% ajasta ja asiakkaat ovat tyytyväisempiä.",
-    rating: 5,
-    image: "MV"
-  },
-  {
-    name: "Jukka Mäkinen",
-    role: "Markkinointipäällikkö, Digi Solutions",
-    content: "Loimme lead-generointiin agentin alle tunnissa. Ei ollut koskaan helpompaa! Suosittelen lämpimästi kaikille pk-yrityksille.",
-    rating: 5,
-    image: "JM"
-  },
-  {
-    name: "Sanna Korhonen",
-    role: "Perustaja, Wellness Studio",
-    content: "Ajanvarausagenttimme toimii 24/7 ja varaukset ovat kasvaneet 60%. Asiakkaat rakastavat sitä ja me myös!",
-    rating: 5,
-    image: "SK"
-  }
-];
+import { useTranslation } from "react-i18next";
 
 export default function Testimonials() {
+  const { t } = useTranslation();
+
+  const testimonials = [
+    {
+      nameKey: "testimonials.testimonial1.name",
+      roleKey: "testimonials.testimonial1.role",
+      contentKey: "testimonials.testimonial1.content",
+      rating: 5,
+      image: "SM"
+    },
+    {
+      nameKey: "testimonials.testimonial2.name",
+      roleKey: "testimonials.testimonial2.role",
+      contentKey: "testimonials.testimonial2.content",
+      rating: 5,
+      image: "JA"
+    },
+    {
+      nameKey: "testimonials.testimonial3.name",
+      roleKey: "testimonials.testimonial3.role",
+      contentKey: "testimonials.testimonial3.content",
+      rating: 5,
+      image: "ER"
+    }
+  ];
+
   return (
     <section className="w-full bg-muted/30 py-16 md:py-24 relative z-10">
       <div className="max-w-7xl mx-auto px-4">
@@ -36,10 +39,10 @@ export default function Testimonials() {
           className="text-center mb-12 md:mb-16"
         >
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
-            Mitä asiakkaamme sanovat
+            {t('testimonials.title')}
           </h2>
           <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto">
-            Tuhannet yritykset luottavat Jeesi.ai:hin päivittäin
+            {t('testimonials.subtitle')}
           </p>
         </motion.div>
 
@@ -59,15 +62,15 @@ export default function Testimonials() {
                   ))}
                 </div>
                 <p className="text-foreground mb-6 italic">
-                  "{testimonial.content}"
+                  "{t(testimonial.contentKey)}"
                 </p>
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold">
                     {testimonial.image}
                   </div>
                   <div>
-                    <p className="text-foreground font-semibold">{testimonial.name}</p>
-                    <p className="text-muted-foreground text-sm">{testimonial.role}</p>
+                    <p className="text-foreground font-semibold">{t(testimonial.nameKey)}</p>
+                    <p className="text-muted-foreground text-sm">{t(testimonial.roleKey)}</p>
                   </div>
                 </div>
               </div>

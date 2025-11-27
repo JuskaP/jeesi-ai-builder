@@ -1,30 +1,33 @@
 import { motion } from "framer-motion";
 import { Shield, Lock, MapPin, FileCheck } from "lucide-react";
-
-const badges = [
-  {
-    icon: Shield,
-    title: "GDPR-yhteensopiva",
-    description: "Täysi vaatimustenmukaisuus EU:n tietosuoja-asetuksen kanssa",
-  },
-  {
-    icon: Lock,
-    title: "SSL/TLS-suojattu",
-    description: "Kaikki data salattu korkeimman tason salauksella",
-  },
-  {
-    icon: MapPin,
-    title: "Suomalainen palvelu",
-    description: "Data säilytetään Suomessa ja EU:ssa",
-  },
-  {
-    icon: FileCheck,
-    title: "ISO 27001",
-    description: "Sertifioitu tietoturvanhallintajärjestelmä",
-  },
-];
+import { useTranslation } from "react-i18next";
 
 export default function TrustBadges() {
+  const { t } = useTranslation();
+
+  const badges = [
+    {
+      icon: Shield,
+      titleKey: "trust.gdpr.title",
+      descriptionKey: "trust.gdpr.description",
+    },
+    {
+      icon: Lock,
+      titleKey: "trust.ssl.title",
+      descriptionKey: "trust.ssl.description",
+    },
+    {
+      icon: MapPin,
+      titleKey: "trust.euResidency.title",
+      descriptionKey: "trust.euResidency.description",
+    },
+    {
+      icon: FileCheck,
+      titleKey: "trust.iso27001.title",
+      descriptionKey: "trust.iso27001.description",
+    },
+  ];
+
   return (
     <section className="w-full max-w-6xl mx-auto px-4 my-24 relative z-10">
       <motion.div
@@ -35,10 +38,10 @@ export default function TrustBadges() {
         className="text-center mb-12"
       >
         <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">
-          Luotettavuus ja tietoturva
+          {t('trust.title')}
         </h2>
         <p className="text-muted-foreground text-lg">
-          Tietosi on turvassa korkealaatuisten standardien mukaisesti
+          {t('trust.subtitle')}
         </p>
       </motion.div>
 
@@ -53,7 +56,7 @@ export default function TrustBadges() {
           const Icon = badge.icon;
           return (
             <motion.div
-              key={badge.title}
+              key={index}
               initial={{ opacity: 0, scale: 0.95 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
@@ -64,10 +67,10 @@ export default function TrustBadges() {
                 <Icon className="w-7 h-7 text-primary" />
               </div>
               <h3 className="text-base font-semibold text-foreground mb-2">
-                {badge.title}
+                {t(badge.titleKey)}
               </h3>
               <p className="text-sm text-muted-foreground">
-                {badge.description}
+                {t(badge.descriptionKey)}
               </p>
             </motion.div>
           );
@@ -82,7 +85,7 @@ export default function TrustBadges() {
         className="text-center mt-8"
       >
         <p className="text-sm text-muted-foreground">
-          Sitoudumme korkeimpiin tietoturva- ja yksityisyysstandardeihin suojataksemme tietosi
+          {t('trust.commitment')}
         </p>
       </motion.div>
     </section>
