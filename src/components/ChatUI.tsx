@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
-import { Loader2, Image as ImageIcon } from "lucide-react";
+import { Loader2, Image as ImageIcon, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface Message {
@@ -37,11 +38,13 @@ const formatMessage = (content: string) => {
 export default function ChatUI({ template }: ChatUIProps) {
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [greetingIndex, setGreetingIndex] = useState(0);
   const [currentGreeting, setCurrentGreeting] = useState<string>("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isCreatingAgent, setIsCreatingAgent] = useState(false);
   const [hasUserTyped, setHasUserTyped] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [selectedImagePreview, setSelectedImagePreview] = useState<string | null>(null);
@@ -316,6 +319,56 @@ export default function ChatUI({ template }: ChatUIProps) {
     }
   };
 
+  const createAgent = async () => {
+    if (!user) {
+      toast({
+        title: "Sign in required",
+        description: "Please sign in to create an agent",
+        variant: "destructive"
+      });
+      navigate('/auth');
+      return;
+    }
+
+    if (messages.length < 3) {
+      toast({
+        title: "More details needed",
+        description: "Please have a longer conversation so I can understand your requirements better",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setIsCreatingAgent(true);
+
+    try {
+      const { data, error } = await supabase.functions.invoke('create-agent', {
+        body: { messages, userId: user.id }
+      });
+
+      if (error) throw error;
+
+      toast({
+        title: "Agent Created! 🎉",
+        description: `${data.agent.name} is ready. Let's configure it together.`
+      });
+
+      navigate(`/agents/${data.agent.id}/settings`);
+    } catch (error) {
+      console.error('Create agent error:', error);
+      toast({
+        title: "Creation Failed",
+        description: "Couldn't create agent. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsCreatingAgent(false);
+    }
+  };
+
+  // Show "Create Agent" button if conversation is substantive
+  const showCreateButton = messages.length >= 3 && messages.some(m => m.role === 'user') && !isCreatingAgent;
+
   return (
     <div className="flex flex-col w-full max-w-3xl mx-auto p-4 rounded-2xl border border-border/20 shadow-lg bg-card/10 backdrop-blur-sm min-h-[200px] max-h-[600px]">
       <div className="flex-1 overflow-y-auto space-y-4 p-4">
@@ -351,6 +404,28 @@ export default function ChatUI({ template }: ChatUIProps) {
       </div>
 
       <div className="space-y-2">
+        {showCreateButton && (
+          <div className="pb-2">
+            <Button
+              onClick={createAgent}
+              disabled={isCreatingAgent}
+              className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
+            >
+              {isCreatingAgent ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Creating Your Agent...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="mr-2 h-4 w-4" />
+                  Create This Agent
+                </>
+              )}
+            </Button>
+          </div>
+        )}
+
         {selectedImagePreview && (
           <div className="relative inline-block">
             <img src={selectedImagePreview} alt="Preview" className="max-h-32 rounded-lg" />
