@@ -132,7 +132,37 @@
   },
   "profile": {
     "title": "Profile",
-    "signOut": "Sign Out"
+    "subtitle": "Manage your account and API keys",
+    "signOut": "Sign Out",
+    "user": "User",
+    "loadError": "Failed to load profile",
+    "tabs": {
+      "overview": "Overview",
+      "apiKeys": "API Keys",
+      "settings": "Settings"
+    },
+    "stats": {
+      "totalAgents": "Total Agents",
+      "active": "Active",
+      "credits": "Credits",
+      "weeklyActivity": "This Week"
+    },
+    "recentAgents": {
+      "title": "Recent Agents",
+      "description": "Your latest AI agents",
+      "created": "Created",
+      "noAgents": "No agents yet",
+      "createFirst": "Create Your First Agent"
+    },
+    "agentStatus": {
+      "active": "Active",
+      "draft": "Draft"
+    },
+    "settings": {
+      "title": "Account Settings",
+      "description": "Manage your account preferences",
+      "comingSoon": "Settings coming soon"
+    }
   },
   "community": {
     "title": "Community Templates",
