@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { useLocation } from "react-router-dom";
 import ChatUI from "@/components/ChatUI";
-import UseCaseCarousel from "@/components/UseCaseCarousel";
+import StatsCounter from "@/components/StatsCounter";
 import CTABanner from "@/components/CTABanner";
 import Features from "@/components/Features";
 import DemoSection from "@/components/DemoSection";
@@ -54,7 +54,7 @@ export default function Landing() {
         </div>
       </motion.div>
 
-      <UseCaseCarousel />
+      <StatsCounter />
 
       <CTABanner />
 
