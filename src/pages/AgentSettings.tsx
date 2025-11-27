@@ -65,6 +65,8 @@ export default function AgentSettings() {
   const [knowledgeBase, setKnowledgeBase] = useState<string[]>([]);
   const [newKnowledge, setNewKnowledge] = useState('');
   const [isPublished, setIsPublished] = useState(false);
+  const [isHeavy, setIsHeavy] = useState(false);
+  const [railwayUrl, setRailwayUrl] = useState('');
 
   useEffect(() => {
     if (!user) {
@@ -104,6 +106,8 @@ export default function AgentSettings() {
         }
         
         setIsPublished(data.is_published || false);
+        setIsHeavy(data.is_heavy || false);
+        setRailwayUrl(data.railway_url || '');
       }
     } catch (error) {
       console.error('Error fetching agent:', error);
@@ -129,6 +133,8 @@ export default function AgentSettings() {
           max_tokens: maxTokens[0],
           knowledge_base: knowledgeBase,
           is_published: isPublished,
+          is_heavy: isHeavy,
+          railway_url: railwayUrl || null,
           updated_at: new Date().toISOString()
         })
         .eq('id', id)
@@ -356,6 +362,63 @@ export default function AgentSettings() {
                   </p>
                 )}
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Railway Configuration */}
+          <Card className="border-blue-500/20">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Badge variant="outline" className="text-xs">Advanced</Badge>
+                Railway Backend Execution
+              </CardTitle>
+              <CardDescription>
+                Enable Railway backend for complex agents requiring longer execution times, more memory, or persistent connections
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div className="space-y-0.5">
+                  <Label htmlFor="heavy">Execute on Railway Backend</Label>
+                  <p className="text-sm text-muted-foreground">
+                    Routes agent execution to Railway for complex workloads
+                  </p>
+                </div>
+                <Switch
+                  id="heavy"
+                  checked={isHeavy}
+                  onCheckedChange={setIsHeavy}
+                />
+              </div>
+              
+              {isHeavy && (
+                <div className="space-y-2">
+                  <Label htmlFor="railwayUrl">Custom Railway URL (Optional)</Label>
+                  <Input
+                    id="railwayUrl"
+                    value={railwayUrl}
+                    onChange={(e) => setRailwayUrl(e.target.value)}
+                    placeholder="https://yourapp.up.railway.app"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Leave empty to use the default Railway backend URL from environment
+                  </p>
+                </div>
+              )}
+
+              {isHeavy && (
+                <div className="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg space-y-2">
+                  <p className="text-sm font-medium text-blue-900 dark:text-blue-100">
+                    Heavy Agent Features:
+                  </p>
+                  <ul className="text-xs text-blue-800 dark:text-blue-200 space-y-1 ml-4">
+                    <li>• No 60-second timeout limit</li>
+                    <li>• Higher memory allocation</li>
+                    <li>• WebSocket support for real-time streaming</li>
+                    <li>• Support for complex dependencies</li>
+                  </ul>
+                </div>
+              )}
             </CardContent>
           </Card>
 
