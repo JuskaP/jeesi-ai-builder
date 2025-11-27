@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
-import { authenticateSupabaseJWT, authenticateAPIKey, supabase } from '../index';
+import { supabase } from '../index';
+import { authenticateSupabaseJWT, authenticateAPIKey } from '../middleware/auth';
 import { z } from 'zod';
 import { executeAgent } from '../services/agentExecutor';
 
