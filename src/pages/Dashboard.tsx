@@ -6,9 +6,11 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
+import { useTranslation } from 'react-i18next';
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [agents, setAgents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -33,7 +35,7 @@ export default function Dashboard() {
       setAgents(data || []);
     } catch (error) {
       console.error('Error fetching agents:', error);
-      toast.error('Agenttien lataaminen epäonnistui');
+      toast.error(t('agentSettings.messages.loadError'));
     } finally {
       setLoading(false);
     }
@@ -42,7 +44,7 @@ export default function Dashboard() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-muted-foreground">Ladataan...</div>
+        <div className="text-muted-foreground">{t('common.loading')}</div>
       </div>
     );
   }
@@ -57,13 +59,13 @@ export default function Dashboard() {
             </svg>
           </div>
           <div>
-            <h2 className='text-2xl font-semibold text-foreground mb-2'>Ei vielä agentteja</h2>
+            <h2 className='text-2xl font-semibold text-foreground mb-2'>{t('dashboard.empty')}</h2>
             <p className='text-muted-foreground max-w-md mx-auto'>
-              Aloita ensimmäisen agentin luominen ja automatisoi liiketoimintasi prosesseja.
+              {t('landing.hero.subtitle')}
             </p>
           </div>
           <Button asChild size='lg'>
-            <Link to='/community'>Aloita agenttien luonti!</Link>
+            <Link to='/community'>{t('dashboard.empty')}</Link>
           </Button>
         </div>
       </div>
@@ -74,11 +76,11 @@ export default function Dashboard() {
     <div className='p-8 max-w-7xl mx-auto'>
       <div className='flex items-center justify-between mb-6'>
         <div>
-          <h2 className='text-3xl font-bold text-foreground'>Omat Agentit</h2>
-          <p className='mt-2 text-muted-foreground'>Hallinnoi ja seuraa agenttejasi</p>
+          <h2 className='text-3xl font-bold text-foreground'>{t('dashboard.title')}</h2>
+          <p className='mt-2 text-muted-foreground'>{t('dashboard.title')}</p>
         </div>
         <Button asChild>
-          <Link to='/community'>Luo uusi agentti</Link>
+          <Link to='/community'>{t('common.add')}</Link>
         </Button>
       </div>
 
@@ -95,17 +97,17 @@ export default function Dashboard() {
                   variant={agent.status === 'deployed' ? 'default' : 'secondary'}
                   className='text-xs'
                 >
-                  {agent.status === 'deployed' ? 'Käytössä' : 'Keskeneräinen'}
+                  {agent.status === 'deployed' ? t('dashboard.status.completed') : t('dashboard.status.inProgress')}
                 </Badge>
               </div>
             </CardHeader>
             <CardContent>
               <div className='flex gap-2'>
                 <Button variant='outline' size='sm' className='flex-1' asChild>
-                  <Link to={`/agents/${agent.id}/settings`}>Muokkaa</Link>
+                  <Link to={`/agents/${agent.id}/settings`}>{t('dashboard.actions.edit')}</Link>
                 </Button>
                 <Button size='sm' className='flex-1' disabled>
-                  Käynnistä
+                  {t('dashboard.actions.view')}
                 </Button>
               </div>
             </CardContent>

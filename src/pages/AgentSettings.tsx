@@ -13,37 +13,38 @@ import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { ArrowLeft, Plus, Trash2, Save, TestTube } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const AI_MODELS = [
   {
     value: 'google/gemini-2.5-flash',
     label: 'Google Gemini 2.5 Flash',
-    description: 'Tasapainoinen malli, sopii useimpiin käyttötarkoituksiin',
-    indicator: '💚 Suositeltu'
+    descriptionKey: 'agentSettings.aiModel.models.gemini-flash.description',
+    indicator: '💚'
   },
   {
     value: 'google/gemini-2.5-pro',
     label: 'Google Gemini 2.5 Pro',
-    description: 'Tehokkain Gemini-malli monimutkaista päättelyä varten',
-    indicator: '🔥 Tehokkain'
+    descriptionKey: 'agentSettings.aiModel.models.gemini-pro.description',
+    indicator: '🔥'
   },
   {
     value: 'google/gemini-2.5-flash-lite',
     label: 'Google Gemini 2.5 Flash Lite',
-    description: 'Nopein ja halvin, sopii yksinkertaisiin tehtäviin',
-    indicator: '⚡ Nopein'
+    descriptionKey: 'agentSettings.aiModel.models.gemini-lite.description',
+    indicator: '⚡'
   },
   {
     value: 'openai/gpt-5',
     label: 'OpenAI GPT-5',
-    description: 'Premium-malli, paras tarkkuus ja monimutkaiset tehtävät',
-    indicator: '💎 Premium'
+    descriptionKey: 'agentSettings.aiModel.models.gpt-5.description',
+    indicator: '💎'
   },
   {
     value: 'openai/gpt-5-mini',
     label: 'OpenAI GPT-5 Mini',
-    description: 'Kustannustehokas versio GPT-5:stä',
-    indicator: '💰 Kustannustehokas'
+    descriptionKey: 'agentSettings.aiModel.models.gpt-5-mini.description',
+    indicator: '💰'
   }
 ];
 
@@ -51,6 +52,7 @@ export default function AgentSettings() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   
@@ -105,7 +107,7 @@ export default function AgentSettings() {
       }
     } catch (error) {
       console.error('Error fetching agent:', error);
-      toast.error('Agentin lataaminen epäonnistui');
+      toast.error(t('agentSettings.messages.loadError'));
     } finally {
       setLoading(false);
     }
@@ -134,10 +136,10 @@ export default function AgentSettings() {
 
       if (error) throw error;
       
-      toast.success('Asetukset tallennettu!');
+      toast.success(t('agentSettings.messages.saveSuccess'));
     } catch (error) {
       console.error('Error saving agent:', error);
-      toast.error('Tallentaminen epäonnistui');
+      toast.error(t('agentSettings.messages.saveError'));
     } finally {
       setSaving(false);
     }
@@ -159,7 +161,7 @@ export default function AgentSettings() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="text-muted-foreground">Ladataan...</div>
+        <div className="text-muted-foreground">{t('common.loading')}</div>
       </div>
     );
   }
@@ -171,11 +173,11 @@ export default function AgentSettings() {
           <Button variant="ghost" size="sm" asChild>
             <Link to="/dashboard">
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Takaisin
+              {t('agentSettings.back')}
             </Link>
           </Button>
           <div className="flex-1">
-            <h1 className="text-3xl font-bold text-foreground">Agentin asetukset</h1>
+            <h1 className="text-3xl font-bold text-foreground">{t('agentSettings.title')}</h1>
             <p className="text-muted-foreground mt-1">{name}</p>
           </div>
         </div>
@@ -184,12 +186,12 @@ export default function AgentSettings() {
           {/* Perustiedot */}
           <Card>
             <CardHeader>
-              <CardTitle>Perustiedot</CardTitle>
-              <CardDescription>Agentin nimi ja kuvaus</CardDescription>
+              <CardTitle>{t('agentSettings.basicInfo.title')}</CardTitle>
+              <CardDescription>{t('agentSettings.basicInfo.description')}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <Label htmlFor="name">Nimi</Label>
+                <Label htmlFor="name">{t('agentSettings.basicInfo.name')}</Label>
                 <Input
                   id="name"
                   value={name}
@@ -198,12 +200,12 @@ export default function AgentSettings() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="description">Kuvaus</Label>
+                <Label htmlFor="description">{t('agentSettings.basicInfo.description')}</Label>
                 <Input
                   id="description"
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
-                  placeholder="Lyhyt kuvaus agentin tarkoituksesta"
+                  placeholder={t('agentSettings.basicInfo.description')}
                 />
               </div>
             </CardContent>
@@ -233,8 +235,8 @@ export default function AgentSettings() {
           {/* AI-malli */}
           <Card>
             <CardHeader>
-              <CardTitle>AI-malli</CardTitle>
-              <CardDescription>Valitse agenttisi käyttämä tekoälymalli</CardDescription>
+              <CardTitle>{t('agentSettings.aiModel.title')}</CardTitle>
+              <CardDescription>{t('agentSettings.aiModel.description')}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <Select value={aiModel} onValueChange={setAiModel}>
@@ -256,7 +258,7 @@ export default function AgentSettings() {
               </Select>
               {selectedModel && (
                 <p className="text-sm text-muted-foreground">
-                  ℹ️ {selectedModel.description}
+                  ℹ️ {t(selectedModel.descriptionKey)}
                 </p>
               )}
             </CardContent>
@@ -289,8 +291,8 @@ export default function AgentSettings() {
           {/* Max Tokens */}
           <Card>
             <CardHeader>
-              <CardTitle>Max Tokens: {maxTokens[0]}</CardTitle>
-              <CardDescription>Vastausten maksimipituus</CardDescription>
+              <CardTitle>{t('agentSettings.maxTokens.title')}: {maxTokens[0]}</CardTitle>
+              <CardDescription>{t('agentSettings.maxTokens.description')}</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -360,41 +362,41 @@ export default function AgentSettings() {
           {/* Julkaisu */}
           <Card>
             <CardHeader>
-              <CardTitle>Julkaisu</CardTitle>
-              <CardDescription>Ota agentti käyttöön API:n kautta</CardDescription>
+              <CardTitle>{t('agentSettings.publishing.title')}</CardTitle>
+              <CardDescription>{t('agentSettings.publishing.description')}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center justify-between">
                 <div className="space-y-0.5">
-                  <Label>Julkaise agentti</Label>
+                  <Label htmlFor="publish">{t('agentSettings.publishing.toggle')}</Label>
                   <p className="text-sm text-muted-foreground">
-                    Julkaistut agentit kuluttavat krediittejä
+                    {t('agentSettings.publishing.warning')}
                   </p>
                 </div>
                 <Switch
+                  id="publish"
                   checked={isPublished}
                   onCheckedChange={setIsPublished}
                 />
               </div>
               {isPublished && (
-                <div className="p-3 rounded-md bg-primary/10 border border-primary/20">
-                  <p className="text-sm text-foreground">
-                    ⚠️ Agenttisi on julkaistu ja käytettävissä API:n kautta. Jokainen API-kutsu kuluttaa krediittejä.
+                <div className="p-3 bg-primary/10 rounded-lg">
+                  <p className="text-sm text-primary">
+                    ✓ {t('agentSettings.publishing.published')}
                   </p>
                 </div>
               )}
             </CardContent>
           </Card>
 
-          {/* Action Buttons */}
-          <div className="flex gap-3 justify-end">
+          <div className="flex gap-4 justify-end pt-4">
             <Button variant="outline" size="lg" disabled>
               <TestTube className="mr-2 h-4 w-4" />
-              Testaa agenttia
+              {t('agentSettings.actions.test')}
             </Button>
             <Button size="lg" onClick={handleSave} disabled={saving}>
               <Save className="mr-2 h-4 w-4" />
-              {saving ? 'Tallennetaan...' : 'Tallenna muutokset'}
+              {saving ? t('agentSettings.actions.saving') : t('agentSettings.actions.save')}
             </Button>
           </div>
         </div>

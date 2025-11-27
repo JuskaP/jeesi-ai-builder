@@ -1,0 +1,196 @@
+{
+  "brand": {
+    "name": "jeesi.ai",
+    "assistant": "Helpie"
+  },
+  "nav": {
+    "myAgents": "Meine Agenten",
+    "community": "Community",
+    "workspaces": "Arbeitsbereiche",
+    "pricing": "Preise",
+    "profile": "Profil",
+    "signIn": "Anmelden oder Konto erstellen"
+  },
+  "landing": {
+    "hero": {
+      "title": "Erstellen Sie Ihren KI-Agenten in Minuten",
+      "subtitle": "Sagen Sie Helpie, was Sie wollen - die Plattform erledigt den Rest. Keine Programmierung erforderlich.",
+      "cta": "Kostenlos starten"
+    },
+    "greetings": {
+      "loggedOut": [
+        "👋 Hallo! Ich bin Helpie, Ihr KI-Agenten-Assistent.",
+        "🚀 Bereit, etwas Erstaunliches zu erschaffen? Los geht's!",
+        "💡 Haben Sie eine Idee? Lassen Sie uns daraus einen KI-Agenten machen!",
+        "✨ Sagen Sie mir, welche Art von Agent Sie erstellen möchten.",
+        "🎯 Lassen Sie uns gemeinsam Ihren individuellen KI-Agenten erstellen!"
+      ],
+      "loggedIn": "Willkommen zurück, {email}! Bereit zum Weitermachen?"
+    }
+  },
+  "dashboard": {
+    "title": "Meine Agenten",
+    "empty": "Beginnen Sie mit der Erstellung von Agenten!",
+    "status": {
+      "completed": "Abgeschlossen",
+      "inProgress": "In Bearbeitung"
+    },
+    "actions": {
+      "edit": "Bearbeiten",
+      "view": "Ansehen"
+    }
+  },
+  "agentSettings": {
+    "title": "Agenten-Einstellungen",
+    "back": "Zurück",
+    "basicInfo": {
+      "title": "Grundinformationen",
+      "name": "Name",
+      "description": "Beschreibung"
+    },
+    "systemPrompt": {
+      "title": "System-Prompt",
+      "description": "Definieren Sie die Persönlichkeit und Anweisungen Ihres Agenten",
+      "placeholder": "Sie sind ein hilfreicher Kundenservice-Assistent...",
+      "characters": "Zeichen"
+    },
+    "aiModel": {
+      "title": "KI-Modell",
+      "description": "Wählen Sie das KI-Modell für Ihren Agenten",
+      "models": {
+        "gemini-flash": {
+          "name": "Google Gemini 2.5 Flash",
+          "description": "Ausgewogenes Modell, geeignet für die meisten Anwendungsfälle"
+        },
+        "gemini-pro": {
+          "name": "Google Gemini 2.5 Pro",
+          "description": "Am leistungsstärksten, am besten für komplexes Denken"
+        },
+        "gemini-lite": {
+          "name": "Google Gemini 2.5 Flash Lite",
+          "description": "Am schnellsten und kostengünstigsten"
+        },
+        "gpt-5": {
+          "name": "OpenAI GPT-5",
+          "description": "Premium-Modell mit ausgezeichnetem Denkvermögen"
+        },
+        "gpt-5-mini": {
+          "name": "OpenAI GPT-5 Mini",
+          "description": "Kostengünstig mit starker Leistung"
+        }
+      }
+    },
+    "temperature": {
+      "title": "Temperatur",
+      "description": "Steuert die Kreativität der Antworten",
+      "precise": "Präzise",
+      "creative": "Kreativ"
+    },
+    "maxTokens": {
+      "title": "Max. Tokens",
+      "description": "Maximale Antwortlänge"
+    },
+    "knowledgeBase": {
+      "title": "Wissensbasis",
+      "description": "Fügen Sie Informationen hinzu, die Ihr Agent kennen sollte",
+      "add": "Information hinzufügen",
+      "placeholder": "Wissensausschnitt eingeben...",
+      "empty": "Noch kein Wissen hinzugefügt"
+    },
+    "publishing": {
+      "title": "Veröffentlichung",
+      "toggle": "Agent veröffentlichen",
+      "warning": "Die Veröffentlichung verbraucht Credits bei Verwendung",
+      "published": "Agent ist veröffentlicht und über API verfügbar"
+    },
+    "actions": {
+      "save": "Änderungen speichern",
+      "test": "Agent testen",
+      "saving": "Wird gespeichert...",
+      "testing": "Wird getestet..."
+    },
+    "messages": {
+      "saveSuccess": "Agenten-Einstellungen erfolgreich gespeichert",
+      "saveError": "Fehler beim Speichern der Agenten-Einstellungen",
+      "loadError": "Fehler beim Laden des Agenten"
+    }
+  },
+  "auth": {
+    "signIn": "Anmelden",
+    "signUp": "Registrieren",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "forgotPassword": "Passwort vergessen?",
+    "noAccount": "Haben Sie noch kein Konto?",
+    "hasAccount": "Haben Sie bereits ein Konto?"
+  },
+  "profile": {
+    "title": "Profil",
+    "signOut": "Abmelden"
+  },
+  "community": {
+    "title": "Community-Vorlagen",
+    "search": "Vorlagen suchen...",
+    "empty": "Keine Vorlagen gefunden"
+  },
+  "workspaces": {
+    "title": "Arbeitsbereiche",
+    "create": "Arbeitsbereich erstellen",
+    "empty": "Noch keine Arbeitsbereiche"
+  },
+  "billing": {
+    "title": "Preispläne",
+    "plans": {
+      "basic": {
+        "name": "Basic",
+        "price": "Kostenlos",
+        "features": [
+          "5 tägliche Credits (max. 50/Monat)",
+          "Keine Veröffentlichung",
+          "jeesi.ai Wasserzeichen"
+        ]
+      },
+      "pro": {
+        "name": "Pro",
+        "price": "29,99€/Monat",
+        "features": [
+          "5 täglich + 150 monatliche Credits",
+          "Agenten veröffentlichen",
+          "Eigene Domains",
+          "Wasserzeichen entfernen"
+        ]
+      },
+      "expert": {
+        "name": "Expert",
+        "price": "49,99€/Monat",
+        "features": [
+          "250 Credits/Monat",
+          "Interne Veröffentlichung",
+          "SSO-Unterstützung",
+          "Design-Vorlagen"
+        ]
+      },
+      "custom": {
+        "name": "Individuell",
+        "price": "Kontaktieren Sie uns",
+        "features": [
+          "Individuelle Credits",
+          "Unternehmens-Support",
+          "Dedizierte Beratung"
+        ]
+      }
+    }
+  },
+  "common": {
+    "loading": "Lädt...",
+    "error": "Ein Fehler ist aufgetreten",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "add": "Hinzufügen",
+    "remove": "Entfernen",
+    "close": "Schließen",
+    "back": "Zurück"
+  }
+}
