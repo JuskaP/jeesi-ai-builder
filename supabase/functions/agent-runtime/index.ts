@@ -77,7 +77,7 @@ serve(async (req) => {
     // Fetch agent configuration
     const { data: agent, error: agentError } = await supabase
       .from("agents")
-      .select("system_prompt, ai_model, temperature, max_tokens, is_published, user_id")
+      .select("system_prompt, ai_model, temperature, max_tokens, is_published, user_id, is_heavy, railway_url")
       .eq("id", agentId)
       .eq("is_published", true)
       .single();
@@ -90,6 +90,53 @@ serve(async (req) => {
       );
     }
 
+    // ROUTING LOGIC: Check if agent is heavy and should run on Railway
+    if (agent.is_heavy) {
+      const railwayUrl = agent.railway_url || Deno.env.get("RAILWAY_BACKEND_URL");
+      
+      if (!railwayUrl) {
+        console.error("Heavy agent but no Railway URL configured");
+        return new Response(
+          JSON.stringify({ error: "Heavy agent execution not configured" }),
+          { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      console.log("Routing to Railway backend", { agentId, railwayUrl });
+
+      // Forward request to Railway backend
+      const railwayResponse = await fetch(`${railwayUrl}/api/agent/execute`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": apiKey
+        },
+        body: JSON.stringify({
+          agentId,
+          messages,
+          stream: true
+        })
+      });
+
+      if (!railwayResponse.ok) {
+        const errorText = await railwayResponse.text();
+        console.error("Railway backend error:", railwayResponse.status, errorText);
+        return new Response(
+          JSON.stringify({ error: "Railway backend error", details: errorText }),
+          { status: railwayResponse.status, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      // Stream Railway response back to client
+      return new Response(railwayResponse.body, {
+        headers: {
+          ...corsHeaders,
+          "Content-Type": "text/event-stream",
+        },
+      });
+    }
+
+    // STANDARD PATH: Execute agent locally in edge function
     // Call Lovable AI Gateway
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {

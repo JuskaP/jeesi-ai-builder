@@ -21,11 +21,13 @@ export type Database = {
           description: string | null
           features: Json | null
           id: string
+          is_heavy: boolean | null
           is_published: boolean | null
           knowledge_base: Json | null
           max_tokens: number | null
           name: string
           purpose: string
+          railway_url: string | null
           status: string | null
           system_prompt: string | null
           tech_stack: Json | null
@@ -39,11 +41,13 @@ export type Database = {
           description?: string | null
           features?: Json | null
           id?: string
+          is_heavy?: boolean | null
           is_published?: boolean | null
           knowledge_base?: Json | null
           max_tokens?: number | null
           name: string
           purpose: string
+          railway_url?: string | null
           status?: string | null
           system_prompt?: string | null
           tech_stack?: Json | null
@@ -57,11 +61,13 @@ export type Database = {
           description?: string | null
           features?: Json | null
           id?: string
+          is_heavy?: boolean | null
           is_published?: boolean | null
           knowledge_base?: Json | null
           max_tokens?: number | null
           name?: string
           purpose?: string
+          railway_url?: string | null
           status?: string | null
           system_prompt?: string | null
           tech_stack?: Json | null
@@ -295,6 +301,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      deduct_credits: {
+        Args: { p_credits: number; p_user_id: string }
+        Returns: undefined
+      }
       get_admin_stats: {
         Args: never
         Returns: {
