@@ -38,7 +38,63 @@ export default function DemoSection() {
           Näin helppoa agentin luominen on
         </h2>
         <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto">
-          Neljä yksinkertaista vaihetta ideasta toimivaan AI-agenttiin
+          Katso video ja opi luomaan oma AI-agentti minuuteissa
+        </p>
+      </motion.div>
+
+      {/* Video Demo */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+        className="mb-20"
+      >
+        <div className="relative max-w-4xl mx-auto">
+          {/* Glow effect */}
+          <div className="absolute -inset-1 bg-gradient-to-r from-primary/30 via-accent/20 to-primary/30 rounded-2xl blur-xl opacity-75" />
+          
+          {/* Video container */}
+          <div className="relative bg-background/80 backdrop-blur-sm border border-border/50 rounded-xl overflow-hidden">
+            <div className="aspect-video bg-muted/30 flex items-center justify-center">
+              {/* Placeholder - korvaa tämä oikealla videolla */}
+              <div className="text-center p-8">
+                <div className="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <svg className="w-10 h-10 text-primary" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z"/>
+                  </svg>
+                </div>
+                <p className="text-muted-foreground text-lg mb-2">Demo-video tulossa pian</p>
+                <p className="text-muted-foreground text-sm">Tähän tulee video agentin luomisesta alusta loppuun</p>
+              </div>
+              {/* Kun video on valmis, korvaa yllä oleva tällä:
+              <video 
+                controls 
+                className="w-full h-full"
+                poster="/path-to-thumbnail.jpg"
+              >
+                <source src="/path-to-video.mp4" type="video/mp4" />
+                Selaimesi ei tue video-elementtiä.
+              </video>
+              */}
+            </div>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Process Steps */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        className="text-center mb-12"
+      >
+        <h3 className="text-2xl md:text-3xl font-bold text-foreground mb-4">
+          Neljä yksinkertaista vaihetta
+        </h3>
+        <p className="text-muted-foreground text-base md:text-lg">
+          Ideasta toimivaan AI-agenttiin käden käänteessä
         </p>
       </motion.div>
 
