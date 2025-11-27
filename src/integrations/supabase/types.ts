@@ -16,38 +16,92 @@ export type Database = {
     Tables: {
       agents: {
         Row: {
+          ai_model: string | null
           created_at: string | null
           description: string | null
           features: Json | null
           id: string
+          is_published: boolean | null
+          knowledge_base: Json | null
+          max_tokens: number | null
           name: string
           purpose: string
           status: string | null
+          system_prompt: string | null
           tech_stack: Json | null
+          temperature: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          ai_model?: string | null
+          created_at?: string | null
+          description?: string | null
+          features?: Json | null
+          id?: string
+          is_published?: boolean | null
+          knowledge_base?: Json | null
+          max_tokens?: number | null
+          name: string
+          purpose: string
+          status?: string | null
+          system_prompt?: string | null
+          tech_stack?: Json | null
+          temperature?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          ai_model?: string | null
+          created_at?: string | null
+          description?: string | null
+          features?: Json | null
+          id?: string
+          is_published?: boolean | null
+          knowledge_base?: Json | null
+          max_tokens?: number | null
+          name?: string
+          purpose?: string
+          status?: string | null
+          system_prompt?: string | null
+          tech_stack?: Json | null
+          temperature?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      api_keys: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          key_hash: string
+          key_name: string
+          key_prefix: string
+          last_used_at: string | null
           updated_at: string | null
           user_id: string
         }
         Insert: {
           created_at?: string | null
-          description?: string | null
-          features?: Json | null
           id?: string
-          name: string
-          purpose: string
-          status?: string | null
-          tech_stack?: Json | null
+          is_active?: boolean | null
+          key_hash: string
+          key_name: string
+          key_prefix: string
+          last_used_at?: string | null
           updated_at?: string | null
           user_id: string
         }
         Update: {
           created_at?: string | null
-          description?: string | null
-          features?: Json | null
           id?: string
-          name?: string
-          purpose?: string
-          status?: string | null
-          tech_stack?: Json | null
+          is_active?: boolean | null
+          key_hash?: string
+          key_name?: string
+          key_prefix?: string
+          last_used_at?: string | null
           updated_at?: string | null
           user_id?: string
         }
@@ -81,6 +135,74 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "conversations_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      credit_balances: {
+        Row: {
+          created_at: string | null
+          credits_remaining: number
+          credits_used_this_month: number
+          id: string
+          plan_type: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          credits_remaining?: number
+          credits_used_this_month?: number
+          id?: string
+          plan_type?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          credits_remaining?: number
+          credits_used_this_month?: number
+          id?: string
+          plan_type?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      credit_usage: {
+        Row: {
+          agent_id: string | null
+          created_at: string | null
+          credits_used: number
+          id: string
+          metadata: Json | null
+          operation_type: string
+          user_id: string
+        }
+        Insert: {
+          agent_id?: string | null
+          created_at?: string | null
+          credits_used: number
+          id?: string
+          metadata?: Json | null
+          operation_type: string
+          user_id: string
+        }
+        Update: {
+          agent_id?: string | null
+          created_at?: string | null
+          credits_used?: number
+          id?: string
+          metadata?: Json | null
+          operation_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credit_usage_agent_id_fkey"
             columns: ["agent_id"]
             isOneToOne: false
             referencedRelation: "agents"
