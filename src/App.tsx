@@ -10,6 +10,7 @@ import PageTransition from "./components/PageTransition";
 import Landing from "./pages/Landing";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
+import AgentSettings from "./pages/AgentSettings";
 import Community from "./pages/Community";
 import Workspaces from "./pages/Workspaces";
 import Billing from "./pages/Billing";
@@ -28,6 +29,14 @@ function AnimatedRoutes() {
         <Route path="/" element={<PageTransition><Landing /></PageTransition>} />
         <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
         <Route path="/dashboard" element={<PageTransition><Dashboard /></PageTransition>} />
+        <Route 
+          path="/agents/:id/settings" 
+          element={
+            <ProtectedRoute>
+              <PageTransition><AgentSettings /></PageTransition>
+            </ProtectedRoute>
+          } 
+        />
         <Route path="/community" element={<PageTransition><Community /></PageTransition>} />
         <Route path="/workspaces" element={<PageTransition><Workspaces /></PageTransition>} />
         <Route path="/billing" element={<PageTransition><Billing /></PageTransition>} />
