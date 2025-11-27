@@ -1,0 +1,39 @@
+import { useTranslation } from 'react-i18next';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Globe } from 'lucide-react';
+
+const languages = [
+  { code: 'en', name: 'English', flag: '🇬🇧' },
+  { code: 'fi', name: 'Suomi', flag: '🇫🇮' },
+  { code: 'de', name: 'Deutsch', flag: '🇩🇪' },
+  { code: 'sv', name: 'Svenska', flag: '🇸🇪' },
+  { code: 'es', name: 'Español', flag: '🇪🇸' },
+];
+
+export default function LanguageSelector() {
+  const { i18n } = useTranslation();
+
+  const handleLanguageChange = (lang: string) => {
+    i18n.changeLanguage(lang);
+    localStorage.setItem('language', lang);
+  };
+
+  return (
+    <Select value={i18n.language} onValueChange={handleLanguageChange}>
+      <SelectTrigger className="w-[140px] border-border/50 bg-card/50">
+        <Globe className="w-4 h-4 mr-2" />
+        <SelectValue />
+      </SelectTrigger>
+      <SelectContent>
+        {languages.map((lang) => (
+          <SelectItem key={lang.code} value={lang.code}>
+            <span className="flex items-center gap-2">
+              <span>{lang.flag}</span>
+              <span>{lang.name}</span>
+            </span>
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
+  );
+}

@@ -1,0 +1,196 @@
+{
+  "brand": {
+    "name": "jeesi.ai",
+    "assistant": "Helpie"
+  },
+  "nav": {
+    "myAgents": "Mina Agenter",
+    "community": "Gemenskap",
+    "workspaces": "Arbetsytor",
+    "pricing": "Priser",
+    "profile": "Profil",
+    "signIn": "Logga in eller skapa konto"
+  },
+  "landing": {
+    "hero": {
+      "title": "Bygg din AI-agent på minuter",
+      "subtitle": "Berätta för Helpie vad du vill ha - plattformen sköter resten. Ingen kodning krävs.",
+      "cta": "Börja gratis"
+    },
+    "greetings": {
+      "loggedOut": [
+        "👋 Hej! Jag är Helpie, din AI-agentbyggarassistent.",
+        "🚀 Redo att skapa något fantastiskt? Låt oss börja!",
+        "💡 Har du en idé? Låt oss förvandla den till en AI-agent!",
+        "✨ Berätta vilken typ av agent du vill bygga.",
+        "🎯 Låt oss bygga din anpassade AI-agent tillsammans!"
+      ],
+      "loggedIn": "Välkommen tillbaka, {email}! Redo att fortsätta bygga?"
+    }
+  },
+  "dashboard": {
+    "title": "Mina Agenter",
+    "empty": "Börja skapa agenter!",
+    "status": {
+      "completed": "Slutförd",
+      "inProgress": "Pågående"
+    },
+    "actions": {
+      "edit": "Redigera",
+      "view": "Visa"
+    }
+  },
+  "agentSettings": {
+    "title": "Agentinställningar",
+    "back": "Tillbaka",
+    "basicInfo": {
+      "title": "Grundläggande information",
+      "name": "Namn",
+      "description": "Beskrivning"
+    },
+    "systemPrompt": {
+      "title": "Systemprompt",
+      "description": "Definiera din agents personlighet och instruktioner",
+      "placeholder": "Du är en hjälpsam kundtjänstassistent...",
+      "characters": "tecken"
+    },
+    "aiModel": {
+      "title": "AI-modell",
+      "description": "Välj AI-modell för din agent",
+      "models": {
+        "gemini-flash": {
+          "name": "Google Gemini 2.5 Flash",
+          "description": "Balanserad modell, lämplig för de flesta användningsfall"
+        },
+        "gemini-pro": {
+          "name": "Google Gemini 2.5 Pro",
+          "description": "Mest kraftfull, bäst för komplexa resonemang"
+        },
+        "gemini-lite": {
+          "name": "Google Gemini 2.5 Flash Lite",
+          "description": "Snabbast och mest kostnadseffektiv"
+        },
+        "gpt-5": {
+          "name": "OpenAI GPT-5",
+          "description": "Premiummodell med utmärkt resonemang"
+        },
+        "gpt-5-mini": {
+          "name": "OpenAI GPT-5 Mini",
+          "description": "Kostnadseffektiv med stark prestanda"
+        }
+      }
+    },
+    "temperature": {
+      "title": "Temperatur",
+      "description": "Styr svarskreativitet",
+      "precise": "Precis",
+      "creative": "Kreativ"
+    },
+    "maxTokens": {
+      "title": "Max tokens",
+      "description": "Maximal svarslängd"
+    },
+    "knowledgeBase": {
+      "title": "Kunskapsbas",
+      "description": "Lägg till information din agent bör känna till",
+      "add": "Lägg till information",
+      "placeholder": "Ange kunskapsutdrag...",
+      "empty": "Ingen kunskap tillagd ännu"
+    },
+    "publishing": {
+      "title": "Publicering",
+      "toggle": "Publicera agent",
+      "warning": "Publicering förbrukar krediter vid användning",
+      "published": "Agent är publicerad och tillgänglig via API"
+    },
+    "actions": {
+      "save": "Spara ändringar",
+      "test": "Testa agent",
+      "saving": "Sparar...",
+      "testing": "Testar..."
+    },
+    "messages": {
+      "saveSuccess": "Agentinställningar sparade framgångsrikt",
+      "saveError": "Misslyckades med att spara agentinställningar",
+      "loadError": "Misslyckades med att ladda agent"
+    }
+  },
+  "auth": {
+    "signIn": "Logga in",
+    "signUp": "Registrera",
+    "email": "E-post",
+    "password": "Lösenord",
+    "forgotPassword": "Glömt lösenord?",
+    "noAccount": "Har du inget konto?",
+    "hasAccount": "Har du redan ett konto?"
+  },
+  "profile": {
+    "title": "Profil",
+    "signOut": "Logga ut"
+  },
+  "community": {
+    "title": "Gemenskapsmallar",
+    "search": "Sök mallar...",
+    "empty": "Inga mallar hittades"
+  },
+  "workspaces": {
+    "title": "Arbetsytor",
+    "create": "Skapa arbetsyta",
+    "empty": "Inga arbetsytor ännu"
+  },
+  "billing": {
+    "title": "Prisplaner",
+    "plans": {
+      "basic": {
+        "name": "Grundläggande",
+        "price": "Gratis",
+        "features": [
+          "5 dagliga krediter (max 50/månad)",
+          "Ingen publicering",
+          "jeesi.ai vattenstämpel"
+        ]
+      },
+      "pro": {
+        "name": "Pro",
+        "price": "29,99€/månad",
+        "features": [
+          "5 dagligen + 150 månatliga krediter",
+          "Publicera agenter",
+          "Anpassade domäner",
+          "Ta bort vattenstämpel"
+        ]
+      },
+      "expert": {
+        "name": "Expert",
+        "price": "49,99€/månad",
+        "features": [
+          "250 krediter/månad",
+          "Intern publicering",
+          "SSO-stöd",
+          "Designmallar"
+        ]
+      },
+      "custom": {
+        "name": "Anpassad",
+        "price": "Kontakta oss",
+        "features": [
+          "Anpassade krediter",
+          "Företagssupport",
+          "Dedikerad konsultation"
+        ]
+      }
+    }
+  },
+  "common": {
+    "loading": "Laddar...",
+    "error": "Ett fel uppstod",
+    "save": "Spara",
+    "cancel": "Avbryt",
+    "delete": "Ta bort",
+    "edit": "Redigera",
+    "add": "Lägg till",
+    "remove": "Ta bort",
+    "close": "Stäng",
+    "back": "Tillbaka"
+  }
+}

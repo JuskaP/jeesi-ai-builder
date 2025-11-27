@@ -1,0 +1,196 @@
+{
+  "brand": {
+    "name": "jeesi.ai",
+    "assistant": "Helpie"
+  },
+  "nav": {
+    "myAgents": "Omat Agentit",
+    "community": "Yhteisö",
+    "workspaces": "Työtilat",
+    "pricing": "Hinnasto",
+    "profile": "Profiili",
+    "signIn": "Kirjaudu tai luo tili"
+  },
+  "landing": {
+    "hero": {
+      "title": "Rakenna AI-agenttisi minuuteissa",
+      "subtitle": "Kerro Helpiella mitä haluat - alusta hoitaa loput. Ei koodausta tarvita.",
+      "cta": "Aloita ilmaiseksi"
+    },
+    "greetings": {
+      "loggedOut": [
+        "👋 Hei! Olen Helpie, AI-agenttirakentaja-assistenttisi.",
+        "🚀 Valmiina luomaan jotain hämmästyttävää? Aloitetaan!",
+        "💡 Onko sinulla idea? Muutetaan se AI-agentiksi!",
+        "✨ Kerro minulle millaisen agentin haluaisit rakentaa.",
+        "🎯 Rakennetaan räätälöity AI-agenttisi yhdessä!"
+      ],
+      "loggedIn": "Tervetuloa takaisin, {email}! Jatketaanko rakentamista?"
+    }
+  },
+  "dashboard": {
+    "title": "Omat Agentit",
+    "empty": "Aloita agenttien luonti!",
+    "status": {
+      "completed": "Valmis",
+      "inProgress": "Kesken"
+    },
+    "actions": {
+      "edit": "Muokkaa",
+      "view": "Näytä"
+    }
+  },
+  "agentSettings": {
+    "title": "Agentin asetukset",
+    "back": "Takaisin",
+    "basicInfo": {
+      "title": "Perustiedot",
+      "name": "Nimi",
+      "description": "Kuvaus"
+    },
+    "systemPrompt": {
+      "title": "Järjestelmäohje",
+      "description": "Määrittele agenttisi persoonallisuus ja ohjeet",
+      "placeholder": "Olet avulias asiakaspalveluassistentti...",
+      "characters": "merkkiä"
+    },
+    "aiModel": {
+      "title": "AI-malli",
+      "description": "Valitse AI-malli agentillesi",
+      "models": {
+        "gemini-flash": {
+          "name": "Google Gemini 2.5 Flash",
+          "description": "Tasapainoinen malli, sopii useimpiin käyttötapauksiin"
+        },
+        "gemini-pro": {
+          "name": "Google Gemini 2.5 Pro",
+          "description": "Tehokkain, paras monimutkaiseen päättelyyn"
+        },
+        "gemini-lite": {
+          "name": "Google Gemini 2.5 Flash Lite",
+          "description": "Nopein ja kustannustehokkain"
+        },
+        "gpt-5": {
+          "name": "OpenAI GPT-5",
+          "description": "Premium-malli erinomaisella päättelyllä"
+        },
+        "gpt-5-mini": {
+          "name": "OpenAI GPT-5 Mini",
+          "description": "Kustannustehokas vahvalla suorituskyvyllä"
+        }
+      }
+    },
+    "temperature": {
+      "title": "Lämpötila",
+      "description": "Ohjaa vastausten luovuutta",
+      "precise": "Tarkka",
+      "creative": "Luova"
+    },
+    "maxTokens": {
+      "title": "Maksimi tokenimäärä",
+      "description": "Vastauksen enimmäispituus"
+    },
+    "knowledgeBase": {
+      "title": "Tietopohja",
+      "description": "Lisää tietoa jonka agenttisi tulisi tietää",
+      "add": "Lisää tietoa",
+      "placeholder": "Syötä tietokatkelmia...",
+      "empty": "Ei vielä lisättyjä tietoja"
+    },
+    "publishing": {
+      "title": "Julkaisu",
+      "toggle": "Julkaise agentti",
+      "warning": "Julkaiseminen kuluttaa krediittejä käytön yhteydessä",
+      "published": "Agentti on julkaistu ja saatavilla API:n kautta"
+    },
+    "actions": {
+      "save": "Tallenna muutokset",
+      "test": "Testaa agentti",
+      "saving": "Tallennetaan...",
+      "testing": "Testataan..."
+    },
+    "messages": {
+      "saveSuccess": "Agentin asetukset tallennettu onnistuneesti",
+      "saveError": "Agentin asetusten tallennus epäonnistui",
+      "loadError": "Agentin lataus epäonnistui"
+    }
+  },
+  "auth": {
+    "signIn": "Kirjaudu sisään",
+    "signUp": "Luo tili",
+    "email": "Sähköposti",
+    "password": "Salasana",
+    "forgotPassword": "Unohditko salasanan?",
+    "noAccount": "Eikö sinulla ole tiliä?",
+    "hasAccount": "Onko sinulla jo tili?"
+  },
+  "profile": {
+    "title": "Profiili",
+    "signOut": "Kirjaudu ulos"
+  },
+  "community": {
+    "title": "Yhteisömallit",
+    "search": "Etsi malleja...",
+    "empty": "Malleja ei löytynyt"
+  },
+  "workspaces": {
+    "title": "Työtilat",
+    "create": "Luo työtila",
+    "empty": "Ei vielä työtiloja"
+  },
+  "billing": {
+    "title": "Hinnoittelupaketit",
+    "plans": {
+      "basic": {
+        "name": "Perus",
+        "price": "Ilmainen",
+        "features": [
+          "5 päivittäistä krediittiä (max 50/kk)",
+          "Ei julkaisumahdollisuutta",
+          "jeesi.ai vesileima"
+        ]
+      },
+      "pro": {
+        "name": "Pro",
+        "price": "29,99€/kk",
+        "features": [
+          "5 päivittäistä + 150 kuukausittaista krediittiä",
+          "Julkaise agentteja",
+          "Omat verkkotunnukset",
+          "Poista vesileima"
+        ]
+      },
+      "expert": {
+        "name": "Asiantuntija",
+        "price": "49,99€/kk",
+        "features": [
+          "250 krediittiä/kk",
+          "Sisäinen julkaisu",
+          "SSO-tuki",
+          "Suunnittelumallit"
+        ]
+      },
+      "custom": {
+        "name": "Räätälöity",
+        "price": "Ota yhteyttä",
+        "features": [
+          "Räätälöidyt krediitit",
+          "Yritysten tuki",
+          "Omistettu konsultointi"
+        ]
+      }
+    }
+  },
+  "common": {
+    "loading": "Ladataan...",
+    "error": "Tapahtui virhe",
+    "save": "Tallenna",
+    "cancel": "Peruuta",
+    "delete": "Poista",
+    "edit": "Muokkaa",
+    "add": "Lisää",
+    "remove": "Poista",
+    "close": "Sulje",
+    "back": "Takaisin"
+  }
+}
