@@ -92,7 +92,11 @@ export default function ChatUI({ template }: ChatUIProps) {
   }, [greetingIndex, user, hasUserTyped, messages.length]);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ 
+      behavior: "smooth",
+      block: "nearest",
+      inline: "nearest"
+    });
   };
 
   useEffect(() => {
