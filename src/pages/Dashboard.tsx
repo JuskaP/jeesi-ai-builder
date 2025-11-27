@@ -106,11 +106,14 @@ export default function Dashboard() {
                 {agent.description || agent.purpose}
               </p>
               <div className='flex gap-2'>
-                <Button variant='outline' size='sm' className='flex-1' asChild>
+                <Button variant='outline' size='sm' asChild>
                   <Link to={`/agents/${agent.id}/test`}>Test</Link>
                 </Button>
-                <Button variant='outline' size='sm' className='flex-1' asChild>
+                <Button variant='outline' size='sm' asChild>
                   <Link to={`/agents/${agent.id}/settings`}>Settings</Link>
+                </Button>
+                <Button variant='outline' size='sm' asChild>
+                  <Link to={`/agents/${agent.id}/embed`}>Embed</Link>
                 </Button>
               </div>
             </CardContent>
