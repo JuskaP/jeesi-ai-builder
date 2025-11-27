@@ -102,12 +102,15 @@ export default function Dashboard() {
               </div>
             </CardHeader>
             <CardContent>
+              <p className='text-sm text-muted-foreground mb-4 line-clamp-2'>
+                {agent.description || agent.purpose}
+              </p>
               <div className='flex gap-2'>
                 <Button variant='outline' size='sm' className='flex-1' asChild>
-                  <Link to={`/agents/${agent.id}/settings`}>{t('dashboard.actions.edit')}</Link>
+                  <Link to={`/agents/${agent.id}/test`}>Test</Link>
                 </Button>
-                <Button size='sm' className='flex-1' disabled>
-                  {t('dashboard.actions.view')}
+                <Button variant='outline' size='sm' className='flex-1' asChild>
+                  <Link to={`/agents/${agent.id}/settings`}>Settings</Link>
                 </Button>
               </div>
             </CardContent>

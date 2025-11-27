@@ -11,6 +11,7 @@ import Landing from "./pages/Landing";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
 import AgentSettings from "./pages/AgentSettings";
+import TestAgent from "./pages/TestAgent";
 import Community from "./pages/Community";
 import Workspaces from "./pages/Workspaces";
 import Billing from "./pages/Billing";
@@ -34,6 +35,14 @@ function AnimatedRoutes() {
           element={
             <ProtectedRoute>
               <PageTransition><AgentSettings /></PageTransition>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/agents/:id/test" 
+          element={
+            <ProtectedRoute>
+              <PageTransition><TestAgent /></PageTransition>
             </ProtectedRoute>
           } 
         />

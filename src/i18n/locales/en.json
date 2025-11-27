@@ -303,6 +303,26 @@
     "contactTitle": "Contact",
     "copyright": "Built for SMBs in Finland"
   },
+  "chat": {
+    "placeholder": "Describe what you want your agent to do...",
+    "send": "Send",
+    "typing": "Helpie is thinking...",
+    "analyzeImage": "Analyze this image",
+    "imageSent": "Image sent",
+    "imageAttached": "[Image attached]",
+    "newConversation": "New Conversation",
+    "sendError": "Failed to send message. Please try again.",
+    "createAgent": "Create This Agent",
+    "creatingAgent": "Creating Your Agent...",
+    "agentCreated": "Agent Created!",
+    "agentCreatedDesc": "{{name}} is ready. Let's configure it together.",
+    "creationFailed": "Creation Failed",
+    "creationFailedDesc": "Couldn't create agent. Please try again.",
+    "signInRequired": "Sign in required",
+    "signInRequiredDesc": "Please sign in to create an agent",
+    "moreDetailsNeeded": "More details needed",
+    "moreDetailsNeededDesc": "Please have a longer conversation so I can understand your requirements better"
+  },
   "common": {
     "loading": "Loading...",
     "error": "An error occurred",
@@ -314,6 +334,7 @@
     "remove": "Remove",
     "close": "Close",
     "back": "Back",
-    "send": "Send"
+    "send": "Send",
+    "test": "Test"
   }
 }

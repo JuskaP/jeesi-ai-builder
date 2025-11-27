@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.agent-runtime]
 verify_jwt = false
+
+[functions.create-agent]
+verify_jwt = false

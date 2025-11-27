@@ -12,7 +12,7 @@ serve(async (req) => {
   }
 
   try {
-    const { messages } = await req.json();
+    const { messages, agentConfig } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     
     if (!LOVABLE_API_KEY) {
@@ -31,18 +31,8 @@ serve(async (req) => {
       console.log('Request contains images - using multimodal capabilities');
     }
 
-    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'google/gemini-2.5-flash',
-        messages: [
-          { 
-            role: 'system', 
-            content: `You are Helpie, an AI agent builder assistant that helps businesses design and define AI agents.
+    // Use custom agent config if provided (test mode), otherwise use default Helpie config
+    const systemPrompt = agentConfig?.system_prompt || `You are Helpie, an AI agent builder assistant that helps businesses design and define AI agents.
 
 IMPORTANT INSTRUCTION - Conversation structure:
 - Ask ONLY 1-2 clarifying questions at a time
@@ -71,10 +61,24 @@ The bot could, for example:
 - Help with order tracking and updating basic information
 - Collect customer feedback and categorize inquiries"
 
-Be friendly, encouraging, and use clear language without technical jargon.`
-          },
+Be friendly, encouraging, and use clear language without technical jargon.`;
+
+    const model = agentConfig?.ai_model || 'google/gemini-2.5-flash';
+    const temperature = agentConfig?.temperature || 0.7;
+
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${LOVABLE_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model,
+        messages: [
+          { role: 'system', content: systemPrompt },
           ...messages,
         ],
+        temperature,
         stream: true,
       }),
     });
