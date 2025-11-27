@@ -16,12 +16,28 @@ const faqs = [
     answer: "Yksinkertaisen agentin voit luoda jo muutamassa minuutissa. Monimutkaisemmat agentit voivat vaatia 15-30 minuuttia. Kaikki riippuu tarpeistasi ja halutusta toiminnallisuudesta."
   },
   {
+    question: "Mitä ovat krediitit ja miten niitä käytetään?",
+    answer: "Krediitit ovat Jeesi.ai:n käyttöyksikkö. Jokainen agentin luonti, muokkaus tai keskustelu assistentin kanssa kuluttaa krediittejä. Ilmaisessa Basic-tasossa saat 5 päivittäistä krediittiä (max 50/kk). Pro-tasossa saat 5 päivittäistä + 150 kuukausikrediittiä, ja Expert-tasossa 250 krediittiä kuukaudessa."
+  },
+  {
     question: "Miten hinnoittelu toimii?",
-    answer: "Tarjoamme joustavaa käyttöpohjaista hinnoittelua. Aloita ilmaisella kokeilujaksolla ja maksa vain siitä mitä käytät. Ei kiinteitä kuukausimaksuja tai pitkiä sitoutumisia."
+    answer: "Tarjoamme neljä tasoa: Basic (ilmainen, 50 krediittiä/kk), Pro (29,99€/kk, 155 krediittiä/kk), Expert (49,99€/kk, 250 krediittiä/kk) ja Custom (räätälöity hinnoittelu). Pro ja Expert -tilaajat voivat ostaa lisää krediittejä tarpeen mukaan: 50 krediittiä 9,99€, 100 krediittiä 14,99€, 200 krediittiä erikoishinnoittelulla."
+  },
+  {
+    question: "Voiko krediittejä ostaa lisää?",
+    answer: "Kyllä! Pro ja Expert -tason käyttäjät voivat ostaa lisäkrediittejä milloin tahansa: 50 krediittiä 9,99€, 100 krediittiä 14,99€ tai 200 krediittiä. Ostamasi krediitit säilyvät ja siirtyvät seuraavaan kuukauteen, joten ne eivät vanhene."
+  },
+  {
+    question: "Mitä tapahtuu käyttämättömille krediiteille?",
+    answer: "Pro ja Expert -tason kuukausittaiset krediitit siirtyvät seuraavalle kuukaudelle, joten et menetä niitä! Päivittäiset ilmaiskrediitit (5 per päivä) eivät kuitenkaan kerry, vaan ne ovat käytettävissä päivittäin. Basic-tason päivittäiset krediitit on rajoitettu 50 krediittiin kuukaudessa."
   },
   {
     question: "Voiko agentin integroida olemassa oleviin järjestelmiin?",
-    answer: "Kyllä! Agentit voidaan upottaa verkkosivuille, integroida API:n kautta tai liittää olemassa oleviin työkaluihin. Tuemme yleisimpiä integrointeja heti valmiina."
+    answer: "Kyllä! Agentit voidaan upottaa verkkosivuille, integroida API:n kautta tai liittää olemassa oleviin työkaluihin. Tuemme yleisimpiä integrointeja heti valmiina. Huomaa, että agentin julkaisu ja integrointi vaativat Pro-tason tai korkeamman tilauksen."
+  },
+  {
+    question: "Voinko vaihtaa tilaustasoa myöhemmin?",
+    answer: "Kyllä voit! Voit päivittää tilauksesi milloin tahansa korkeammalle tasolle, ja muutos tulee voimaan välittömästi. Alentaminen alemmalle tasolle tulee voimaan seuraavan laskutusjakson alussa. Kaikki ostamasi lisäkrediitit säilyvät tilauksen muutoksessa."
   },
   {
     question: "Onko tietoni turvassa?",
