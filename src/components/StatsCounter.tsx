@@ -1,27 +1,28 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, useInView } from 'framer-motion';
 import { Users, Bot, Clock } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const stats = [
   { 
     icon: Users, 
     value: 2500, 
     suffix: '+', 
-    label: 'Tyytyväistä käyttäjää',
+    labelKey: 'stats.users',
     color: 'from-primary/20 to-primary/5'
   },
   { 
     icon: Bot, 
     value: 5000, 
     suffix: '+', 
-    label: 'Luotua agenttia',
+    labelKey: 'stats.agents',
     color: 'from-accent/20 to-accent/5'
   },
   { 
     icon: Clock, 
     value: 50000, 
     suffix: '+', 
-    label: 'Säästettyä työtuntia',
+    labelKey: 'stats.hours',
     color: 'from-primary/15 to-primary/5'
   },
 ];
@@ -61,6 +62,7 @@ function useCountUp(end: number, duration: number, shouldStart: boolean) {
 }
 
 export default function StatsCounter() {
+  const { t, i18n } = useTranslation();
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: "-100px" });
 
@@ -98,12 +100,12 @@ export default function StatsCounter() {
                   
                   {/* Number */}
                   <div className="text-4xl md:text-5xl font-bold text-foreground mb-2 tabular-nums">
-                    {count.toLocaleString('fi-FI')}{stat.suffix}
+                    {count.toLocaleString(i18n.language)}{stat.suffix}
                   </div>
                   
                   {/* Label */}
                   <p className="text-sm md:text-base text-muted-foreground">
-                    {stat.label}
+                    {t(stat.labelKey)}
                   </p>
                 </div>
               </div>

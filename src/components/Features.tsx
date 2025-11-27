@@ -1,40 +1,43 @@
 import { motion } from "framer-motion";
 import { Zap, Code2, Puzzle, Shield, Sparkles, Rocket } from "lucide-react";
-
-const features = [
-  {
-    icon: Zap,
-    title: "Nopea käyttöönotto",
-    description: "Luo toimiva AI-agentti minuuteissa, ei tunteja tai päiviä. Kerro mitä haluat ja alusta hoitaa loput."
-  },
-  {
-    icon: Code2,
-    title: "Ei koodausta",
-    description: "Ei tarvitse teknistä osaamista. Keskustele assistentin kanssa luonnollisella kielellä ja rakennetaan yhdessä."
-  },
-  {
-    icon: Puzzle,
-    title: "Valmis integroitavaksi",
-    description: "Upota agentit suoraan verkkosivuille, sovelluksiin tai käytä API:n kautta. Toimii heti."
-  },
-  {
-    icon: Shield,
-    title: "Turvallinen ja luotettava",
-    description: "Tietosi on turvassa. GDPR-yhteensopiva alusta suomalaisella tuella ja ylläpidolla."
-  },
-  {
-    icon: Sparkles,
-    title: "Tekoälyn voima",
-    description: "Hyödyntää kehittyneitä kielimalleja ymmärtääkseen asiakkaitasi ja auttaakseen heitä paremmin."
-  },
-  {
-    icon: Rocket,
-    title: "Skaalautuva ratkaisu",
-    description: "Aloita pienellä ja kasvata tarpeen mukaan. Ei kiinteitä kustannuksia, maksa vain käytöstä."
-  }
-];
+import { useTranslation } from "react-i18next";
 
 export default function Features() {
+  const { t } = useTranslation();
+
+  const features = [
+    {
+      icon: Zap,
+      titleKey: "features.quickSetup.title",
+      descriptionKey: "features.quickSetup.description"
+    },
+    {
+      icon: Code2,
+      titleKey: "features.noCoding.title",
+      descriptionKey: "features.noCoding.description"
+    },
+    {
+      icon: Puzzle,
+      titleKey: "features.readyToIntegrate.title",
+      descriptionKey: "features.readyToIntegrate.description"
+    },
+    {
+      icon: Shield,
+      titleKey: "features.secureReliable.title",
+      descriptionKey: "features.secureReliable.description"
+    },
+    {
+      icon: Sparkles,
+      titleKey: "features.aiPower.title",
+      descriptionKey: "features.aiPower.description"
+    },
+    {
+      icon: Rocket,
+      titleKey: "features.scalableSolution.title",
+      descriptionKey: "features.scalableSolution.description"
+    }
+  ];
+
   return (
     <section className="w-full max-w-7xl mx-auto px-4 py-16 md:py-24 relative z-10">
       <motion.div
@@ -44,10 +47,10 @@ export default function Features() {
         className="text-center mb-12 md:mb-16"
       >
         <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
-          Miksi Jeesi.ai?
+          {t('features.title')}
         </h2>
         <p className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto">
-          Kaikki mitä tarvitset AI-agenttien rakentamiseen ja käyttöönottoon
+          {t('features.subtitle')}
         </p>
       </motion.div>
 
@@ -66,10 +69,10 @@ export default function Features() {
                 <feature.icon className="w-6 h-6 text-primary" />
               </div>
               <h3 className="text-xl font-semibold text-foreground mb-2">
-                {feature.title}
+                {t(feature.titleKey)}
               </h3>
               <p className="text-muted-foreground">
-                {feature.description}
+                {t(feature.descriptionKey)}
               </p>
             </div>
           </motion.div>

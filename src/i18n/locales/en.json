@@ -181,6 +181,111 @@
       }
     }
   },
+  "cta": {
+    "badge": "Free Trial",
+    "title": "Start Building Your AI Agent Today",
+    "description": "No commitment, no credit card. Try free and see how easy agent creation can be.",
+    "startFree": "Start for Free",
+    "noCreditCard": "No credit card required",
+    "benefit1": "5 minutes to get started",
+    "benefit2": "No technical skills needed",
+    "benefit3": "24/7 Support"
+  },
+  "features": {
+    "title": "Why jeesi.ai?",
+    "subtitle": "Everything you need to build and deploy AI agents",
+    "quickSetup": { "title": "Quick Setup", "description": "Create a working AI agent in minutes, not hours or days. Tell us what you want and the platform handles the rest." },
+    "noCoding": { "title": "No Coding", "description": "No technical skills required. Chat with the assistant in natural language and build together." },
+    "readyToIntegrate": { "title": "Ready to Integrate", "description": "Embed agents directly on websites, apps or use via API. Works immediately." },
+    "secureReliable": { "title": "Secure & Reliable", "description": "Your data is safe. GDPR-compliant platform with support and maintenance." },
+    "aiPower": { "title": "AI Power", "description": "Leverages advanced language models to understand your customers and help them better." },
+    "scalableSolution": { "title": "Scalable Solution", "description": "Start small and grow as needed. No fixed costs, pay only for usage." }
+  },
+  "demo": {
+    "title": "Creating an Agent is This Easy",
+    "subtitle": "Watch the video and learn to create your own AI agent in minutes",
+    "videoPlaceholder": "Demo video coming soon",
+    "videoDescription": "Here will be a video of creating an agent from start to finish",
+    "stepsTitle": "Four Simple Steps",
+    "stepsSubtitle": "From idea to working AI agent in a snap",
+    "step1Title": "1. Describe Your Needs",
+    "step1Description": "Describe what you want the agent to do - use voice or text",
+    "step2Title": "2. AI Builds",
+    "step2Description": "AI creates the agent automatically based on your description",
+    "step3Title": "3. Test & Refine",
+    "step3Description": "Try the agent and make necessary changes through conversation",
+    "step4Title": "4. Publish",
+    "step4Description": "Publish the agent on your website or integrated into systems",
+    "processTime": "Average process time under 5 minutes",
+    "tryNow": "Try Now for Free"
+  },
+  "integrations": {
+    "title": "Compatible with Popular Tools",
+    "subtitle": "Integrate seamlessly with your existing systems",
+    "moreIntegrations": "And hundreds more integrations via API"
+  },
+  "testimonials": {
+    "title": "What Our Customers Say",
+    "subtitle": "Thousands of businesses trust jeesi.ai daily",
+    "testimonial1": { "name": "Sarah Mitchell", "role": "CEO, TechStart Solutions", "content": "jeesi.ai helped us automate customer service without technical expertise. We saved 40% time and customers are happier." },
+    "testimonial2": { "name": "James Anderson", "role": "Marketing Director, Digital Growth Co", "content": "Created a lead generation agent in under an hour. It's never been easier! Highly recommend to all SMBs." },
+    "testimonial3": { "name": "Emma Roberts", "role": "Founder, Wellness Studio", "content": "Our booking agent works 24/7 and bookings have increased 60%. Customers love it and so do we!" }
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "subtitle": "Answers to common questions",
+    "q1": "Do I need to know how to code?",
+    "a1": "No! jeesi.ai is designed specifically for non-technical users. You simply chat with the assistant in natural language, and it builds the agent for you.",
+    "q2": "How long does it take to create an agent?",
+    "a2": "You can create a simple agent in just a few minutes. More complex agents may require 15-30 minutes. It all depends on your needs and desired functionality.",
+    "q3": "What are credits and how are they used?",
+    "a3": "Credits are jeesi.ai's usage units. Each agent creation, edit, or conversation with the assistant consumes credits. The free Basic tier gives you 5 daily credits (max 50/month). Pro tier gives 5 daily + 150 monthly credits, and Expert tier gives 250 credits per month.",
+    "q4": "How does pricing work?",
+    "a4": "We offer four tiers: Basic (free, 50 credits/month), Pro (€29.99/month, 155 credits/month), Expert (€49.99/month, 250 credits/month) and Custom (tailored pricing). Pro and Expert subscribers can purchase additional credits as needed: 50 credits €9.99, 100 credits €14.99, 200 credits with special pricing.",
+    "q5": "Can I buy more credits?",
+    "a5": "Yes! Pro and Expert tier users can purchase additional credits anytime: 50 credits €9.99, 100 credits €14.99, or 200 credits. Purchased credits are saved and roll over to the next month, so they don't expire.",
+    "q6": "What happens to unused credits?",
+    "a6": "Pro and Expert tier monthly credits roll over to the next month, so you don't lose them! Daily free credits (5 per day) don't accumulate though, they are available daily. Basic tier daily credits are capped at 50 credits per month.",
+    "q7": "Can agents be integrated into existing systems?",
+    "a7": "Yes! Agents can be embedded on websites, integrated via API, or connected to existing tools. We support the most common integrations out of the box. Note that agent publishing and integration require Pro tier or higher subscription.",
+    "q8": "Can I change my subscription tier later?",
+    "a8": "Yes you can! You can upgrade your subscription anytime to a higher tier, and the change takes effect immediately. Downgrading to a lower tier takes effect at the start of the next billing period. All purchased additional credits are preserved when changing subscription.",
+    "q9": "Is my data secure?",
+    "a9": "Absolutely. We are GDPR-compliant and all data is encrypted. Service with support, and you have full control over your data.",
+    "q10": "What if I need help?",
+    "a10": "We offer customer support directly in chat or via email. We also have comprehensive documentation and video guides to help you get started.",
+    "noAnswer": "Didn't find an answer?",
+    "contactUs": "Contact Us"
+  },
+  "trust": {
+    "title": "Reliability and Security",
+    "subtitle": "Your data is safe with high-quality standards",
+    "gdpr": { "title": "GDPR Compliant", "description": "Full compliance with EU data protection regulation" },
+    "ssl": { "title": "SSL/TLS Secured", "description": "All data encrypted with highest level encryption" },
+    "euResidency": { "title": "EU Data Residency", "description": "Data stored in Finland and EU" },
+    "iso27001": { "title": "ISO 27001", "description": "Certified information security management system" },
+    "commitment": "We commit to the highest security and privacy standards to protect your data"
+  },
+  "stats": {
+    "users": "Happy Users",
+    "agents": "Created Agents",
+    "hours": "Work Hours Saved"
+  },
+  "footer": {
+    "tagline": "Create your personal AI assistant quickly and easily.",
+    "productsTitle": "Products",
+    "myAgents": "My Agents",
+    "community": "Community",
+    "workspaces": "Workspaces",
+    "pricing": "Pricing",
+    "companyTitle": "Company",
+    "about": "About Us",
+    "blog": "Blog",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "contactTitle": "Contact",
+    "copyright": "Built for SMBs in Finland"
+  },
   "common": {
     "loading": "Loading...",
     "error": "An error occurred",
