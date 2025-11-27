@@ -96,12 +96,13 @@ export function websocketServer(server: Server) {
   // Periodic cleanup of dead connections
   setInterval(() => {
     wss.clients.forEach((ws) => {
-      if (!ws.isAlive) {
-        ws.terminate();
+      const client = ws as WebSocket & { isAlive?: boolean };
+      if (!client.isAlive) {
+        client.terminate();
         return;
       }
-      (ws as any).isAlive = false;
-      ws.ping();
+      client.isAlive = false;
+      client.ping();
     });
   }, 30000);
 }

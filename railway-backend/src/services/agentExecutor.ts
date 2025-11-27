@@ -126,7 +126,7 @@ export async function executeAgent(options: AgentExecutionOptions): Promise<any>
 
     } else {
       // Handle non-streaming response
-      const data = await response.json();
+      const data: any = await response.json();
       const assistantMessage = data.choices?.[0]?.message?.content || '';
 
       const executionTime = Date.now() - startTime;
