@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { useTranslation } from 'react-i18next';
-import LanguageSelector from './LanguageSelector';
 
 export default function Navbar() {
   const { user } = useAuth();
@@ -17,7 +16,6 @@ export default function Navbar() {
           <Link to='/workspaces' className='text-sm text-foreground hover:text-primary transition-colors duration-300'>{t('nav.workspaces')}</Link>
           <Link to='/billing' className='text-sm text-foreground hover:text-primary transition-colors duration-300'>{t('nav.pricing')}</Link>
           {user && <Link to='/profile' className='text-sm text-foreground hover:text-primary transition-colors duration-300'>{t('nav.profile')}</Link>}
-          <LanguageSelector />
           <Link to={user ? '/profile' : '/auth'} className='px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm hover:bg-primary/90 transition-all duration-300 hover:shadow-lg hover:shadow-primary/20 hover:-translate-y-0.5'>
             {user ? t('nav.profile') : t('nav.signIn')}
           </Link>
