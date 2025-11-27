@@ -8,6 +8,9 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, User, Zap, TrendingUp, Bot } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import CreditBalance from '@/components/CreditBalance';
+import ApiKeyManager from '@/components/ApiKeyManager';
 
 interface Agent {
   id: string;
@@ -123,151 +126,182 @@ export default function Profile() {
             </Button>
           </div>
 
-          {/* User Info Card */}
-          <Card className="mb-6">
-            <CardHeader>
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-                  <User className="w-8 h-8 text-primary" />
-                </div>
-                <div>
-                  <CardTitle>{profile?.full_name || 'Käyttäjä'}</CardTitle>
-                  <CardDescription>{user?.email}</CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-          </Card>
+          <Tabs defaultValue="overview" className="space-y-6">
+            <TabsList className="grid w-full grid-cols-3">
+              <TabsTrigger value="overview">Yleiskatsaus</TabsTrigger>
+              <TabsTrigger value="api-keys">API-avaimet</TabsTrigger>
+              <TabsTrigger value="settings">Asetukset</TabsTrigger>
+            </TabsList>
 
-          {/* Stats Grid */}
-          <div className="grid md:grid-cols-4 gap-6 mb-8">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-            >
-              <Card className="hover:border-primary/50 transition-all duration-300">
-                <CardContent className="pt-6">
-                  <div className="flex items-center gap-3">
-                    <div className="p-3 rounded-lg bg-primary/10">
-                      <Bot className="w-6 h-6 text-primary" />
+            <TabsContent value="overview" className="space-y-6">
+              {/* User Info Card */}
+              <Card>
+                <CardHeader>
+                  <div className="flex items-center gap-4">
+                    <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                      <User className="w-8 h-8 text-primary" />
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">Agentit yhteensä</p>
-                      <p className="text-2xl font-bold text-foreground">{stats.totalAgents}</p>
+                      <CardTitle>{profile?.full_name || 'Käyttäjä'}</CardTitle>
+                      <CardDescription>{user?.email}</CardDescription>
                     </div>
                   </div>
-                </CardContent>
+                </CardHeader>
               </Card>
-            </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              <Card className="hover:border-primary/50 transition-all duration-300">
-                <CardContent className="pt-6">
-                  <div className="flex items-center gap-3">
-                    <div className="p-3 rounded-lg bg-accent/10">
-                      <TrendingUp className="w-6 h-6 text-accent" />
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Aktiiviset</p>
-                      <p className="text-2xl font-bold text-foreground">{stats.activeAgents}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
+              {/* Credit Balance */}
+              <CreditBalance />
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-            >
-              <Card className="hover:border-primary/50 transition-all duration-300">
-                <CardContent className="pt-6">
-                  <div className="flex items-center gap-3">
-                    <div className="p-3 rounded-lg bg-primary/10">
-                      <Zap className="w-6 h-6 text-primary" />
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Krediitit</p>
-                      <p className="text-2xl font-bold text-foreground">{stats.credits}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-            >
-              <Card className="hover:border-primary/50 transition-all duration-300">
-                <CardContent className="pt-6">
-                  <div className="flex items-center gap-3">
-                    <div className="p-3 rounded-lg bg-accent/10">
-                      <TrendingUp className="w-6 h-6 text-accent" />
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">Viikon aktiivisuus</p>
-                      <p className="text-2xl font-bold text-foreground">{stats.weeklyActivity}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          </div>
-
-          {/* Recent Agents */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Viimeisimmät agentit</CardTitle>
-              <CardDescription>
-                Äskettäin luodut ja päivitetyt agentit
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {agents.length > 0 ? (
-                <div className="space-y-3">
-                  {agents.slice(0, 5).map((agent, index) => (
-                    <motion.div
-                      key={agent.id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.1 }}
-                      className="flex items-center justify-between p-4 rounded-lg border border-border/50 hover:border-primary/50 transition-all duration-300 hover:bg-muted/50"
-                    >
+              {/* Stats Grid */}
+              <div className="grid md:grid-cols-4 gap-6">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 }}
+                >
+                  <Card className="hover:border-primary/50 transition-all duration-300">
+                    <CardContent className="pt-6">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                          <Bot className="w-5 h-5 text-primary" />
+                        <div className="p-3 rounded-lg bg-primary/10">
+                          <Bot className="w-6 h-6 text-primary" />
                         </div>
                         <div>
-                          <p className="font-medium text-foreground">{agent.name}</p>
-                          <p className="text-sm text-muted-foreground">
-                            Luotu {new Date(agent.created_at).toLocaleDateString('fi-FI')}
-                          </p>
+                          <p className="text-sm text-muted-foreground">Agentit yhteensä</p>
+                          <p className="text-2xl font-bold text-foreground">{stats.totalAgents}</p>
                         </div>
                       </div>
-                      <Badge variant={agent.status === 'active' ? 'default' : 'secondary'}>
-                        {agent.status === 'active' ? 'Aktiivinen' : 'Luonnos'}
-                      </Badge>
-                    </motion.div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <Bot className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
-                  <p className="text-muted-foreground">Ei vielä agentteja</p>
-                  <Button className="mt-4" onClick={() => navigate('/')}>
-                    Luo ensimmäinen agentti
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <Card className="hover:border-primary/50 transition-all duration-300">
+                    <CardContent className="pt-6">
+                      <div className="flex items-center gap-3">
+                        <div className="p-3 rounded-lg bg-accent/10">
+                          <TrendingUp className="w-6 h-6 text-accent" />
+                        </div>
+                        <div>
+                          <p className="text-sm text-muted-foreground">Aktiiviset</p>
+                          <p className="text-2xl font-bold text-foreground">{stats.activeAgents}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <Card className="hover:border-primary/50 transition-all duration-300">
+                    <CardContent className="pt-6">
+                      <div className="flex items-center gap-3">
+                        <div className="p-3 rounded-lg bg-primary/10">
+                          <Zap className="w-6 h-6 text-primary" />
+                        </div>
+                        <div>
+                          <p className="text-sm text-muted-foreground">Krediitit</p>
+                          <p className="text-2xl font-bold text-foreground">{stats.credits}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                >
+                  <Card className="hover:border-primary/50 transition-all duration-300">
+                    <CardContent className="pt-6">
+                      <div className="flex items-center gap-3">
+                        <div className="p-3 rounded-lg bg-accent/10">
+                          <TrendingUp className="w-6 h-6 text-accent" />
+                        </div>
+                        <div>
+                          <p className="text-sm text-muted-foreground">Viikon aktiivisuus</p>
+                          <p className="text-2xl font-bold text-foreground">{stats.weeklyActivity}</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              </div>
+
+              {/* Recent Agents */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Viimeisimmät agentit</CardTitle>
+                  <CardDescription>
+                    Äskettäin luodut ja päivitetyt agentit
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {agents.length > 0 ? (
+                    <div className="space-y-3">
+                      {agents.slice(0, 5).map((agent, index) => (
+                        <motion.div
+                          key={agent.id}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.1 }}
+                          className="flex items-center justify-between p-4 rounded-lg border border-border/50 hover:border-primary/50 transition-all duration-300 hover:bg-muted/50"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                              <Bot className="w-5 h-5 text-primary" />
+                            </div>
+                            <div>
+                              <p className="font-medium text-foreground">{agent.name}</p>
+                              <p className="text-sm text-muted-foreground">
+                                Luotu {new Date(agent.created_at).toLocaleDateString('fi-FI')}
+                              </p>
+                            </div>
+                          </div>
+                          <Badge variant={agent.status === 'active' ? 'default' : 'secondary'}>
+                            {agent.status === 'active' ? 'Aktiivinen' : 'Luonnos'}
+                          </Badge>
+                        </motion.div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <Bot className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+                      <p className="text-muted-foreground">Ei vielä agentteja</p>
+                      <Button className="mt-4" onClick={() => navigate('/')}>
+                        Luo ensimmäinen agentti
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            <TabsContent value="api-keys">
+              <ApiKeyManager />
+            </TabsContent>
+
+            <TabsContent value="settings">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Asetukset</CardTitle>
+                  <CardDescription>
+                    Profiilin ja tilin asetukset
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">Asetukset tulossa pian...</p>
+                </CardContent>
+              </Card>
+            </TabsContent>
+          </Tabs>
         </motion.div>
       </div>
     </div>
