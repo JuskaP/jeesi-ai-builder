@@ -27,6 +27,7 @@ import TermsOfService from "./pages/TermsOfService";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import ProtectedRoute from "./components/ProtectedRoute";
 import DataConsentDialog from "./components/DataConsentDialog";
+import CookieConsent from "./components/CookieConsent";
 
 const queryClient = new QueryClient();
 
@@ -130,6 +131,7 @@ const App = () => (
       <BrowserRouter>
         <AnimatedRoutes />
         <DataConsentDialog />
+        <CookieConsent />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
