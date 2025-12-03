@@ -19,10 +19,10 @@ const creditPackCredits: Record<string, number> = {
 const subscriptionCredits: Record<string, number> = {
   "price_1SaGfcGx4tvYlwhYuxu4weEo": 100,  // starter monthly
   "price_1SaGfkGx4tvYlwhYpSWO1FDR": 100,  // starter annual
-  "price_1SaGflGx4tvYlwhYcZj1MSf0": 250,  // pro monthly
-  "price_1SaGfmGx4tvYlwhYngNzJNmS": 250,  // pro annual
-  "price_1SaGfoGx4tvYlwhYiIfhKBSc": 500,  // business monthly
-  "price_1SaGfpGx4tvYlwhY01HLAcPB": 500,  // business annual
+  "price_1SaGflGx4tvYlwhYcZj1MSf0": 500,  // pro monthly
+  "price_1SaGfmGx4tvYlwhYngNzJNmS": 500,  // pro annual
+  "price_1SaGfoGx4tvYlwhYiIfhKBSc": 1000,  // business monthly
+  "price_1SaGfpGx4tvYlwhY01HLAcPB": 1000,  // business annual
 };
 
 const getPlanTypeFromPrice = (priceId: string): string => {

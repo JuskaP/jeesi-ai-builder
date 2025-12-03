@@ -26,8 +26,8 @@ const DAILY_CREDITS = 5;
 const planMonthlyCredits: Record<string, number> = {
   free: 50,
   starter: 100,
-  pro: 1000,
-  business: 2000,
+  pro: 500,
+  business: 1000,
   enterprise: 10000,
 };
 
