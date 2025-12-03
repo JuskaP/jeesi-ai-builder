@@ -16,11 +16,13 @@
         containerId: options.containerId || 'jeesi-agent',
         theme: options.theme || 'light',
         position: options.position || 'bottom-right',
+        // API URL is required - no hardcoded default
         apiUrl: options.apiUrl || 'https://kyysnciirgauhzzqobly.supabase.co/functions/v1/agent-runtime'
+        apiUrl: options.apiUrl
       };
 
-      if (!this.config.agentId || !this.config.apiKey) {
-        console.error('Jeesi Widget: agentId and apiKey are required');
+      if (!this.config.agentId || !this.config.apiKey || !this.config.apiUrl) {
+        console.error('Jeesi Widget: agentId, apiKey, and apiUrl are required');
         return;
       }
 
