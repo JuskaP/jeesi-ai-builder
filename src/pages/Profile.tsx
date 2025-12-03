@@ -31,7 +31,7 @@ interface CreditBalanceData {
 
 export default function Profile() {
   const { t } = useTranslation();
-  const { user, signOut } = useAuth();
+  const { user, signOut, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [profile, setProfile] = useState<any>(null);
@@ -42,6 +42,7 @@ export default function Profile() {
   const [fullName, setFullName] = useState('');
 
   useEffect(() => {
+    if (authLoading) return;
     if (!user) {
       navigate('/auth');
       return;
