@@ -5,21 +5,68 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+import { Loader2 } from 'lucide-react';
 
 export default function CreateAgentForm() {
   const [desc, setDesc] = useState('');
   const [name, setName] = useState('');
   const [integration, setIntegration] = useState('stripe');
   const [result, setResult] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
 
   const create = async () => {
-    const res = await fetch(`${import.meta.env.VITE_API_URL}/v1/agents`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, description: desc, integrations: [integration] })
-    });
-    const data = await res.json();
-    setResult(JSON.stringify(data, null, 2));
+    if (!name || !desc) {
+      toast({
+        title: "Missing fields",
+        description: "Please provide both name and description.",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast({
+          title: "Authentication required",
+          description: "Please sign in to create an agent.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      const { data, error } = await supabase.functions.invoke('create-agent', {
+        body: {
+          userId: session.user.id,
+          config: {
+            name,
+            purpose: integration,
+            description: desc,
+            system_prompt: `You are ${name}, an AI assistant. ${desc}`
+          }
+        }
+      });
+
+      if (error) throw error;
+      setResult(JSON.stringify(data, null, 2));
+      toast({
+        title: "Agent created!",
+        description: `${name} has been created successfully.`
+      });
+    } catch (error) {
+      console.error('Error creating agent:', error);
+      toast({
+        title: "Error",
+        description: "Failed to create agent. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -60,8 +107,10 @@ export default function CreateAgentForm() {
             </Select>
           </div>
           <div className='flex gap-2'>
-            <Button onClick={create}>Generate spec</Button>
-            <Button variant='outline'>Save draft</Button>
+            <Button onClick={create} disabled={loading}>
+              {loading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              {loading ? 'Creating...' : 'Create Agent'}
+            </Button>
           </div>
         </div>
       </div>
