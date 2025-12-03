@@ -12,7 +12,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { ArrowLeft, Plus, Trash2, Save, TestTube, Users } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Save, TestTube, Users, Activity } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 interface Workspace {
@@ -524,6 +524,12 @@ export default function AgentSettings() {
           </Card>
 
           <div className="flex gap-4 justify-end pt-4">
+            <Button variant="outline" size="lg" asChild>
+              <Link to={`/agents/${id}/diagnostics`}>
+                <Activity className="mr-2 h-4 w-4" />
+                Diagnostics
+              </Link>
+            </Button>
             <Button variant="outline" size="lg" disabled>
               <TestTube className="mr-2 h-4 w-4" />
               {t('agentSettings.actions.test')}
