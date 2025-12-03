@@ -45,55 +45,100 @@ const itemVariants = {
 };
 
 export default function FoundersCommunity() {
+  const topRow = founders.slice(0, 8);
+  const bottomRow = founders.slice(8, 16);
+
   return (
-    <motion.section
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.6 }}
-      className="w-full max-w-4xl mx-auto px-4 py-16 text-center relative z-10"
-    >
-      <h2 className="text-xl md:text-2xl lg:text-3xl font-semibold text-foreground mb-10 max-w-3xl mx-auto leading-relaxed">
-        Join worldwide community of founders and entrepreneurs who use Jeesi.ai to level up their businesses!
-      </h2>
-      
-      <motion.div 
-        className="flex flex-wrap justify-center items-center gap-4 md:gap-6"
-        variants={containerVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
+    <section className="w-full max-w-4xl mx-auto px-4 py-16 text-center relative z-10">
+      <motion.h2 
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 0.6 }}
+        className="text-xl md:text-2xl lg:text-3xl font-semibold text-foreground mb-10 max-w-3xl mx-auto leading-relaxed"
       >
-        {founders.map((founder, index) => (
-          <motion.div
-            key={founder.name}
-            variants={itemVariants}
-            whileHover={{ 
-              scale: 1.15, 
-              zIndex: 10,
-              transition: { duration: 0.2 }
-            }}
-            className="relative"
-          >
+        Join worldwide community of founders and entrepreneurs who use Jeesi.ai to level up their businesses!
+      </motion.h2>
+      
+      <div className="flex flex-col items-center gap-3 md:gap-4">
+        {/* Top Row */}
+        <motion.div 
+          className="flex flex-wrap justify-center items-center gap-3 md:gap-4"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+        >
+          {topRow.map((founder, index) => (
             <motion.div
-              animate={{ 
-                y: [0, index % 2 === 0 ? -6 : 6, 0],
+              key={founder.name}
+              variants={itemVariants}
+              whileHover={{ 
+                scale: 1.15, 
+                zIndex: 10,
+                transition: { duration: 0.2 }
               }}
-              transition={{
-                duration: 2 + (index * 0.3),
-                repeat: Infinity,
-                ease: "easeInOut" as const,
-              }}
+              className="relative"
             >
-              <img
-                src={founder.image}
-                alt={`${founder.name} - Jeesi.ai community member`}
-                className="w-14 h-14 md:w-16 md:h-16 rounded-full object-cover border-2 border-border shadow-lg hover:border-primary hover:shadow-primary/20 hover:shadow-xl transition-all duration-300"
-              />
+              <motion.div
+                animate={{ 
+                  y: [0, index % 2 === 0 ? -4 : 4, 0],
+                }}
+                transition={{
+                  duration: 2 + (index * 0.2),
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              >
+                <img
+                  src={founder.image}
+                  alt={`${founder.name} - Jeesi.ai community member`}
+                  className="w-12 h-12 md:w-14 md:h-14 rounded-full object-cover border-2 border-border shadow-lg hover:border-primary hover:shadow-primary/20 hover:shadow-xl transition-all duration-300"
+                />
+              </motion.div>
             </motion.div>
-          </motion.div>
-        ))}
-      </motion.div>
-    </motion.section>
+          ))}
+        </motion.div>
+
+        {/* Bottom Row - Offset */}
+        <motion.div 
+          className="flex flex-wrap justify-center items-center gap-3 md:gap-4 translate-x-6 md:translate-x-8"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+        >
+          {bottomRow.map((founder, index) => (
+            <motion.div
+              key={founder.name}
+              variants={itemVariants}
+              whileHover={{ 
+                scale: 1.15, 
+                zIndex: 10,
+                transition: { duration: 0.2 }
+              }}
+              className="relative"
+            >
+              <motion.div
+                animate={{ 
+                  y: [0, index % 2 === 0 ? 4 : -4, 0],
+                }}
+                transition={{
+                  duration: 2.5 + (index * 0.2),
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              >
+                <img
+                  src={founder.image}
+                  alt={`${founder.name} - Jeesi.ai community member`}
+                  className="w-12 h-12 md:w-14 md:h-14 rounded-full object-cover border-2 border-border shadow-lg hover:border-primary hover:shadow-primary/20 hover:shadow-xl transition-all duration-300"
+                />
+              </motion.div>
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+    </section>
   );
 }
