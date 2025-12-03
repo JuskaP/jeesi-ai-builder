@@ -2,10 +2,12 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Check, Sparkles, Loader2, Calendar } from 'lucide-react';
+import { Check, X, Sparkles, Loader2, Calendar } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { Switch } from '@/components/ui/switch';
+import { Label } from '@/components/ui/label';
 
 interface SubscriptionStatus {
   subscribed: boolean;
@@ -18,6 +20,7 @@ export default function Billing() {
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
   const [checkingSubscription, setCheckingSubscription] = useState(true);
+  const [isAnnual, setIsAnnual] = useState(false);
   const [subscription, setSubscription] = useState<SubscriptionStatus>({ 
     subscribed: false, 
     plan_type: 'free' 
@@ -60,7 +63,38 @@ export default function Billing() {
       }
 
       const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: { tier }
+        body: { tier, annual: isAnnual }
+      });
+      
+      if (error) throw error;
+      if (data.url) window.open(data.url, '_blank');
+    } catch (error) {
+      console.error('Error creating checkout:', error);
+      toast({
+        title: "Error",
+        description: "Failed to start checkout process. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const buyCredits = async (credits: number) => {
+    try {
+      setLoading(true);
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!sessionData.session) {
+        toast({
+          title: "Authentication Required",
+          description: "Please sign in to purchase credits.",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: { creditPack: credits }
       });
       
       if (error) throw error;
@@ -95,7 +129,7 @@ export default function Billing() {
     }
   };
 
-  const planTiers = ['starter', 'pro', 'business', 'enterprise'];
+  const planTiers = ['free', 'starter', 'pro', 'business', 'enterprise'];
   
   const plans = planTiers.map(tier => {
     const plan = t(`billing.plans.${tier}`, { returnObjects: true }) as any;
@@ -103,15 +137,19 @@ export default function Billing() {
       ...plan,
       tier,
       isEnterprise: tier === 'enterprise',
+      isFree: tier === 'free',
       popular: tier === 'pro',
       isCurrentPlan: subscription.plan_type === tier
     };
   });
 
+  const creditPacks = t('billing.creditTopups.packs', { returnObjects: true }) as Array<{ credits: number; price: string }>;
+
   const handlePlanAction = (plan: any) => {
     if (plan.isEnterprise) {
-      // Open Cal.com or booking link
       window.open('https://cal.com/jeesi/enterprise', '_blank');
+    } else if (plan.isFree) {
+      // Free plan - do nothing
     } else if (!plan.isCurrentPlan) {
       subscribe(plan.tier);
     }
@@ -119,11 +157,32 @@ export default function Billing() {
 
   return (
     <div className="p-8 max-w-7xl mx-auto">
-      <div className="text-center mb-12">
+      <div className="text-center mb-8">
         <h1 className="text-4xl font-bold text-foreground mb-4">{t('billing.title')}</h1>
         <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
           {t('billing.subtitle')}
         </p>
+        
+        {/* Billing toggle */}
+        <div className="flex items-center justify-center gap-3 mt-6">
+          <Label htmlFor="billing-toggle" className={!isAnnual ? 'font-semibold' : 'text-muted-foreground'}>
+            {t('billing.monthly')}
+          </Label>
+          <Switch
+            id="billing-toggle"
+            checked={isAnnual}
+            onCheckedChange={setIsAnnual}
+          />
+          <Label htmlFor="billing-toggle" className={isAnnual ? 'font-semibold' : 'text-muted-foreground'}>
+            {t('billing.annual')}
+          </Label>
+          {isAnnual && (
+            <Badge variant="secondary" className="ml-2">
+              {t('billing.annualSave')}
+            </Badge>
+          )}
+        </div>
+
         {subscription.subscribed && (
           <div className="mt-4 flex items-center justify-center gap-4">
             <Badge variant="default" className="text-sm">
@@ -136,7 +195,14 @@ export default function Billing() {
         )}
       </div>
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+      {/* Daily credits note */}
+      <div className="text-center mb-8">
+        <p className="text-sm text-muted-foreground">
+          {t('billing.dailyCreditsNote')} • {t('billing.creditsRollover')}
+        </p>
+      </div>
+
+      <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-4 mb-12">
         {checkingSubscription ? (
           <div className="col-span-full flex items-center justify-center py-12">
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -160,22 +226,30 @@ export default function Billing() {
                 </Badge>
               )}
             
-              <CardHeader>
-                <CardTitle className="text-2xl">{plan.name}</CardTitle>
-                <CardDescription className="min-h-[40px]">{plan.description}</CardDescription>
-                <div className="pt-4">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-xl">{plan.name}</CardTitle>
+                <CardDescription className="min-h-[32px] text-sm">{plan.description}</CardDescription>
+                <div className="pt-2">
                   <div className="flex items-baseline gap-1">
-                    <span className="text-3xl font-bold text-foreground">{plan.price}</span>
+                    <span className="text-2xl font-bold text-foreground">
+                      {isAnnual ? plan.annualPrice : plan.price}
+                    </span>
                   </div>
                 </div>
               </CardHeader>
 
-              <CardContent className="space-y-6">
-                <ul className="space-y-2">
+              <CardContent className="space-y-4">
+                <ul className="space-y-1.5">
                   {plan.features.map((feature: string) => (
-                    <li key={feature} className="flex items-start gap-2 text-sm">
-                      <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                    <li key={feature} className="flex items-start gap-2 text-xs">
+                      <Check className="h-3 w-3 text-primary shrink-0 mt-0.5" />
                       <span>{feature}</span>
+                    </li>
+                  ))}
+                  {plan.limitations?.map((limitation: string) => (
+                    <li key={limitation} className="flex items-start gap-2 text-xs text-muted-foreground">
+                      <X className="h-3 w-3 text-destructive shrink-0 mt-0.5" />
+                      <span>{limitation}</span>
                     </li>
                   ))}
                 </ul>
@@ -183,6 +257,7 @@ export default function Billing() {
                 <Button 
                   className="w-full" 
                   variant={plan.popular ? 'default' : 'outline'}
+                  size="sm"
                   disabled={loading || plan.isCurrentPlan}
                   onClick={() => handlePlanAction(plan)}
                 >
@@ -203,6 +278,36 @@ export default function Billing() {
             </Card>
           ))
         )}
+      </div>
+
+      {/* Credit Top-ups Section */}
+      <div className="bg-muted/50 rounded-lg p-6 mb-12">
+        <h3 className="text-xl font-semibold text-foreground mb-2 text-center">
+          {t('billing.creditTopups.title')}
+        </h3>
+        <p className="text-muted-foreground mb-6 text-center">
+          {t('billing.creditTopups.description')}
+        </p>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {creditPacks.map((pack) => (
+            <Card key={pack.credits} className="text-center">
+              <CardContent className="pt-6">
+                <div className="text-2xl font-bold text-foreground mb-1">{pack.credits}</div>
+                <div className="text-sm text-muted-foreground mb-3">credits</div>
+                <div className="text-lg font-semibold text-primary mb-3">{pack.price}</div>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="w-full"
+                  onClick={() => buyCredits(pack.credits)}
+                  disabled={loading}
+                >
+                  {t('billing.creditTopups.buy')}
+                </Button>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
       </div>
 
       <div className="bg-muted/50 rounded-lg p-6 text-center">

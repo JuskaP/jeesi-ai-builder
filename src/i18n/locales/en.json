@@ -327,36 +327,74 @@
   },
   "billing": {
     "title": "Pricing Plans",
-    "subtitle": "Choose the plan that fits your needs. Upgrade or downgrade anytime.",
+    "subtitle": "Choose the plan that fits your needs. All plans include 5 daily bonus credits.",
     "mostPopular": "Most Popular",
     "needHelp": "Need Help Choosing?",
     "helpDescription": "Contact our team and we'll help you find the perfect plan for your needs.",
     "contact": "Contact Sales",
+    "monthly": "Monthly",
+    "annual": "Annual",
+    "annualSave": "Save 20%",
+    "dailyCredits": "+5 daily credits",
+    "dailyCreditsNote": "Daily credits reset each day and don't roll over",
+    "creditsRollover": "Unused monthly credits roll over",
+    "creditTopups": {
+      "title": "Need More Credits?",
+      "description": "Top up your credits anytime",
+      "packs": [
+        { "credits": 50, "price": "€14.90" },
+        { "credits": 100, "price": "€24.90" },
+        { "credits": 250, "price": "€49.90" },
+        { "credits": 500, "price": "€89.90" }
+      ],
+      "buy": "Buy"
+    },
     "plans": {
+      "free": {
+        "name": "Free",
+        "description": "Try out the platform",
+        "price": "€0/month",
+        "annualPrice": "€0/year",
+        "cta": "Get Started",
+        "features": [
+          "1 AI agent",
+          "50 credits/month",
+          "+5 daily credits",
+          "jeesi.ai watermark",
+          "Community support"
+        ],
+        "limitations": [
+          "No integrations",
+          "No publishing"
+        ]
+      },
       "starter": {
         "name": "Starter",
         "description": "Perfect for getting started",
         "price": "€19/month",
+        "annualPrice": "€182/year",
         "cta": "Get Started",
         "features": [
           "3 AI agents",
           "100 credits/month",
+          "+5 daily credits",
           "Basic integrations",
-          "Community support",
-          "jeesi.ai watermark"
+          "No watermark",
+          "Community support"
         ]
       },
       "pro": {
         "name": "Pro",
         "description": "For individuals and small teams",
         "price": "€49/month",
+        "annualPrice": "€470/year",
         "cta": "Upgrade to Pro",
         "features": [
           "10 AI agents",
-          "500 credits/month",
+          "1,000 credits/month",
+          "+5 daily credits",
           "All integrations",
           "Custom domains",
-          "Remove watermark",
           "Priority support"
         ]
       },
@@ -364,10 +402,12 @@
         "name": "Business",
         "description": "For growing businesses and teams",
         "price": "€99/month",
+        "annualPrice": "€950/year",
         "cta": "Upgrade to Business",
         "features": [
           "Unlimited agents",
           "2,000 credits/month",
+          "+5 daily credits",
           "Team collaboration",
           "API access",
           "SSO support",
@@ -378,9 +418,12 @@
         "name": "Enterprise",
         "description": "Tailored for enterprise needs",
         "price": "Custom",
+        "annualPrice": "Custom",
         "cta": "Book a Call",
         "features": [
           "Unlimited everything",
+          "Custom credits",
+          "+5 daily credits",
           "Custom integrations",
           "SLA guarantee",
           "Dedicated account manager",
