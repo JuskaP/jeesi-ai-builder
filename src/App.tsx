@@ -24,6 +24,7 @@ import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import PublicChat from "./pages/PublicChat";
 import ProtectedRoute from "./components/ProtectedRoute";
+import DataConsentDialog from "./components/DataConsentDialog";
 
 const queryClient = new QueryClient();
 
@@ -110,6 +111,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AnimatedRoutes />
+        <DataConsentDialog />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
