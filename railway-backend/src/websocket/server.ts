@@ -1,7 +1,6 @@
 import { Server } from 'http';
 import { WebSocketServer, WebSocket } from 'ws';
 import jwt from 'jsonwebtoken';
-import { supabase } from '../index';
 
 export function websocketServer(server: Server) {
   const wss = new WebSocketServer({ 
@@ -109,26 +108,10 @@ export function websocketServer(server: Server) {
 
 async function handleAgentExecution(ws: WebSocket, userId: string, message: any) {
   try {
-    const { agentId, messages } = message;
+    const { agentId, agentConfig, messages } = message;
 
-    if (!agentId || !messages) {
-      throw new Error('Missing agentId or messages');
-    }
-
-    // Fetch agent
-    const { data: agent, error: agentError } = await supabase
-      .from('agents')
-      .select('*')
-      .eq('id', agentId)
-      .single();
-
-    if (agentError || !agent) {
-      throw new Error('Agent not found');
-    }
-
-    // Check access
-    if (!agent.is_published && agent.user_id !== userId) {
-      throw new Error('Access denied');
+    if (!agentId || !agentConfig || !messages) {
+      throw new Error('Missing agentId, agentConfig, or messages');
     }
 
     // Send execution started event
@@ -137,13 +120,13 @@ async function handleAgentExecution(ws: WebSocket, userId: string, message: any)
       agentId
     }));
 
-    // Execute agent with streaming
-    const { executeAgent } = await import('../services/agentExecutor');
+    // Execute agent with streaming using pre-validated config
+    const { executeAgentValidated } = await import('../services/agentExecutor');
 
-    await executeAgent({
-      agent,
+    await executeAgentValidated({
+      agentId,
+      agentConfig,
       messages,
-      userId,
       stream: true,
       onChunk: (chunk: string) => {
         ws.send(JSON.stringify({
