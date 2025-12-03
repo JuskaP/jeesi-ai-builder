@@ -479,9 +479,9 @@
   "testimonials": {
     "title": "What Our Customers Say",
     "subtitle": "Thousands of businesses trust jeesi.ai daily",
-    "testimonial1": { "name": "Sarah Mitchell", "role": "CEO, TechStart Solutions", "content": "jeesi.ai helped us automate customer service without technical expertise. We saved 40% time and customers are happier." },
-    "testimonial2": { "name": "James Anderson", "role": "Marketing Director, Digital Growth Co", "content": "Created a lead generation agent in under an hour. It's never been easier! Highly recommend to all SMBs." },
-    "testimonial3": { "name": "Emma Roberts", "role": "Founder, Wellness Studio", "content": "Our booking agent works 24/7 and bookings have increased 60%. Customers love it and so do we!" }
+    "testimonial1": { "name": "Sarah M.", "role": "CEO", "content": "jeesi.ai helped us automate customer service without technical expertise. We saved 40% time and customers are happier." },
+    "testimonial2": { "name": "James A.", "role": "Marketing Director", "content": "Created a lead generation agent in under an hour. It's never been easier! Highly recommend to all SMBs." },
+    "testimonial3": { "name": "Emma R.", "role": "Founder", "content": "Our booking agent works 24/7 and bookings have increased 60%. Customers love it and so do we!" }
   },
   "faq": {
     "title": "Frequently Asked Questions",
