@@ -2,18 +2,34 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Check, X, Sparkles, Loader2, Calendar } from 'lucide-react';
+import { Check, X, Sparkles, Loader2, Calendar, Zap, Clock, TrendingUp } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
+import { Progress } from '@/components/ui/progress';
 
 interface SubscriptionStatus {
   subscribed: boolean;
   plan_type: string;
   subscription_end?: string;
 }
+
+interface CreditBalance {
+  credits_remaining: number;
+  credits_used_this_month: number;
+  plan_type: string;
+}
+
+const DAILY_CREDITS = 5;
+const planMonthlyCredits: Record<string, number> = {
+  free: 50,
+  starter: 100,
+  pro: 1000,
+  business: 2000,
+  enterprise: 10000,
+};
 
 export default function Billing() {
   const { t } = useTranslation();
@@ -25,10 +41,31 @@ export default function Billing() {
     subscribed: false, 
     plan_type: 'free' 
   });
+  const [creditBalance, setCreditBalance] = useState<CreditBalance | null>(null);
+  const [dailyCreditsUsed, setDailyCreditsUsed] = useState(0);
 
   useEffect(() => {
     checkSubscription();
+    fetchCreditBalance();
   }, []);
+
+  const fetchCreditBalance = async () => {
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!sessionData.session) return;
+
+      const { data, error } = await supabase
+        .from('credit_balances')
+        .select('*')
+        .eq('user_id', sessionData.session.user.id)
+        .single();
+
+      if (error && error.code !== 'PGRST116') throw error;
+      if (data) setCreditBalance(data);
+    } catch (error) {
+      console.error('Error fetching credit balance:', error);
+    }
+  };
 
   const checkSubscription = async () => {
     try {
@@ -195,12 +232,74 @@ export default function Billing() {
         )}
       </div>
 
-      {/* Daily credits note */}
-      <div className="text-center mb-8">
-        <p className="text-sm text-muted-foreground">
-          {t('billing.dailyCreditsNote')} • {t('billing.creditsRollover')}
-        </p>
-      </div>
+      {/* Credit Balance Indicator */}
+      {creditBalance && (
+        <div className="grid md:grid-cols-2 gap-4 mb-8 max-w-2xl mx-auto">
+          {/* Daily Credits Card */}
+          <Card className="border-dashed">
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-2 mb-3">
+                <Zap className="h-5 w-5 text-yellow-500" />
+                <span className="font-semibold text-foreground">Daily Credits</span>
+                <Badge variant="outline" className="ml-auto text-xs">
+                  <Clock className="h-3 w-3 mr-1" />
+                  Resets at midnight
+                </Badge>
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Available today</span>
+                  <span className="font-medium">{DAILY_CREDITS - dailyCreditsUsed} / {DAILY_CREDITS}</span>
+                </div>
+                <Progress 
+                  value={((DAILY_CREDITS - dailyCreditsUsed) / DAILY_CREDITS) * 100} 
+                  className="h-2"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Daily credits don't roll over to the next day
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Monthly Credits Card */}
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center gap-2 mb-3">
+                <TrendingUp className="h-5 w-5 text-primary" />
+                <span className="font-semibold text-foreground">Monthly Credits</span>
+                <Badge variant="secondary" className="ml-auto text-xs capitalize">
+                  {creditBalance.plan_type} plan
+                </Badge>
+              </div>
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Remaining</span>
+                  <span className="font-medium">
+                    {creditBalance.credits_remaining} / {planMonthlyCredits[creditBalance.plan_type] || 0}
+                  </span>
+                </div>
+                <Progress 
+                  value={(creditBalance.credits_remaining / (planMonthlyCredits[creditBalance.plan_type] || 1)) * 100} 
+                  className="h-2"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Unused credits roll over to next month
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Daily credits note for non-logged in users */}
+      {!creditBalance && (
+        <div className="text-center mb-8">
+          <p className="text-sm text-muted-foreground">
+            {t('billing.dailyCreditsNote')} • {t('billing.creditsRollover')}
+          </p>
+        </div>
+      )}
 
       <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-4 mb-12">
         {checkingSubscription ? (
