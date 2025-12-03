@@ -23,6 +23,8 @@ import Profile from "./pages/Profile";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 import PublicChat from "./pages/PublicChat";
+import TermsOfService from "./pages/TermsOfService";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 import ProtectedRoute from "./components/ProtectedRoute";
 import DataConsentDialog from "./components/DataConsentDialog";
 
@@ -109,6 +111,8 @@ function AnimatedRoutes() {
         />
         {/* Public chat route for iframe embedding - no navbar/footer */}
         <Route path="/chat/:id" element={<PublicChat />} />
+        <Route path="/terms" element={<PageTransition><TermsOfService /></PageTransition>} />
+        <Route path="/privacy" element={<PageTransition><PrivacyPolicy /></PageTransition>} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
       </Routes>
