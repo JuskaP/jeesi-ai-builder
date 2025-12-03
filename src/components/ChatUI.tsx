@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
+import { useAnalytics } from "@/hooks/useAnalytics";
 import { Loader2, Image as ImageIcon, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AgentPreviewModal, { AgentConfig } from "@/components/AgentPreviewModal";
@@ -39,6 +40,7 @@ const formatMessage = (content: string) => {
 export default function ChatUI({ template }: ChatUIProps) {
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
+  const { trackEvent, trackAgentIssue } = useAnalytics();
   const navigate = useNavigate();
   const [greetingIndex, setGreetingIndex] = useState(0);
   const [currentGreeting, setCurrentGreeting] = useState<string>("");
@@ -112,6 +114,8 @@ export default function ChatUI({ template }: ChatUIProps) {
   }, [messages]);
 
   const streamChat = async (userMessage: Message | any) => {
+    const startTime = Date.now();
+    
     try {
       const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/agent-chat`;
       
@@ -132,6 +136,13 @@ export default function ChatUI({ template }: ChatUIProps) {
       });
 
       if (!response.ok || !response.body) {
+        // Track error
+        trackEvent({
+          event_type: 'error',
+          error_type: 'stream_failed',
+          error_message: `HTTP ${response.status}: Failed to start stream`,
+          prompt_text: typeof userMessage.content === 'string' ? userMessage.content : 'image message',
+        });
         throw new Error('Failed to start stream');
       }
 
@@ -187,9 +198,28 @@ export default function ChatUI({ template }: ChatUIProps) {
       
       if (assistantContent) {
         await saveMessage("assistant", assistantContent);
+        
+        // Track successful response
+        const responseTime = Date.now() - startTime;
+        trackEvent({
+          event_type: 'response',
+          response_time_ms: responseTime,
+          response_preview: assistantContent,
+          prompt_text: typeof userMessage.content === 'string' ? userMessage.content : 'image message',
+          metadata: { message_count: messages.length + 2 },
+        });
       }
     } catch (error) {
       console.error('Chat error:', error);
+      
+      // Track error event
+      trackEvent({
+        event_type: 'error',
+        error_type: 'chat_error',
+        error_message: error instanceof Error ? error.message : 'Unknown error',
+        prompt_text: typeof userMessage.content === 'string' ? userMessage.content : 'image message',
+      });
+      
       toast({
         title: t('common.error'),
         description: t('chat.sendError'),
@@ -276,6 +306,16 @@ export default function ChatUI({ template }: ChatUIProps) {
     if ((!input.trim() && !selectedImage) || isLoading) return;
     
     setHasUserTyped(true);
+    
+    // Track prompt event
+    trackEvent({
+      event_type: 'prompt',
+      prompt_text: input || 'image message',
+      metadata: { 
+        has_image: !!selectedImage,
+        message_count: messages.length + 1,
+      },
+    });
     
     let userMessage: any;
     let imageUrl: string | null = null;
