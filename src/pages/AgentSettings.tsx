@@ -12,9 +12,22 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { ArrowLeft, Plus, Trash2, Save, TestTube, Users, Activity } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Save, TestTube, Users, Activity, Globe, Lock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import CustomFunctionsManager from '@/components/CustomFunctionsManager';
+
+const COMMUNITY_CATEGORIES = [
+  'Customer Service',
+  'Sales',
+  'Marketing',
+  'Support',
+  'Education',
+  'Healthcare',
+  'Finance',
+  'E-commerce',
+  'General',
+  'Other'
+];
 
 interface Workspace {
   id: string;
@@ -75,6 +88,9 @@ export default function AgentSettings() {
   const [railwayUrl, setRailwayUrl] = useState('');
   const [workspaceId, setWorkspaceId] = useState<string | null>(null);
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
+  const [isSharedToCommunity, setIsSharedToCommunity] = useState(false);
+  const [communityCategory, setCommunityCategory] = useState('General');
+  const [userPlanType, setUserPlanType] = useState<string>('free');
 
   useEffect(() => {
     if (authLoading) return;
@@ -85,7 +101,25 @@ export default function AgentSettings() {
     }
     fetchAgent();
     fetchWorkspaces();
+    fetchUserPlan();
   }, [id, user, navigate, authLoading]);
+
+  const fetchUserPlan = async () => {
+    if (!user) return;
+    try {
+      const { data, error } = await supabase
+        .from('credit_balances')
+        .select('plan_type')
+        .eq('user_id', user.id)
+        .single();
+
+      if (!error && data) {
+        setUserPlanType(data.plan_type || 'free');
+      }
+    } catch (error) {
+      console.error('Error fetching user plan:', error);
+    }
+  };
 
   const fetchWorkspaces = async () => {
     if (!user) return;
@@ -144,6 +178,8 @@ export default function AgentSettings() {
         setIsHeavy(data.is_heavy || false);
         setRailwayUrl(data.railway_url || '');
         setWorkspaceId(data.workspace_id || null);
+        setIsSharedToCommunity(data.is_shared_to_community || false);
+        setCommunityCategory(data.community_category || 'General');
       }
     } catch (error) {
       console.error('Error fetching agent:', error);
@@ -172,6 +208,9 @@ export default function AgentSettings() {
           is_heavy: isHeavy,
           railway_url: railwayUrl || null,
           workspace_id: workspaceId,
+          is_shared_to_community: isSharedToCommunity,
+          community_category: communityCategory,
+          shared_at: isSharedToCommunity ? new Date().toISOString() : null,
           updated_at: new Date().toISOString()
         })
         .eq('id', id)
@@ -525,6 +564,77 @@ export default function AgentSettings() {
                     ✓ {t('agentSettings.publishing.published')}
                   </p>
                 </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Community Sharing */}
+          <Card className={userPlanType === 'free' ? 'opacity-60' : ''}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Globe className="h-5 w-5" />
+                Share to Community
+                {userPlanType === 'free' && (
+                  <Badge variant="secondary" className="ml-2">
+                    <Lock className="h-3 w-3 mr-1" />
+                    Paid Plans Only
+                  </Badge>
+                )}
+              </CardTitle>
+              <CardDescription>
+                Share your agent as a template for others to use and customize
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {userPlanType === 'free' ? (
+                <div className="p-4 bg-muted rounded-lg text-center">
+                  <Lock className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Community sharing is available on Starter, Pro, and Business plans
+                  </p>
+                  <Button variant="outline" size="sm" asChild>
+                    <Link to="/billing">Upgrade Plan</Link>
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-0.5">
+                      <Label htmlFor="community-share">Share to Community</Label>
+                      <p className="text-sm text-muted-foreground">
+                        Allow others to discover and use your agent as a template
+                      </p>
+                    </div>
+                    <Switch
+                      id="community-share"
+                      checked={isSharedToCommunity}
+                      onCheckedChange={setIsSharedToCommunity}
+                    />
+                  </div>
+                  
+                  {isSharedToCommunity && (
+                    <div className="space-y-3">
+                      <div className="space-y-2">
+                        <Label>Category</Label>
+                        <Select value={communityCategory} onValueChange={setCommunityCategory}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {COMMUNITY_CATEGORIES.map((cat) => (
+                              <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
+                        <p className="text-sm text-green-600 dark:text-green-400">
+                          ✓ Your agent will be visible in the Community templates
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
             </CardContent>
           </Card>
