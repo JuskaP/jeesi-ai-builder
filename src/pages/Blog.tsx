@@ -2,6 +2,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { Calendar, Clock, ArrowRight } from "lucide-react";
+import NewsletterForm from "@/components/NewsletterForm";
 
 interface BlogPost {
   slug: string;
@@ -105,6 +106,11 @@ export default function Blog() {
               </Card>
             </Link>
           ))}
+        </div>
+
+        {/* Newsletter Section */}
+        <div className="mt-16 max-w-xl mx-auto">
+          <NewsletterForm />
         </div>
       </div>
     </div>
