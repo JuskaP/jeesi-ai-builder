@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
@@ -9,17 +9,28 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { z } from 'zod';
+import { Loader2, ArrowLeft } from 'lucide-react';
 
 export default function Auth() {
   const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
+  const redirect = searchParams.get('redirect');
+  
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (user) {
+      navigate(redirect || '/dashboard');
+    }
+  }, [user, navigate, redirect]);
 
   const emailSchema = z.string().email(t('auth.errors.invalidEmail'));
   const passwordSchema = z.string().min(6, t('auth.errors.passwordTooShort'));
@@ -71,7 +82,7 @@ export default function Auth() {
             title: t('auth.welcomeBack'),
             description: t('auth.loginSuccess'),
           });
-          navigate('/dashboard');
+          navigate(redirect || '/dashboard');
         }
       } else {
         const { error } = await signUp(email, password, fullName);
@@ -86,7 +97,7 @@ export default function Auth() {
             title: t('auth.welcome'),
             description: t('auth.accountCreated'),
           });
-          navigate('/dashboard');
+          navigate(redirect || '/dashboard');
         }
       }
     } catch (error) {
@@ -101,17 +112,28 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen bg-muted/50 flex items-center justify-center p-6">
+    <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/30 flex items-center justify-center p-6">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         className="w-full max-w-md"
       >
-        <Card>
-          <CardHeader>
-            <CardTitle>{isLogin ? t('auth.signIn') : t('auth.signUp')}</CardTitle>
-            <CardDescription>
+        <div className="mb-6">
+          <Button variant="ghost" size="sm" asChild>
+            <Link to="/">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              {t('common.back')}
+            </Link>
+          </Button>
+        </div>
+
+        <Card className="border-border/50 shadow-xl">
+          <CardHeader className="space-y-1 pb-4">
+            <CardTitle className="text-2xl font-bold">
+              {isLogin ? t('auth.signIn') : t('auth.signUp')}
+            </CardTitle>
+            <CardDescription className="text-muted-foreground">
               {isLogin 
                 ? t('auth.signInDescription') 
                 : t('auth.signUpDescription')}
@@ -129,6 +151,7 @@ export default function Auth() {
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     required={!isLogin}
+                    className="h-11"
                   />
                 </div>
               )}
@@ -142,6 +165,7 @@ export default function Auth() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
+                  className="h-11"
                 />
               </div>
 
@@ -154,25 +178,31 @@ export default function Auth() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
+                  className="h-11"
                 />
               </div>
 
               <Button 
                 type="submit" 
-                className="w-full"
+                className="w-full h-11 text-base font-medium"
                 disabled={isLoading}
               >
-                {isLoading 
-                  ? t('common.loading') 
-                  : isLogin ? t('auth.signIn') : t('auth.signUp')}
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    {t('common.loading')}
+                  </>
+                ) : (
+                  isLogin ? t('auth.signIn') : t('auth.signUp')
+                )}
               </Button>
             </form>
 
-            <div className="mt-4 text-center text-sm">
+            <div className="mt-6 text-center">
               <button
                 type="button"
                 onClick={() => setIsLogin(!isLogin)}
-                className="text-primary hover:underline"
+                className="text-sm text-muted-foreground hover:text-primary transition-colors"
               >
                 {isLogin 
                   ? t('auth.noAccount') 
@@ -181,6 +211,10 @@ export default function Auth() {
             </div>
           </CardContent>
         </Card>
+
+        <p className="mt-6 text-center text-xs text-muted-foreground">
+          By continuing, you agree to our Terms of Service and Privacy Policy.
+        </p>
       </motion.div>
     </div>
   );
