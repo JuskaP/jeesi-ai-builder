@@ -56,7 +56,7 @@ const AI_MODELS = [
 export default function AgentSettings() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -76,13 +76,15 @@ export default function AgentSettings() {
   const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
 
   useEffect(() => {
+    if (authLoading) return;
+    
     if (!user) {
       navigate('/auth');
       return;
     }
     fetchAgent();
     fetchWorkspaces();
-  }, [id, user, navigate]);
+  }, [id, user, navigate, authLoading]);
 
   const fetchWorkspaces = async () => {
     if (!user) return;
@@ -198,7 +200,7 @@ export default function AgentSettings() {
 
   const selectedModel = AI_MODELS.find(m => m.value === aiModel);
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-muted-foreground">{t('common.loading')}</div>
