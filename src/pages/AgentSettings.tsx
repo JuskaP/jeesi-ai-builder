@@ -25,6 +25,10 @@ const COMMUNITY_CATEGORIES = [
   'Healthcare',
   'Finance',
   'E-commerce',
+  'Legal',
+  'HR',
+  'Real Estate',
+  'Travel',
   'General',
   'Other'
 ];
