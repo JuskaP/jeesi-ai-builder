@@ -19,17 +19,21 @@ import Billing from "./pages/Billing";
 import Profile from "./pages/Profile";
 import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
+import PublicChat from "./pages/PublicChat";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
 function AnimatedRoutes() {
   const location = useLocation();
+  const isPublicChatRoute = location.pathname.startsWith("/chat/");
 
   return (
-    <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<PageTransition><Landing /></PageTransition>} />
+    <>
+      {!isPublicChatRoute && <Navbar />}
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
+          <Route path="/" element={<PageTransition><Landing /></PageTransition>} />
         <Route path="/auth" element={<PageTransition><Auth /></PageTransition>} />
         <Route path="/dashboard" element={<PageTransition><Dashboard /></PageTransition>} />
         <Route 
@@ -68,10 +72,14 @@ function AnimatedRoutes() {
             </ProtectedRoute>
           } 
         />
+        {/* Public chat route for iframe embedding - no navbar/footer */}
+        <Route path="/chat/:id" element={<PublicChat />} />
         {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
       </Routes>
     </AnimatePresence>
+    {!isPublicChatRoute && <Footer />}
+    </>
   );
 }
 
@@ -81,9 +89,7 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Navbar />
         <AnimatedRoutes />
-        <Footer />
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
