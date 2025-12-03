@@ -15,6 +15,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import CreditBalance from '@/components/CreditBalance';
 import ApiKeyManager from '@/components/ApiKeyManager';
 import ConsentSettings from '@/components/ConsentSettings';
+import AvatarUploader from '@/components/AvatarUploader';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 interface Agent {
   id: string;
@@ -206,9 +208,12 @@ export default function Profile() {
               <Card>
                 <CardHeader>
                   <div className="flex items-center gap-4">
-                    <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-                      <User className="w-8 h-8 text-primary" />
-                    </div>
+                    <Avatar className="h-16 w-16">
+                      <AvatarImage src={profile?.avatar_url || undefined} alt="Profile" />
+                      <AvatarFallback className="text-xl bg-primary/10 text-primary">
+                        {profile?.full_name?.split(' ').map((n: string) => n[0]).join('').toUpperCase() || <User className="w-8 h-8" />}
+                      </AvatarFallback>
+                    </Avatar>
                     <div className="flex-1">
                       <CardTitle>{profile?.full_name || t('profile.user')}</CardTitle>
                       <CardDescription>{user?.email}</CardDescription>
@@ -374,7 +379,16 @@ export default function Profile() {
             </TabsContent>
 
             {/* Settings Tab */}
-            <TabsContent value="settings">
+            <TabsContent value="settings" className="space-y-6">
+              {user && (
+                <AvatarUploader
+                  userId={user.id}
+                  currentAvatarUrl={profile?.avatar_url}
+                  userInitials={profile?.full_name?.split(' ').map((n: string) => n[0]).join('').toUpperCase()}
+                  onAvatarChange={(url) => setProfile((prev: any) => ({ ...prev, avatar_url: url }))}
+                />
+              )}
+              
               <Card>
                 <CardHeader>
                   <CardTitle>{t('profile.settings.title')}</CardTitle>
