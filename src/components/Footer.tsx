@@ -56,9 +56,9 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/blog" className="text-sm text-muted-foreground hover:text-primary transition-colors">
                   {t('footer.blog')}
-                </a>
+                </Link>
               </li>
               <li>
                 <Link to="/privacy" className="text-sm text-muted-foreground hover:text-primary transition-colors">
