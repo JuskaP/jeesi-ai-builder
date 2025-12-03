@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import ChatUI from "@/components/ChatUI";
-import StatsCounter from "@/components/StatsCounter";
+import FoundersCommunity from "@/components/FoundersCommunity";
 import CTABanner from "@/components/CTABanner";
 import Features from "@/components/Features";
 import DemoSection from "@/components/DemoSection";
@@ -55,7 +55,7 @@ export default function Landing() {
         </div>
       </motion.div>
 
-      <StatsCounter />
+      <FoundersCommunity />
 
       <CTABanner />
 
