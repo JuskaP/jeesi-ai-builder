@@ -27,10 +27,10 @@ const annualPriceMap: Record<string, string> = {
 
 // Credit pack price IDs - Update with actual Stripe price IDs
 const creditPackPriceMap: Record<number, string> = {
-  50: "price_credits_50",
   100: "price_credits_100",
   250: "price_credits_250",
   500: "price_credits_500",
+  1000: "price_credits_1000",
 };
 
 serve(async (req) => {
