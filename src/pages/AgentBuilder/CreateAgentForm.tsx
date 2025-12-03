@@ -90,7 +90,7 @@ export default function CreateAgentForm() {
               onChange={e => setDesc(e.target.value)}
               rows={6}
               className='mt-1'
-              placeholder='Kuvaile agenttia...'
+              placeholder='Describe your agent...'
             />
           </div>
           <div>

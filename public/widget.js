@@ -17,7 +17,6 @@
         theme: options.theme || 'light',
         position: options.position || 'bottom-right',
         // API URL is required - no hardcoded default
-        apiUrl: options.apiUrl || 'https://kyysnciirgauhzzqobly.supabase.co/functions/v1/agent-runtime'
         apiUrl: options.apiUrl
       };
 
