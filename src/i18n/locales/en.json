@@ -126,6 +126,14 @@
       "saveSuccess": "Agent settings saved successfully",
       "saveError": "Failed to save agent settings",
       "loadError": "Failed to load agent"
+    },
+    "workspace": {
+      "title": "Workspace",
+      "description": "Assign this agent to a workspace to share it with team members",
+      "selectPlaceholder": "Select a workspace",
+      "personal": "Personal (not shared)",
+      "personalHint": "This agent is only visible to you",
+      "sharedHint": "Team members in this workspace can access this agent"
     }
   },
   "auth": {
