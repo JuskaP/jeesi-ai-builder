@@ -77,7 +77,7 @@ serve(async (req) => {
     // Fetch agent configuration
     const { data: agent, error: agentError } = await supabase
       .from("agents")
-      .select("system_prompt, ai_model, temperature, max_tokens, is_published, user_id, is_heavy, railway_url")
+      .select("id, name, system_prompt, ai_model, temperature, max_tokens, is_published, user_id, is_heavy, railway_url, knowledge_base")
       .eq("id", agentId)
       .eq("is_published", true)
       .single();
@@ -93,6 +93,7 @@ serve(async (req) => {
     // ROUTING LOGIC: Check if agent is heavy and should run on Railway
     if (agent.is_heavy) {
       const railwayUrl = agent.railway_url || Deno.env.get("RAILWAY_BACKEND_URL");
+      const railwaySecret = Deno.env.get("RAILWAY_BACKEND_SECRET");
       
       if (!railwayUrl) {
         console.error("Heavy agent but no Railway URL configured");
@@ -102,17 +103,35 @@ serve(async (req) => {
         );
       }
 
-      console.log("Routing to Railway backend", { agentId, railwayUrl });
+      if (!railwaySecret) {
+        console.error("RAILWAY_BACKEND_SECRET not configured");
+        return new Response(
+          JSON.stringify({ error: "Railway authentication not configured" }),
+          { status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
 
-      // Forward request to Railway backend
-      const railwayResponse = await fetch(`${railwayUrl}/api/agent/execute`, {
+      console.log("[AGENT-RUNTIME] Routing to Railway backend", { agentId, railwayUrl });
+
+      // Forward PRE-VALIDATED request to Railway backend with shared secret
+      const railwayResponse = await fetch(`${railwayUrl}/api/agent/execute-validated`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-api-key": apiKey
+          "x-railway-secret": railwaySecret
         },
         body: JSON.stringify({
-          agentId,
+          // Pre-validated data - Railway trusts this
+          userId,
+          agentId: agent.id,
+          agentConfig: {
+            name: agent.name,
+            system_prompt: agent.system_prompt,
+            ai_model: agent.ai_model || "google/gemini-2.5-flash",
+            temperature: agent.temperature || 0.7,
+            max_tokens: agent.max_tokens || 1000,
+            knowledge_base: agent.knowledge_base
+          },
           messages,
           stream: true
         })
@@ -120,12 +139,15 @@ serve(async (req) => {
 
       if (!railwayResponse.ok) {
         const errorText = await railwayResponse.text();
-        console.error("Railway backend error:", railwayResponse.status, errorText);
+        console.error("[AGENT-RUNTIME] Railway backend error:", railwayResponse.status, errorText);
         return new Response(
           JSON.stringify({ error: "Railway backend error", details: errorText }),
           { status: railwayResponse.status, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
+
+      // Deduct credits after successful Railway execution start
+      await deductCredits(supabase, userId, agentId, agent.ai_model, messages.length);
 
       // Stream Railway response back to client
       return new Response(railwayResponse.body, {
@@ -143,8 +165,15 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY not configured");
     }
 
+    // Build system prompt with knowledge base
+    let systemPrompt = agent.system_prompt || "You are a helpful AI assistant.";
+    if (agent.knowledge_base && Array.isArray(agent.knowledge_base) && agent.knowledge_base.length > 0) {
+      const knowledgeContext = agent.knowledge_base.map((kb: any) => kb.content).join("\n\n");
+      systemPrompt = `${systemPrompt}\n\nKnowledge Base:\n${knowledgeContext}`;
+    }
+
     const aiMessages = [
-      { role: "system", content: agent.system_prompt },
+      { role: "system", content: systemPrompt },
       ...messages
     ];
 
@@ -157,6 +186,8 @@ serve(async (req) => {
       body: JSON.stringify({
         model: agent.ai_model || "google/gemini-2.5-flash",
         messages: aiMessages,
+        temperature: agent.temperature || 0.7,
+        max_tokens: agent.max_tokens || 1000,
         stream: true,
       }),
     });
@@ -185,31 +216,8 @@ serve(async (req) => {
       );
     }
 
-    // Deduct credits in background (1 credit per request)
-    const creditsUsed = 1;
-    supabase
-      .from("credit_balances")
-      .update({
-        credits_remaining: creditData.credits_remaining - creditsUsed,
-        credits_used_this_month: supabase.rpc('increment', { x: creditsUsed })
-      })
-      .eq("user_id", userId)
-      .then();
-
-    // Log usage in background
-    supabase
-      .from("credit_usage")
-      .insert({
-        user_id: userId,
-        agent_id: agentId,
-        credits_used: creditsUsed,
-        operation_type: "agent_runtime",
-        metadata: {
-          model: agent.ai_model,
-          message_count: messages.length
-        }
-      })
-      .then();
+    // Deduct credits after successful AI Gateway call
+    await deductCredits(supabase, userId, agentId, agent.ai_model, messages.length);
 
     // Stream response back to client
     return new Response(response.body, {
@@ -227,6 +235,44 @@ serve(async (req) => {
     );
   }
 });
+
+// Helper function to deduct credits properly
+async function deductCredits(
+  supabase: any, 
+  userId: string, 
+  agentId: string, 
+  model: string | null, 
+  messageCount: number
+): Promise<void> {
+  const creditsUsed = 1;
+  
+  try {
+    // Use the deduct_credits RPC function
+    await supabase.rpc("deduct_credits", {
+      p_user_id: userId,
+      p_credits: creditsUsed
+    });
+
+    // Log usage
+    await supabase
+      .from("credit_usage")
+      .insert({
+        user_id: userId,
+        agent_id: agentId,
+        credits_used: creditsUsed,
+        operation_type: "agent_runtime",
+        metadata: {
+          model: model || "google/gemini-2.5-flash",
+          message_count: messageCount
+        }
+      });
+
+    console.log("[AGENT-RUNTIME] Credits deducted", { userId, agentId, creditsUsed });
+  } catch (error) {
+    console.error("[AGENT-RUNTIME] Failed to deduct credits:", error);
+    // Don't fail the request due to credit deduction issues
+  }
+}
 
 // Helper function to hash API key
 async function hashApiKey(apiKey: string): Promise<string> {
