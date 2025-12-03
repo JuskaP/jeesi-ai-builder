@@ -14,6 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { ArrowLeft, Plus, Trash2, Save, TestTube, Users, Activity } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import CustomFunctionsManager from '@/components/CustomFunctionsManager';
 
 interface Workspace {
   id: string;
@@ -494,6 +495,9 @@ export default function AgentSettings() {
               )}
             </CardContent>
           </Card>
+
+          {/* Custom Functions */}
+          {id && <CustomFunctionsManager agentId={id} />}
 
           {/* Julkaisu */}
           <Card>

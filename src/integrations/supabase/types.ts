@@ -14,6 +14,56 @@ export type Database = {
   }
   public: {
     Tables: {
+      agent_functions: {
+        Row: {
+          agent_id: string
+          config: Json
+          created_at: string
+          description: string | null
+          execution_order: number
+          function_type: string
+          id: string
+          is_enabled: boolean
+          name: string
+          trigger_keywords: string[] | null
+          updated_at: string
+        }
+        Insert: {
+          agent_id: string
+          config?: Json
+          created_at?: string
+          description?: string | null
+          execution_order?: number
+          function_type: string
+          id?: string
+          is_enabled?: boolean
+          name: string
+          trigger_keywords?: string[] | null
+          updated_at?: string
+        }
+        Update: {
+          agent_id?: string
+          config?: Json
+          created_at?: string
+          description?: string | null
+          execution_order?: number
+          function_type?: string
+          id?: string
+          is_enabled?: boolean
+          name?: string
+          trigger_keywords?: string[] | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_functions_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       agent_issues: {
         Row: {
           agent_id: string | null
