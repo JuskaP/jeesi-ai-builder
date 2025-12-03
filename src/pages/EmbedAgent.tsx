@@ -58,7 +58,7 @@ export default function EmbedAgent() {
 </script>`;
 
   const iframeCode = `<iframe
-  src="${window.location.origin}/chat/${id}?apiKey=YOUR_API_KEY"
+  src="${window.location.origin}/chat/${id}?key=YOUR_API_KEY&theme=light"
   width="400"
   height="600"
   frameborder="0"
