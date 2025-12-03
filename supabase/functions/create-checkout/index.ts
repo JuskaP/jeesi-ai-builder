@@ -12,6 +12,27 @@ const logStep = (step: string, details?: any) => {
   console.log(`[CREATE-CHECKOUT] ${step}${detailsStr}`);
 };
 
+// Price IDs - Update these with your actual Stripe price IDs
+const monthlyPriceMap: Record<string, string> = {
+  starter: "price_starter_monthly",
+  pro: "price_pro_monthly",
+  business: "price_business_monthly",
+};
+
+const annualPriceMap: Record<string, string> = {
+  starter: "price_starter_annual",
+  pro: "price_pro_annual",
+  business: "price_business_annual",
+};
+
+// Credit pack price IDs - Update with actual Stripe price IDs
+const creditPackPriceMap: Record<number, string> = {
+  50: "price_credits_50",
+  100: "price_credits_100",
+  250: "price_credits_250",
+  500: "price_credits_500",
+};
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -32,21 +53,9 @@ serve(async (req) => {
     if (!user?.email) throw new Error("User not authenticated or email not available");
     logStep("User authenticated", { userId: user.id, email: user.email });
 
-    const { tier } = await req.json();
-    logStep("Received tier", { tier });
-
-    // Map tier to price ID - Update these with your actual Stripe price IDs
-    const priceMap: Record<string, string> = {
-      starter: "price_starter_19", // €19/month - Replace with actual Stripe price ID
-      pro: "price_1SYCQgGx4tvYlwhY4eUVk1SU", // €49/month
-      business: "price_1SYCR2Gx4tvYlwhYxuvVNTna", // €99/month
-    };
-
-    const priceId = priceMap[tier];
-    if (!priceId) {
-      throw new Error(`Invalid tier: ${tier}. Valid tiers are: starter, pro, business`);
-    }
-    logStep("Price ID resolved", { priceId });
+    const body = await req.json();
+    const { tier, annual, creditPack } = body;
+    logStep("Received request", { tier, annual, creditPack });
 
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", { 
       apiVersion: "2025-08-27.basil" 
@@ -62,6 +71,28 @@ serve(async (req) => {
       logStep("No existing customer found");
     }
 
+    let priceId: string;
+    let mode: "subscription" | "payment";
+
+    // Handle credit pack purchase
+    if (creditPack) {
+      priceId = creditPackPriceMap[creditPack];
+      if (!priceId) {
+        throw new Error(`Invalid credit pack: ${creditPack}. Valid packs are: 50, 100, 250, 500`);
+      }
+      mode = "payment";
+      logStep("Credit pack purchase", { creditPack, priceId });
+    } else {
+      // Handle subscription
+      const priceMap = annual ? annualPriceMap : monthlyPriceMap;
+      priceId = priceMap[tier];
+      if (!priceId) {
+        throw new Error(`Invalid tier: ${tier}. Valid tiers are: starter, pro, business`);
+      }
+      mode = "subscription";
+      logStep("Subscription checkout", { tier, annual, priceId });
+    }
+
     // Create checkout session
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
@@ -72,11 +103,15 @@ serve(async (req) => {
           quantity: 1,
         },
       ],
-      mode: "subscription",
+      mode,
       success_url: `${req.headers.get("origin")}/billing?success=true`,
       cancel_url: `${req.headers.get("origin")}/billing?canceled=true`,
+      metadata: {
+        user_id: user.id,
+        ...(creditPack && { credit_pack: creditPack.toString() }),
+      },
     });
-    logStep("Checkout session created", { sessionId: session.id });
+    logStep("Checkout session created", { sessionId: session.id, mode });
 
     return new Response(JSON.stringify({ url: session.url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

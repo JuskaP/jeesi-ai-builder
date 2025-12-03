@@ -15,17 +15,23 @@ const logStep = (step: string, details?: any) => {
 // Map Stripe product IDs to plan types - Update with your actual Stripe product IDs
 const productToPlanMap: Record<string, string> = {
   "prod_starter": "starter",
+  "prod_starter_annual": "starter",
   "prod_pro": "pro", 
+  "prod_pro_annual": "pro",
   "prod_business": "business",
+  "prod_business_annual": "business",
 };
 
-// Credit allocations per plan
+// Monthly credit allocations per plan (daily credits handled separately)
 const planCredits: Record<string, number> = {
-  free: 0,
+  free: 50,
   starter: 100,
-  pro: 500,
+  pro: 1000,
   business: 2000,
 };
+
+// All plans get 5 daily credits (don't roll over)
+const DAILY_CREDITS = 5;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
