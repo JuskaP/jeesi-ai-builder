@@ -86,22 +86,40 @@ serve(async (req) => {
     
     const hasActiveSub = subscriptions.data.length > 0;
     let planType = 'free';
-    let subscriptionEnd = null;
+    let subscriptionEnd: string | null = null;
 
     if (hasActiveSub) {
       const subscription = subscriptions.data[0];
-      subscriptionEnd = new Date(subscription.current_period_end * 1000).toISOString();
-      logStep("Active subscription found", { subscriptionId: subscription.id, endDate: subscriptionEnd });
+      logStep("Active subscription found", { subscriptionId: subscription.id });
       
-      const productId = subscription.items.data[0].price.product as string;
-      planType = productToPlanMap[productId] || 'starter';
-      logStep("Determined plan type", { productId, planType });
+      // Safely parse the subscription end date
+      const periodEnd = subscription.current_period_end;
+      if (periodEnd && typeof periodEnd === 'number' && periodEnd > 0) {
+        try {
+          subscriptionEnd = new Date(periodEnd * 1000).toISOString();
+          logStep("Parsed subscription end date", { periodEnd, subscriptionEnd });
+        } catch (dateError) {
+          logStep("Error parsing date, using null", { periodEnd, error: String(dateError) });
+          subscriptionEnd = null;
+        }
+      }
+      
+      const productId = subscription.items.data[0]?.price?.product as string;
+      if (productId) {
+        planType = productToPlanMap[productId] || 'starter';
+        logStep("Determined plan type", { productId, planType });
+      } else {
+        planType = 'starter';
+        logStep("No product ID found, defaulting to starter");
+      }
     } else {
       logStep("No active subscription found");
     }
 
     // Update credit balance in database
-    const credits = planCredits[planType] || 0;
+    const credits = planCredits[planType] || 50;
+    logStep("Updating credit balance", { planType, credits, userId: user.id });
+    
     const { error: upsertError } = await supabaseClient
       .from('credit_balances')
       .upsert({
@@ -114,7 +132,7 @@ serve(async (req) => {
     if (upsertError) {
       logStep("Error updating credit balance", { error: upsertError.message });
     } else {
-      logStep("Credit balance updated", { planType, credits });
+      logStep("Credit balance updated successfully", { planType, credits });
     }
 
     return new Response(JSON.stringify({
