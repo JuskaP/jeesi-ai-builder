@@ -12,25 +12,25 @@ const logStep = (step: string, details?: any) => {
   console.log(`[CREATE-CHECKOUT] ${step}${detailsStr}`);
 };
 
-// Price IDs - Update these with your actual Stripe price IDs
+// Price IDs for subscription plans
 const monthlyPriceMap: Record<string, string> = {
-  starter: "price_starter_monthly",
-  pro: "price_pro_monthly",
-  business: "price_business_monthly",
+  starter: "price_1SaGfcGx4tvYlwhYuxu4weEo",
+  pro: "price_1SaGflGx4tvYlwhYcZj1MSf0",
+  business: "price_1SaGfoGx4tvYlwhYiIfhKBSc",
 };
 
 const annualPriceMap: Record<string, string> = {
-  starter: "price_starter_annual",
-  pro: "price_pro_annual",
-  business: "price_business_annual",
+  starter: "price_1SaGfkGx4tvYlwhYpSWO1FDR",
+  pro: "price_1SaGfmGx4tvYlwhYngNzJNmS",
+  business: "price_1SaGfpGx4tvYlwhY01HLAcPB",
 };
 
-// Credit pack price IDs - Update with actual Stripe price IDs
+// Credit pack price IDs
 const creditPackPriceMap: Record<number, string> = {
-  100: "price_credits_100",
-  250: "price_credits_250",
-  500: "price_credits_500",
-  1000: "price_credits_1000",
+  100: "price_1SaGfqGx4tvYlwhYH4YSgRyv",
+  250: "price_1SaGfrGx4tvYlwhYF33QRCsi",
+  500: "price_1SaGfrGx4tvYlwhYUs592ySr",
+  1000: "price_1SaGfsGx4tvYlwhYnVnc6bKT",
 };
 
 serve(async (req) => {
@@ -78,7 +78,7 @@ serve(async (req) => {
     if (creditPack) {
       priceId = creditPackPriceMap[creditPack];
       if (!priceId) {
-        throw new Error(`Invalid credit pack: ${creditPack}. Valid packs are: 50, 100, 250, 500`);
+        throw new Error(`Invalid credit pack: ${creditPack}. Valid packs are: 100, 250, 500, 1000`);
       }
       mode = "payment";
       logStep("Credit pack purchase", { creditPack, priceId });

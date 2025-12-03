@@ -12,14 +12,14 @@ const logStep = (step: string, details?: any) => {
   console.log(`[CHECK-SUBSCRIPTION] ${step}${detailsStr}`);
 };
 
-// Map Stripe product IDs to plan types - Update with your actual Stripe product IDs
+// Map Stripe product IDs to plan types
 const productToPlanMap: Record<string, string> = {
-  "prod_starter": "starter",
-  "prod_starter_annual": "starter",
-  "prod_pro": "pro", 
-  "prod_pro_annual": "pro",
-  "prod_business": "business",
-  "prod_business_annual": "business",
+  "prod_TXLM3AVt8FA4Dh": "starter",  // Starter Monthly
+  "prod_TXLMoYKkoT29kh": "starter",  // Starter Annual
+  "prod_TXLM7f9ywiP1Lc": "pro",      // Pro Monthly
+  "prod_TXLMKKmQ8DZIem": "pro",      // Pro Annual
+  "prod_TXLMmyZ035iZEh": "business", // Business Monthly
+  "prod_TXLMG2WMeq2w6a": "business", // Business Annual
 };
 
 // Monthly credit allocations per plan (daily credits handled separately)
