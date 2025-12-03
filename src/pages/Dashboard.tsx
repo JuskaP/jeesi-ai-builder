@@ -59,13 +59,13 @@ export default function Dashboard() {
             </svg>
           </div>
           <div>
-            <h2 className='text-2xl font-semibold text-foreground mb-2'>{t('dashboard.empty')}</h2>
+            <h2 className='text-2xl font-semibold text-foreground mb-2'>{t('dashboard.empty.title')}</h2>
             <p className='text-muted-foreground max-w-md mx-auto'>
-              {t('landing.hero.subtitle')}
+              {t('dashboard.empty.description')}
             </p>
           </div>
           <Button asChild size='lg'>
-            <Link to='/community'>{t('dashboard.empty')}</Link>
+            <Link to='/'>{t('dashboard.empty.cta')}</Link>
           </Button>
         </div>
       </div>
@@ -77,10 +77,10 @@ export default function Dashboard() {
       <div className='flex items-center justify-between mb-6'>
         <div>
           <h2 className='text-3xl font-bold text-foreground'>{t('dashboard.title')}</h2>
-          <p className='mt-2 text-muted-foreground'>{t('dashboard.title')}</p>
+          <p className='mt-2 text-muted-foreground'>{t('dashboard.subtitle')}</p>
         </div>
         <Button asChild>
-          <Link to='/community'>{t('common.add')}</Link>
+          <Link to='/'>{t('dashboard.createNew')}</Link>
         </Button>
       </div>
 
@@ -107,13 +107,13 @@ export default function Dashboard() {
               </p>
               <div className='flex gap-2'>
                 <Button variant='outline' size='sm' asChild>
-                  <Link to={`/agents/${agent.id}/test`}>Test</Link>
+                  <Link to={`/agents/${agent.id}/test`}>{t('dashboard.actions.test')}</Link>
                 </Button>
                 <Button variant='outline' size='sm' asChild>
-                  <Link to={`/agents/${agent.id}/settings`}>Settings</Link>
+                  <Link to={`/agents/${agent.id}/settings`}>{t('dashboard.actions.settings')}</Link>
                 </Button>
                 <Button variant='outline' size='sm' asChild>
-                  <Link to={`/agents/${agent.id}/embed`}>Embed</Link>
+                  <Link to={`/agents/${agent.id}/embed`}>{t('dashboard.actions.embed')}</Link>
                 </Button>
               </div>
             </CardContent>

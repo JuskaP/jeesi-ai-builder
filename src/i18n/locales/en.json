@@ -36,14 +36,21 @@
   },
   "dashboard": {
     "title": "My Agents",
-    "empty": "Start creating agents!",
+    "subtitle": "Manage, test, and deploy your AI agents",
+    "empty": {
+      "title": "No agents yet",
+      "description": "Create your first AI agent by chatting with Helpie. Describe what you need and watch it come to life.",
+      "cta": "Create Your First Agent"
+    },
+    "createNew": "Create New Agent",
     "status": {
-      "completed": "Completed",
-      "inProgress": "In Progress"
+      "completed": "Deployed",
+      "inProgress": "Draft"
     },
     "actions": {
-      "edit": "Edit",
-      "view": "View"
+      "test": "Test",
+      "settings": "Settings",
+      "embed": "Embed"
     }
   },
   "agentSettings": {
@@ -182,15 +189,34 @@
   },
   "workspaces": {
     "title": "Workspaces",
+    "description": "Collaborate with your team on AI agent projects. Share credits, manage members, and build together.",
     "create": "Create Workspace",
-    "empty": "No workspaces yet"
+    "empty": "No workspaces yet",
+    "example": "My Workspace",
+    "public": "Public",
+    "members": "{{count}} members",
+    "credits": "{{count}} credits",
+    "viewDetails": "View Details",
+    "loginToManage": "Sign in to manage this workspace",
+    "loginRequired": "Sign In Required",
+    "loginDescription": "Please sign in to create a workspace",
+    "startCollaboration": "Start collaborating with your team",
+    "collaborationTitle": "Team Collaboration",
+    "collaborationText": "Sign in to create workspaces, invite team members, and share credits across your organization."
   },
   "billing": {
     "title": "Pricing Plans",
+    "subtitle": "Choose the plan that fits your needs. Upgrade or downgrade anytime.",
+    "mostPopular": "Most Popular",
+    "needHelp": "Need Help Choosing?",
+    "helpDescription": "Contact our team and we'll help you find the perfect plan for your needs.",
+    "contact": "Contact Sales",
     "plans": {
       "basic": {
         "name": "Basic",
+        "description": "Perfect for trying out the platform",
         "price": "Free",
+        "cta": "Get Started",
         "features": [
           "5 daily credits (max 50/month)",
           "No publishing",
@@ -199,7 +225,9 @@
       },
       "pro": {
         "name": "Pro",
+        "description": "For individuals and small teams",
         "price": "€29.99/month",
+        "cta": "Upgrade to Pro",
         "features": [
           "5 daily + 150 monthly credits",
           "Publish agents",
@@ -209,7 +237,9 @@
       },
       "expert": {
         "name": "Expert",
+        "description": "For growing businesses",
         "price": "€49.99/month",
+        "cta": "Upgrade to Expert",
         "features": [
           "250 credits/month",
           "Internal publishing",
@@ -219,7 +249,9 @@
       },
       "custom": {
         "name": "Custom",
+        "description": "Tailored for enterprise needs",
         "price": "Contact us",
+        "cta": "Contact Sales",
         "features": [
           "Custom credits",
           "Enterprise support",
