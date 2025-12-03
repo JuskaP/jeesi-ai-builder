@@ -108,20 +108,53 @@ export type Database = {
           },
         ]
       }
+      agent_likes: {
+        Row: {
+          agent_id: string
+          created_at: string | null
+          id: string
+          user_id: string
+        }
+        Insert: {
+          agent_id: string
+          created_at?: string | null
+          id?: string
+          user_id: string
+        }
+        Update: {
+          agent_id?: string
+          created_at?: string | null
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_likes_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       agents: {
         Row: {
           ai_model: string | null
+          community_category: string | null
+          community_likes: number | null
           created_at: string | null
           description: string | null
           features: Json | null
           id: string
           is_heavy: boolean | null
           is_published: boolean | null
+          is_shared_to_community: boolean | null
           knowledge_base: Json | null
           max_tokens: number | null
           name: string
           purpose: string
           railway_url: string | null
+          shared_at: string | null
           status: string | null
           system_prompt: string | null
           tech_stack: Json | null
@@ -132,17 +165,21 @@ export type Database = {
         }
         Insert: {
           ai_model?: string | null
+          community_category?: string | null
+          community_likes?: number | null
           created_at?: string | null
           description?: string | null
           features?: Json | null
           id?: string
           is_heavy?: boolean | null
           is_published?: boolean | null
+          is_shared_to_community?: boolean | null
           knowledge_base?: Json | null
           max_tokens?: number | null
           name: string
           purpose: string
           railway_url?: string | null
+          shared_at?: string | null
           status?: string | null
           system_prompt?: string | null
           tech_stack?: Json | null
@@ -153,17 +190,21 @@ export type Database = {
         }
         Update: {
           ai_model?: string | null
+          community_category?: string | null
+          community_likes?: number | null
           created_at?: string | null
           description?: string | null
           features?: Json | null
           id?: string
           is_heavy?: boolean | null
           is_published?: boolean | null
+          is_shared_to_community?: boolean | null
           knowledge_base?: Json | null
           max_tokens?: number | null
           name?: string
           purpose?: string
           railway_url?: string | null
+          shared_at?: string | null
           status?: string | null
           system_prompt?: string | null
           tech_stack?: Json | null
