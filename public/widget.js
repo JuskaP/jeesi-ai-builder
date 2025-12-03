@@ -182,13 +182,33 @@
       });
     },
 
-    addMessage: function(role, content) {
+    addMessage: function(role, content, isStreaming = false) {
       const messagesContainer = document.getElementById('jeesi-messages');
       const messageDiv = document.createElement('div');
       messageDiv.className = `jeesi-message ${role}`;
       messageDiv.textContent = content;
+      if (isStreaming) {
+        messageDiv.id = 'jeesi-streaming-message';
+      }
       messagesContainer.appendChild(messageDiv);
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      return messageDiv;
+    },
+
+    updateStreamingMessage: function(content) {
+      const streamingMsg = document.getElementById('jeesi-streaming-message');
+      if (streamingMsg) {
+        streamingMsg.textContent = content;
+        const messagesContainer = document.getElementById('jeesi-messages');
+        messagesContainer.scrollTop = messagesContainer.scrollHeight;
+      }
+    },
+
+    finalizeStreamingMessage: function() {
+      const streamingMsg = document.getElementById('jeesi-streaming-message');
+      if (streamingMsg) {
+        streamingMsg.removeAttribute('id');
+      }
     },
 
     callAgent: async function(userMessage) {
@@ -203,21 +223,94 @@
             agentId: this.config.agentId,
             messages: [
               { role: 'user', content: userMessage }
-            ]
+            ],
+            stream: true
           })
         });
 
         if (!response.ok) {
-          throw new Error(`API error: ${response.status}`);
+          const errorText = await response.text();
+          throw new Error(`API error: ${response.status} - ${errorText}`);
         }
 
-        const data = await response.json();
-        const assistantMessage = data.response || 'I apologize, but I encountered an error.';
-        this.addMessage('assistant', assistantMessage);
+        // Check if response is SSE stream
+        const contentType = response.headers.get('content-type') || '';
+        
+        if (contentType.includes('text/event-stream')) {
+          // Handle SSE streaming response
+          await this.handleSSEStream(response);
+        } else {
+          // Handle non-streaming JSON response
+          const data = await response.json();
+          const assistantMessage = data.response || 'I apologize, but I encountered an error.';
+          this.addMessage('assistant', assistantMessage);
+        }
 
       } catch (error) {
         console.error('Jeesi Widget Error:', error);
         this.addMessage('assistant', 'Sorry, I encountered an error. Please try again.');
+      }
+    },
+
+    handleSSEStream: async function(response) {
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+      let fullResponse = '';
+      let messageStarted = false;
+
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+
+          buffer += decoder.decode(value, { stream: true });
+
+          // Process complete SSE events
+          let newlineIndex;
+          while ((newlineIndex = buffer.indexOf('\n')) !== -1) {
+            const line = buffer.slice(0, newlineIndex).trim();
+            buffer = buffer.slice(newlineIndex + 1);
+
+            if (!line || line.startsWith(':')) continue;
+            if (!line.startsWith('data: ')) continue;
+
+            const jsonStr = line.slice(6);
+            if (jsonStr === '[DONE]') continue;
+
+            try {
+              const data = JSON.parse(jsonStr);
+
+              if (data.type === 'chunk' && data.content) {
+                if (!messageStarted) {
+                  this.addMessage('assistant', '', true);
+                  messageStarted = true;
+                }
+                fullResponse += data.content;
+                this.updateStreamingMessage(fullResponse);
+              } else if (data.type === 'done') {
+                this.finalizeStreamingMessage();
+              } else if (data.type === 'error') {
+                if (!messageStarted) {
+                  this.addMessage('assistant', data.error || 'An error occurred.');
+                } else {
+                  this.updateStreamingMessage(data.error || 'An error occurred.');
+                  this.finalizeStreamingMessage();
+                }
+              }
+            } catch (e) {
+              // Ignore JSON parse errors for incomplete data
+            }
+          }
+        }
+
+        // Finalize if not already done
+        if (messageStarted) {
+          this.finalizeStreamingMessage();
+        }
+      } catch (error) {
+        console.error('SSE Stream Error:', error);
+        this.finalizeStreamingMessage();
       }
     }
   };
