@@ -148,8 +148,14 @@
     "forgotPassword": "Forgot password?",
     "noAccount": "Don't have an account? Sign up",
     "hasAccount": "Already have an account? Sign in",
+    "backToLogin": "Back to sign in",
     "signInDescription": "Welcome back! Sign in to access your AI agents and dashboard.",
     "signUpDescription": "Create your free account and start building AI agents today.",
+    "resetPassword": "Reset Password",
+    "resetPasswordDescription": "Enter your email and we'll send you a link to reset your password.",
+    "sendResetLink": "Send Reset Link",
+    "resetEmailSent": "Reset link sent!",
+    "resetEmailSentDescription": "Check your email for a link to reset your password.",
     "welcomeBack": "Welcome back!",
     "loginSuccess": "You've been signed in successfully",
     "welcome": "Welcome to jeesi.ai!",
@@ -162,6 +168,7 @@
       "loginFailed": "Sign in failed",
       "checkCredentials": "Please check your email and password",
       "signupFailed": "Sign up failed",
+      "resetFailed": "Password reset failed",
       "unexpected": "Something went wrong",
       "tryAgain": "Please try again later"
     }

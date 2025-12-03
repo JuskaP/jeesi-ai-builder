@@ -3,6 +3,7 @@ import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -11,12 +12,14 @@ import { useToast } from '@/hooks/use-toast';
 import { z } from 'zod';
 import { Loader2, ArrowLeft } from 'lucide-react';
 
+type AuthMode = 'login' | 'signup' | 'reset';
+
 export default function Auth() {
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const redirect = searchParams.get('redirect');
   
-  const [isLogin, setIsLogin] = useState(true);
+  const [mode, setMode] = useState<AuthMode>('login');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
@@ -35,11 +38,13 @@ export default function Auth() {
   const emailSchema = z.string().email(t('auth.errors.invalidEmail'));
   const passwordSchema = z.string().min(6, t('auth.errors.passwordTooShort'));
 
-  const validateInputs = () => {
+  const validateInputs = (skipPassword = false) => {
     try {
       emailSchema.parse(email);
-      passwordSchema.parse(password);
-      if (!isLogin && !fullName.trim()) {
+      if (!skipPassword) {
+        passwordSchema.parse(password);
+      }
+      if (mode === 'signup' && !fullName.trim()) {
         throw new Error(t('auth.errors.nameRequired'));
       }
       return true;
@@ -61,15 +66,53 @@ export default function Auth() {
     }
   };
 
+  const handlePasswordReset = async () => {
+    if (!validateInputs(true)) return;
+    
+    setIsLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/auth?reset=true`,
+      });
+      
+      if (error) {
+        toast({
+          variant: 'destructive',
+          title: t('auth.errors.resetFailed'),
+          description: error.message,
+        });
+      } else {
+        toast({
+          title: t('auth.resetEmailSent'),
+          description: t('auth.resetEmailSentDescription'),
+        });
+        setMode('login');
+      }
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: t('auth.errors.unexpected'),
+        description: t('auth.errors.tryAgain'),
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (mode === 'reset') {
+      await handlePasswordReset();
+      return;
+    }
     
     if (!validateInputs()) return;
     
     setIsLoading(true);
 
     try {
-      if (isLogin) {
+      if (mode === 'login') {
         const { error } = await signIn(email, password);
         if (error) {
           toast({
@@ -111,6 +154,22 @@ export default function Auth() {
     }
   };
 
+  const getTitle = () => {
+    switch (mode) {
+      case 'login': return t('auth.signIn');
+      case 'signup': return t('auth.signUp');
+      case 'reset': return t('auth.resetPassword');
+    }
+  };
+
+  const getDescription = () => {
+    switch (mode) {
+      case 'login': return t('auth.signInDescription');
+      case 'signup': return t('auth.signUpDescription');
+      case 'reset': return t('auth.resetPasswordDescription');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/30 flex items-center justify-center p-6">
       <motion.div
@@ -131,17 +190,15 @@ export default function Auth() {
         <Card className="border-border/50 shadow-xl">
           <CardHeader className="space-y-1 pb-4">
             <CardTitle className="text-2xl font-bold">
-              {isLogin ? t('auth.signIn') : t('auth.signUp')}
+              {getTitle()}
             </CardTitle>
             <CardDescription className="text-muted-foreground">
-              {isLogin 
-                ? t('auth.signInDescription') 
-                : t('auth.signUpDescription')}
+              {getDescription()}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
-              {!isLogin && (
+              {mode === 'signup' && (
                 <div className="space-y-2">
                   <Label htmlFor="fullName">{t('auth.fullName')}</Label>
                   <Input
@@ -150,7 +207,7 @@ export default function Auth() {
                     placeholder={t('auth.fullNamePlaceholder')}
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
-                    required={!isLogin}
+                    required
                     className="h-11"
                   />
                 </div>
@@ -169,18 +226,31 @@ export default function Auth() {
                 />
               </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="password">{t('auth.password')}</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder={t('auth.passwordPlaceholder')}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  className="h-11"
-                />
-              </div>
+              {mode !== 'reset' && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="password">{t('auth.password')}</Label>
+                    {mode === 'login' && (
+                      <button
+                        type="button"
+                        onClick={() => setMode('reset')}
+                        className="text-xs text-muted-foreground hover:text-primary transition-colors"
+                      >
+                        {t('auth.forgotPassword')}
+                      </button>
+                    )}
+                  </div>
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder={t('auth.passwordPlaceholder')}
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="h-11"
+                  />
+                </div>
+              )}
 
               <Button 
                 type="submit" 
@@ -193,21 +263,31 @@ export default function Auth() {
                     {t('common.loading')}
                   </>
                 ) : (
-                  isLogin ? t('auth.signIn') : t('auth.signUp')
+                  mode === 'reset' ? t('auth.sendResetLink') : getTitle()
                 )}
               </Button>
             </form>
 
-            <div className="mt-6 text-center">
-              <button
-                type="button"
-                onClick={() => setIsLogin(!isLogin)}
-                className="text-sm text-muted-foreground hover:text-primary transition-colors"
-              >
-                {isLogin 
-                  ? t('auth.noAccount') 
-                  : t('auth.hasAccount')}
-              </button>
+            <div className="mt-6 text-center space-y-2">
+              {mode === 'reset' ? (
+                <button
+                  type="button"
+                  onClick={() => setMode('login')}
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
+                  {t('auth.backToLogin')}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
+                  className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                >
+                  {mode === 'login' 
+                    ? t('auth.noAccount') 
+                    : t('auth.hasAccount')}
+                </button>
+              )}
             </div>
           </CardContent>
         </Card>
