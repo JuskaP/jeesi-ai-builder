@@ -10,7 +10,7 @@ const logStep = (step: string, details?: any) => {
 // Credit pack mapping (credits by pack price)
 const creditPackCredits: Record<string, number> = {
   "price_1SaGfqGx4tvYlwhYH4YSgRyv": 100,
-  "price_1SaGfrGx4tvYlwhYF33QRCsi": 250,
+  "price_1SaKQOGx4tvYlwhYkEDHcAPJ": 250,  // Updated to €24.90
   "price_1SaGfrGx4tvYlwhYUs592ySr": 500,
   "price_1SaGfsGx4tvYlwhYnVnc6bKT": 1000,
 };

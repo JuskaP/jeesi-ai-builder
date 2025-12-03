@@ -28,7 +28,7 @@ const annualPriceMap: Record<string, string> = {
 // Credit pack price IDs
 const creditPackPriceMap: Record<number, string> = {
   100: "price_1SaGfqGx4tvYlwhYH4YSgRyv",
-  250: "price_1SaGfrGx4tvYlwhYF33QRCsi",
+  250: "price_1SaKQOGx4tvYlwhYkEDHcAPJ",  // Updated to €24.90
   500: "price_1SaGfrGx4tvYlwhYUs592ySr",
   1000: "price_1SaGfsGx4tvYlwhYnVnc6bKT",
 };
