@@ -15,6 +15,8 @@ import TestAgent from "./pages/TestAgent";
 import EmbedAgent from "./pages/EmbedAgent";
 import Community from "./pages/Community";
 import Workspaces from "./pages/Workspaces";
+import WorkspaceDetail from "./pages/WorkspaceDetail";
+import AcceptInvitation from "./pages/AcceptInvitation";
 import Billing from "./pages/Billing";
 import Profile from "./pages/Profile";
 import Admin from "./pages/Admin";
@@ -62,6 +64,15 @@ function AnimatedRoutes() {
         />
         <Route path="/community" element={<PageTransition><Community /></PageTransition>} />
         <Route path="/workspaces" element={<PageTransition><Workspaces /></PageTransition>} />
+        <Route 
+          path="/workspaces/:id" 
+          element={
+            <ProtectedRoute>
+              <PageTransition><WorkspaceDetail /></PageTransition>
+            </ProtectedRoute>
+          } 
+        />
+        <Route path="/invite/:token" element={<PageTransition><AcceptInvitation /></PageTransition>} />
         <Route path="/billing" element={<PageTransition><Billing /></PageTransition>} />
         <Route path="/profile" element={<PageTransition><Profile /></PageTransition>} />
         <Route 
