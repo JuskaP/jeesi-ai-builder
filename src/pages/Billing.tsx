@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Check, Sparkles, Loader2 } from 'lucide-react';
+import { Check, Sparkles, Loader2, Calendar } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
@@ -20,7 +20,7 @@ export default function Billing() {
   const [checkingSubscription, setCheckingSubscription] = useState(true);
   const [subscription, setSubscription] = useState<SubscriptionStatus>({ 
     subscribed: false, 
-    plan_type: 'basic' 
+    plan_type: 'free' 
   });
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export default function Billing() {
       setCheckingSubscription(true);
       const { data: sessionData } = await supabase.auth.getSession();
       if (!sessionData.session) {
-        setSubscription({ subscribed: false, plan_type: 'basic' });
+        setSubscription({ subscribed: false, plan_type: 'free' });
         return;
       }
 
@@ -95,18 +95,27 @@ export default function Billing() {
     }
   };
 
-  const planTiers = ['basic', 'pro', 'expert', 'custom'];
+  const planTiers = ['starter', 'pro', 'business', 'enterprise'];
   
   const plans = planTiers.map(tier => {
     const plan = t(`billing.plans.${tier}`, { returnObjects: true }) as any;
     return {
       ...plan,
       tier,
-      isCustom: tier === 'custom',
+      isEnterprise: tier === 'enterprise',
       popular: tier === 'pro',
       isCurrentPlan: subscription.plan_type === tier
     };
   });
+
+  const handlePlanAction = (plan: any) => {
+    if (plan.isEnterprise) {
+      // Open Cal.com or booking link
+      window.open('https://cal.com/jeesi/enterprise', '_blank');
+    } else if (!plan.isCurrentPlan) {
+      subscribe(plan.tier);
+    }
+  };
 
   return (
     <div className="p-8 max-w-7xl mx-auto">
@@ -151,48 +160,47 @@ export default function Billing() {
                 </Badge>
               )}
             
-            <CardHeader>
-              <CardTitle className="text-2xl">{plan.name}</CardTitle>
-              <CardDescription className="min-h-[40px]">{plan.description}</CardDescription>
-              <div className="pt-4">
-                <div className="flex items-baseline gap-1">
-                  <span className="text-3xl font-bold text-foreground">{plan.price}</span>
+              <CardHeader>
+                <CardTitle className="text-2xl">{plan.name}</CardTitle>
+                <CardDescription className="min-h-[40px]">{plan.description}</CardDescription>
+                <div className="pt-4">
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-3xl font-bold text-foreground">{plan.price}</span>
+                  </div>
                 </div>
-              </div>
-            </CardHeader>
+              </CardHeader>
 
-            <CardContent className="space-y-6">
-              <ul className="space-y-2">
-                {plan.features.map((feature: string) => (
-                  <li key={feature} className="flex items-start gap-2 text-sm">
-                    <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
+              <CardContent className="space-y-6">
+                <ul className="space-y-2">
+                  {plan.features.map((feature: string) => (
+                    <li key={feature} className="flex items-start gap-2 text-sm">
+                      <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                      <span>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
 
-              <Button 
-                className="w-full" 
-                variant={plan.popular ? 'default' : 'outline'}
-                disabled={loading || plan.isCurrentPlan || (plan.tier === 'basic' && !plan.isCurrentPlan)}
-                onClick={() => {
-                  if (plan.isCustom) {
-                    window.location.href = 'mailto:sales@jeesi.ai?subject=Custom Plan Inquiry';
-                  } else if (!plan.isCurrentPlan && plan.tier !== 'basic') {
-                    subscribe(plan.tier);
-                  }
-                }}
-              >
-                {loading ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : plan.isCurrentPlan ? (
-                  'Current Plan'
-                ) : (
-                  plan.cta || t('common.getStarted')
-                )}
-              </Button>
-            </CardContent>
-          </Card>
+                <Button 
+                  className="w-full" 
+                  variant={plan.popular ? 'default' : 'outline'}
+                  disabled={loading || plan.isCurrentPlan}
+                  onClick={() => handlePlanAction(plan)}
+                >
+                  {loading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : plan.isCurrentPlan ? (
+                    'Current Plan'
+                  ) : plan.isEnterprise ? (
+                    <>
+                      <Calendar className="h-4 w-4 mr-2" />
+                      {plan.cta}
+                    </>
+                  ) : (
+                    plan.cta
+                  )}
+                </Button>
+              </CardContent>
+            </Card>
           ))
         )}
       </div>
