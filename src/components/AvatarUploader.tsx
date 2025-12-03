@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Upload, Sparkles, Loader2, User } from "lucide-react";
+import { Upload, Sparkles, Loader2, User, Briefcase, Palette, Shapes, Minus } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
@@ -16,6 +16,33 @@ interface AvatarUploaderProps {
   onAvatarChange: (url: string) => void;
 }
 
+const AVATAR_PRESETS = [
+  {
+    id: "professional",
+    name: "Professional",
+    icon: Briefcase,
+    prompt: "A professional corporate headshot portrait, clean and polished look, soft studio lighting, neutral gray background, business attire, confident expression, high quality photograph style"
+  },
+  {
+    id: "cartoon",
+    name: "Cartoon",
+    icon: Palette,
+    prompt: "A friendly cartoon avatar character, colorful and playful style, big expressive eyes, smooth vector art style, vibrant colors, fun personality, suitable for profile picture"
+  },
+  {
+    id: "abstract",
+    name: "Abstract",
+    icon: Shapes,
+    prompt: "An abstract geometric avatar design, modern art style, bold shapes and colors, unique artistic interpretation, creative and eye-catching, contemporary digital art"
+  },
+  {
+    id: "minimalist",
+    name: "Minimalist",
+    icon: Minus,
+    prompt: "A minimalist avatar design, simple clean lines, monochromatic or limited color palette, elegant and understated, modern aesthetic, zen-like simplicity"
+  }
+];
+
 export default function AvatarUploader({ 
   userId, 
   currentAvatarUrl, 
@@ -24,6 +51,7 @@ export default function AvatarUploader({
 }: AvatarUploaderProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [selectedPreset, setSelectedPreset] = useState<string | null>(null);
   const [aiPrompt, setAiPrompt] = useState("");
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,11 +100,17 @@ export default function AvatarUploader({
     }
   };
 
-  const handleGenerateAvatar = async () => {
+  const handleGenerateAvatar = async (presetPrompt?: string) => {
+    const promptToUse = presetPrompt || aiPrompt;
+    if (!promptToUse && !presetPrompt) {
+      toast.error("Please select a style or enter a description");
+      return;
+    }
+
     setIsGenerating(true);
     try {
       const { data, error } = await supabase.functions.invoke("generate-avatar", {
-        body: { prompt: aiPrompt || undefined }
+        body: { prompt: promptToUse }
       });
 
       if (error) throw error;
@@ -117,6 +151,7 @@ export default function AvatarUploader({
       toast.error(error.message || "Failed to generate avatar");
     } finally {
       setIsGenerating(false);
+      setSelectedPreset(null);
     }
   };
 
@@ -167,28 +202,65 @@ export default function AvatarUploader({
             <Sparkles className="h-5 w-5 text-primary" />
             <h4 className="font-medium">Generate AI Avatar</h4>
           </div>
-          
-          <Textarea
-            placeholder="Describe your desired avatar style... (e.g., 'professional headshot with blue background' or 'cartoon style with friendly smile')"
-            value={aiPrompt}
-            onChange={(e) => setAiPrompt(e.target.value)}
-            rows={2}
-          />
+
+          {/* Preset Styles */}
+          <div className="space-y-2">
+            <Label className="text-sm text-muted-foreground">Quick Styles</Label>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+              {AVATAR_PRESETS.map((preset) => {
+                const Icon = preset.icon;
+                return (
+                  <Button
+                    key={preset.id}
+                    variant={selectedPreset === preset.id ? "default" : "outline"}
+                    size="sm"
+                    className="flex flex-col h-auto py-3 gap-1"
+                    onClick={() => {
+                      setSelectedPreset(preset.id);
+                      setAiPrompt("");
+                    }}
+                    disabled={isGenerating}
+                  >
+                    <Icon className="h-4 w-4" />
+                    <span className="text-xs">{preset.name}</span>
+                  </Button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Custom Prompt */}
+          <div className="space-y-2">
+            <Label className="text-sm text-muted-foreground">Or describe your own style</Label>
+            <Textarea
+              placeholder="e.g., 'futuristic cyberpunk style with neon colors' or 'watercolor painting with soft pastels'"
+              value={aiPrompt}
+              onChange={(e) => {
+                setAiPrompt(e.target.value);
+                setSelectedPreset(null);
+              }}
+              rows={2}
+              disabled={isGenerating}
+            />
+          </div>
           
           <Button 
-            onClick={handleGenerateAvatar} 
-            disabled={isGenerating}
+            onClick={() => {
+              const preset = AVATAR_PRESETS.find(p => p.id === selectedPreset);
+              handleGenerateAvatar(preset?.prompt);
+            }} 
+            disabled={isGenerating || (!selectedPreset && !aiPrompt)}
             className="w-full"
           >
             {isGenerating ? (
               <>
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Generating...
+                Generating {selectedPreset ? AVATAR_PRESETS.find(p => p.id === selectedPreset)?.name : "Custom"} Avatar...
               </>
             ) : (
               <>
                 <Sparkles className="h-4 w-4 mr-2" />
-                Generate AI Avatar
+                Generate {selectedPreset ? AVATAR_PRESETS.find(p => p.id === selectedPreset)?.name + " " : ""}Avatar
               </>
             )}
           </Button>
