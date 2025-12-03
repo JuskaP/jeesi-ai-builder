@@ -6,6 +6,24 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-api-key",
 };
 
+interface AgentFunction {
+  id: string;
+  name: string;
+  function_type: string;
+  trigger_keywords: string[];
+  config: Record<string, any>;
+  is_enabled: boolean;
+  execution_order: number;
+}
+
+interface FunctionResult {
+  functionName: string;
+  functionType: string;
+  success: boolean;
+  data?: any;
+  error?: string;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -90,6 +108,65 @@ serve(async (req) => {
       );
     }
 
+    // Fetch custom functions for this agent
+    const { data: agentFunctions, error: functionsError } = await supabase
+      .from("agent_functions")
+      .select("*")
+      .eq("agent_id", agentId)
+      .eq("is_enabled", true)
+      .order("execution_order");
+
+    if (functionsError) {
+      console.error("Failed to fetch agent functions:", functionsError);
+    }
+
+    const functions: AgentFunction[] = agentFunctions || [];
+    console.log(`[AGENT-RUNTIME] Loaded ${functions.length} custom functions for agent ${agentId}`);
+
+    // Get the last user message to check for triggers
+    const lastUserMessage = messages.filter((m: any) => m.role === "user").pop();
+    const userContent = lastUserMessage?.content?.toLowerCase() || "";
+
+    // Execute triggered functions
+    const functionResults: FunctionResult[] = [];
+    const triggeredFunctions = functions.filter(fn => 
+      fn.trigger_keywords.some(keyword => userContent.includes(keyword.toLowerCase()))
+    );
+
+    console.log(`[AGENT-RUNTIME] ${triggeredFunctions.length} functions triggered by keywords`);
+
+    for (const fn of triggeredFunctions) {
+      try {
+        const result = await executeFunction(fn, userContent, messages);
+        functionResults.push(result);
+        console.log(`[AGENT-RUNTIME] Function ${fn.name} executed:`, result.success);
+      } catch (error) {
+        console.error(`[AGENT-RUNTIME] Function ${fn.name} failed:`, error);
+        functionResults.push({
+          functionName: fn.name,
+          functionType: fn.function_type,
+          success: false,
+          error: error instanceof Error ? error.message : "Unknown error"
+        });
+      }
+    }
+
+    // Check for conditional responses that should override AI response
+    const conditionalResult = functionResults.find(
+      r => r.functionType === "conditional" && r.success && r.data?.response
+    );
+
+    if (conditionalResult) {
+      // Return conditional response directly without calling AI
+      console.log(`[AGENT-RUNTIME] Returning conditional response`);
+      await deductCredits(supabase, userId, agentId, agent.ai_model, messages.length);
+      
+      // Execute webhooks in background
+      executeWebhooksInBackground(functions, messages, conditionalResult.data.response, supabase, agentId);
+      
+      return streamDirectResponse(conditionalResult.data.response, corsHeaders);
+    }
+
     // ROUTING LOGIC: Check if agent is heavy and should run on Railway
     if (agent.is_heavy) {
       const railwayUrl = agent.railway_url || Deno.env.get("RAILWAY_BACKEND_URL");
@@ -121,7 +198,6 @@ serve(async (req) => {
           "x-railway-secret": railwaySecret
         },
         body: JSON.stringify({
-          // Pre-validated data - Railway trusts this
           userId,
           agentId: agent.id,
           agentConfig: {
@@ -133,6 +209,7 @@ serve(async (req) => {
             knowledge_base: agent.knowledge_base
           },
           messages,
+          functionResults, // Pass function results to Railway
           stream: true
         })
       });
@@ -146,10 +223,8 @@ serve(async (req) => {
         );
       }
 
-      // Deduct credits after successful Railway execution start
       await deductCredits(supabase, userId, agentId, agent.ai_model, messages.length);
 
-      // Stream Railway response back to client
       return new Response(railwayResponse.body, {
         headers: {
           ...corsHeaders,
@@ -159,17 +234,38 @@ serve(async (req) => {
     }
 
     // STANDARD PATH: Execute agent locally in edge function
-    // Call Lovable AI Gateway
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY not configured");
     }
 
-    // Build system prompt with knowledge base
+    // Build system prompt with knowledge base and function results
     let systemPrompt = agent.system_prompt || "You are a helpful AI assistant.";
+    
+    // Add knowledge base context
     if (agent.knowledge_base && Array.isArray(agent.knowledge_base) && agent.knowledge_base.length > 0) {
       const knowledgeContext = agent.knowledge_base.map((kb: any) => kb.content).join("\n\n");
       systemPrompt = `${systemPrompt}\n\nKnowledge Base:\n${knowledgeContext}`;
+    }
+
+    // Add function results context if any functions were executed
+    if (functionResults.length > 0) {
+      const successfulResults = functionResults.filter(r => r.success && r.data);
+      if (successfulResults.length > 0) {
+        const functionContext = successfulResults.map(r => {
+          if (r.functionType === "api_call" && r.data) {
+            return `[API Result from ${r.functionName}]: ${JSON.stringify(r.data).substring(0, 500)}`;
+          }
+          if (r.functionType === "data_transform" && r.data) {
+            return `[Transformed Data from ${r.functionName}]: ${r.data}`;
+          }
+          return "";
+        }).filter(Boolean).join("\n");
+        
+        if (functionContext) {
+          systemPrompt = `${systemPrompt}\n\nExternal Data (use this in your response when relevant):\n${functionContext}`;
+        }
+      }
     }
 
     const aiMessages = [
@@ -216,10 +312,11 @@ serve(async (req) => {
       );
     }
 
-    // Deduct credits after successful AI Gateway call
     await deductCredits(supabase, userId, agentId, agent.ai_model, messages.length);
 
-    // Stream response back to client
+    // Execute webhooks in background after response starts streaming
+    executeWebhooksInBackground(functions, messages, null, supabase, agentId);
+
     return new Response(response.body, {
       headers: {
         ...corsHeaders,
@@ -236,6 +333,247 @@ serve(async (req) => {
   }
 });
 
+// Execute a custom function based on its type
+async function executeFunction(fn: AgentFunction, userContent: string, messages: any[]): Promise<FunctionResult> {
+  const baseResult = {
+    functionName: fn.name,
+    functionType: fn.function_type,
+  };
+
+  switch (fn.function_type) {
+    case "api_call":
+      return await executeApiCall(fn, userContent, baseResult);
+    
+    case "conditional":
+      return executeConditional(fn, userContent, baseResult);
+    
+    case "data_transform":
+      return executeDataTransform(fn, userContent, messages, baseResult);
+    
+    case "webhook":
+      // Webhooks are executed in background, not blocking
+      return { ...baseResult, success: true, data: { scheduled: true } };
+    
+    default:
+      return { ...baseResult, success: false, error: "Unknown function type" };
+  }
+}
+
+// Execute API call function
+async function executeApiCall(fn: AgentFunction, userContent: string, baseResult: any): Promise<FunctionResult> {
+  const config = fn.config;
+  const url = config.url as string;
+  const method = (config.method as string) || "GET";
+  
+  if (!url) {
+    return { ...baseResult, success: false, error: "No URL configured" };
+  }
+
+  try {
+    // Parse headers
+    let headers: Record<string, string> = { "Content-Type": "application/json" };
+    if (config.headers_json) {
+      try {
+        headers = { ...headers, ...JSON.parse(config.headers_json as string) };
+      } catch {
+        console.error("Failed to parse headers JSON");
+      }
+    }
+
+    // Prepare body with template substitution
+    let body: string | undefined;
+    if (config.body_template && method !== "GET") {
+      body = (config.body_template as string).replace(/\{\{user_input\}\}/g, userContent);
+    }
+
+    const fetchOptions: RequestInit = {
+      method,
+      headers,
+    };
+
+    if (body) {
+      fetchOptions.body = body;
+    }
+
+    const response = await fetch(url, fetchOptions);
+    
+    if (!response.ok) {
+      return { 
+        ...baseResult, 
+        success: false, 
+        error: `API returned ${response.status}` 
+      };
+    }
+
+    const data = await response.json();
+    return { ...baseResult, success: true, data };
+  } catch (error) {
+    return { 
+      ...baseResult, 
+      success: false, 
+      error: error instanceof Error ? error.message : "API call failed" 
+    };
+  }
+}
+
+// Execute conditional response function
+function executeConditional(fn: AgentFunction, userContent: string, baseResult: any): FunctionResult {
+  const config = fn.config;
+  
+  // Check if any condition keyword matches
+  const conditionKeyword = (config.condition_keyword as string)?.toLowerCase() || "";
+  const keywords = conditionKeyword.split(",").map(k => k.trim()).filter(Boolean);
+  
+  const matched = keywords.some(keyword => userContent.includes(keyword));
+  
+  if (matched && config.condition_response) {
+    return {
+      ...baseResult,
+      success: true,
+      data: { response: config.condition_response as string, matched: true }
+    };
+  }
+  
+  // Return default response if configured and no match
+  if (config.default_response && !matched) {
+    return {
+      ...baseResult,
+      success: true,
+      data: { response: config.default_response as string, matched: false }
+    };
+  }
+  
+  return { ...baseResult, success: false, data: { matched: false } };
+}
+
+// Execute data transform function
+function executeDataTransform(fn: AgentFunction, userContent: string, messages: any[], baseResult: any): FunctionResult {
+  const config = fn.config;
+  const transformType = config.transform_type as string;
+  const template = config.template as string;
+  
+  try {
+    let result: string;
+    
+    switch (transformType) {
+      case "format":
+        result = template?.replace(/\{\{data\}\}/g, userContent) || userContent;
+        break;
+      case "extract":
+        // Simple extraction - just pass through for now
+        result = userContent;
+        break;
+      case "summarize":
+        // Will be handled by AI with the context
+        result = `Please summarize: ${userContent}`;
+        break;
+      default:
+        result = userContent;
+    }
+    
+    return { ...baseResult, success: true, data: result };
+  } catch (error) {
+    return { ...baseResult, success: false, error: "Transform failed" };
+  }
+}
+
+// Execute webhooks in background
+function executeWebhooksInBackground(
+  functions: AgentFunction[], 
+  messages: any[], 
+  response: string | null,
+  supabase: any,
+  agentId: string
+) {
+  const webhooks = functions.filter(fn => fn.function_type === "webhook");
+  
+  if (webhooks.length === 0) return;
+
+  const lastUserMessage = messages.filter((m: any) => m.role === "user").pop();
+  
+  // Use EdgeRuntime.waitUntil if available
+  const executeWebhooks = async () => {
+    for (const webhook of webhooks) {
+      try {
+        const config = webhook.config;
+        const webhookUrl = config.webhook_url as string;
+        const triggerEvent = config.trigger_event as string;
+        
+        if (!webhookUrl) continue;
+        
+        // Check trigger event
+        if (triggerEvent === "on_keyword") {
+          const keywords = webhook.trigger_keywords;
+          const content = lastUserMessage?.content?.toLowerCase() || "";
+          const triggered = keywords.some(k => content.includes(k.toLowerCase()));
+          if (!triggered) continue;
+        }
+        
+        // Prepare payload
+        let payload: Record<string, any> = {
+          agent_id: agentId,
+          timestamp: new Date().toISOString(),
+          message: lastUserMessage?.content || "",
+          response: response || "",
+        };
+        
+        if (config.payload_template) {
+          try {
+            let templateStr = config.payload_template as string;
+            templateStr = templateStr
+              .replace(/\{\{content\}\}/g, lastUserMessage?.content || "")
+              .replace(/\{\{response\}\}/g, response || "")
+              .replace(/\{\{agent_id\}\}/g, agentId);
+            payload = JSON.parse(templateStr);
+          } catch {
+            // Use default payload if template parsing fails
+          }
+        }
+        
+        await fetch(webhookUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+        
+        console.log(`[AGENT-RUNTIME] Webhook ${webhook.name} executed`);
+      } catch (error) {
+        console.error(`[AGENT-RUNTIME] Webhook ${webhook.name} failed:`, error);
+      }
+    }
+  };
+
+  // Execute without blocking
+  executeWebhooks().catch(console.error);
+}
+
+// Stream a direct response (for conditional responses)
+function streamDirectResponse(content: string, corsHeaders: Record<string, string>): Response {
+  const encoder = new TextEncoder();
+  
+  const stream = new ReadableStream({
+    start(controller) {
+      // Send as SSE format compatible with frontend
+      const chunk = {
+        choices: [{
+          delta: { content },
+          index: 0
+        }]
+      };
+      controller.enqueue(encoder.encode(`data: ${JSON.stringify(chunk)}\n\n`));
+      controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+      controller.close();
+    }
+  });
+
+  return new Response(stream, {
+    headers: {
+      ...corsHeaders,
+      "Content-Type": "text/event-stream",
+    },
+  });
+}
+
 // Helper function to deduct credits properly
 async function deductCredits(
   supabase: any, 
@@ -247,13 +585,11 @@ async function deductCredits(
   const creditsUsed = 1;
   
   try {
-    // Use the deduct_credits RPC function
     await supabase.rpc("deduct_credits", {
       p_user_id: userId,
       p_credits: creditsUsed
     });
 
-    // Log usage
     await supabase
       .from("credit_usage")
       .insert({
@@ -270,7 +606,6 @@ async function deductCredits(
     console.log("[AGENT-RUNTIME] Credits deducted", { userId, agentId, creditsUsed });
   } catch (error) {
     console.error("[AGENT-RUNTIME] Failed to deduct credits:", error);
-    // Don't fail the request due to credit deduction issues
   }
 }
 
