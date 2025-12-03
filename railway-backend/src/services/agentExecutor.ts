@@ -1,52 +1,68 @@
-import { supabase } from '../index';
-
 interface Message {
   role: 'user' | 'assistant' | 'system';
   content: string;
 }
 
+interface AgentConfig {
+  name?: string;
+  system_prompt?: string | null;
+  ai_model?: string;
+  temperature?: number;
+  max_tokens?: number;
+  knowledge_base?: any;
+}
+
 interface AgentExecutionOptions {
-  agent: any;
+  agentId: string;
+  agentConfig: AgentConfig;
   messages: Message[];
-  userId: string;
   stream: boolean;
   onChunk?: (chunk: string) => void;
   onDone?: (result: any) => void;
   onError?: (error: Error) => void;
 }
 
-export async function executeAgent(options: AgentExecutionOptions): Promise<any> {
-  const { agent, messages, userId, stream, onChunk, onDone, onError } = options;
+/**
+ * Execute agent with pre-validated configuration
+ * This function trusts the data from edge function - no Supabase calls needed
+ * Credit deduction is handled by the edge function AFTER this returns
+ */
+export async function executeAgentValidated(options: AgentExecutionOptions): Promise<any> {
+  const { agentId, agentConfig, messages, stream, onChunk, onDone, onError } = options;
   const startTime = Date.now();
 
   try {
     console.log('[AGENT-EXECUTOR] Starting execution', {
-      agentId: agent.id,
-      model: agent.ai_model,
+      agentId,
+      model: agentConfig.ai_model,
       messageCount: messages.length
     });
 
-    // Build system prompt
-    const systemPrompt = agent.system_prompt || 'You are a helpful AI assistant.';
+    // Build system prompt with knowledge base
+    let systemPrompt = agentConfig.system_prompt || 'You are a helpful AI assistant.';
     
-    // Add knowledge base context if available
-    let contextPrompt = systemPrompt;
-    if (agent.knowledge_base && Array.isArray(agent.knowledge_base) && agent.knowledge_base.length > 0) {
-      const knowledgeContext = agent.knowledge_base.map((kb: any) => kb.content).join('\n\n');
-      contextPrompt = `${systemPrompt}\n\nKnowledge Base:\n${knowledgeContext}`;
+    if (agentConfig.knowledge_base && Array.isArray(agentConfig.knowledge_base) && agentConfig.knowledge_base.length > 0) {
+      const knowledgeContext = agentConfig.knowledge_base.map((kb: any) => kb.content).join('\n\n');
+      systemPrompt = `${systemPrompt}\n\nKnowledge Base:\n${knowledgeContext}`;
     }
 
     // Prepare messages for AI model
     const aiMessages = [
-      { role: 'system', content: contextPrompt },
+      { role: 'system', content: systemPrompt },
       ...messages
     ];
 
     // Call Lovable AI Gateway
     const LOVABLE_API_KEY = process.env.LOVABLE_API_KEY;
     if (!LOVABLE_API_KEY) {
-      throw new Error('LOVABLE_API_KEY not configured');
+      throw new Error('LOVABLE_API_KEY not configured on Railway');
     }
+
+    console.log('[AGENT-EXECUTOR] Calling AI Gateway', {
+      model: agentConfig.ai_model,
+      temperature: agentConfig.temperature,
+      maxTokens: agentConfig.max_tokens
+    });
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -55,17 +71,18 @@ export async function executeAgent(options: AgentExecutionOptions): Promise<any>
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: agent.ai_model || 'google/gemini-2.5-flash',
+        model: agentConfig.ai_model || 'google/gemini-2.5-flash',
         messages: aiMessages,
-        temperature: agent.temperature || 0.7,
-        max_tokens: agent.max_tokens || 1000,
+        temperature: agentConfig.temperature || 0.7,
+        max_tokens: agentConfig.max_tokens || 1000,
         stream
       })
     });
 
     if (!response.ok) {
-      const error = await response.text();
-      throw new Error(`AI Gateway error: ${response.status} - ${error}`);
+      const errorText = await response.text();
+      console.error('[AGENT-EXECUTOR] AI Gateway error:', response.status, errorText);
+      throw new Error(`AI Gateway error: ${response.status} - ${errorText}`);
     }
 
     if (stream && response.body) {
@@ -109,36 +126,28 @@ export async function executeAgent(options: AgentExecutionOptions): Promise<any>
       }
 
       const executionTime = Date.now() - startTime;
-      const creditsUsed = 1; // Calculate based on token usage if available
-
-      // Record credit usage
-      await recordCreditUsage(userId, agent.id, creditsUsed, executionTime);
+      console.log('[AGENT-EXECUTOR] Streaming complete', { agentId, executionTime });
 
       if (onDone) {
         onDone({
           response: fullResponse,
-          executionTime,
-          creditsUsed
+          executionTime
         });
       }
 
-      return { response: fullResponse, executionTime, creditsUsed };
+      return { response: fullResponse, executionTime };
 
     } else {
       // Handle non-streaming response
       const data: any = await response.json();
       const assistantMessage = data.choices?.[0]?.message?.content || '';
-
       const executionTime = Date.now() - startTime;
-      const creditsUsed = 1;
 
-      // Record credit usage
-      await recordCreditUsage(userId, agent.id, creditsUsed, executionTime);
+      console.log('[AGENT-EXECUTOR] Non-streaming complete', { agentId, executionTime });
 
       return {
         response: assistantMessage,
-        executionTime,
-        creditsUsed
+        executionTime
       };
     }
 
@@ -148,41 +157,5 @@ export async function executeAgent(options: AgentExecutionOptions): Promise<any>
       onError(error as Error);
     }
     throw error;
-  }
-}
-
-async function recordCreditUsage(
-  userId: string,
-  agentId: string,
-  creditsUsed: number,
-  executionTime: number
-): Promise<void> {
-  try {
-    // Record credit usage
-    await supabase
-      .from('credit_usage')
-      .insert({
-        user_id: userId,
-        agent_id: agentId,
-        credits_used: creditsUsed,
-        operation_type: 'agent_execution',
-        metadata: { execution_time_ms: executionTime }
-      });
-
-    // Update credit balance
-    await supabase.rpc('deduct_credits', {
-      p_user_id: userId,
-      p_credits: creditsUsed
-    });
-
-    console.log('[CREDIT-USAGE] Recorded', {
-      userId,
-      agentId,
-      creditsUsed,
-      executionTime
-    });
-  } catch (error) {
-    console.error('[CREDIT-USAGE] Failed to record:', error);
-    // Don't throw - don't fail agent execution due to credit recording issues
   }
 }
