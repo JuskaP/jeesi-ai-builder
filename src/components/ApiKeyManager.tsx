@@ -42,7 +42,7 @@ export default function ApiKeyManager() {
 
   const generateApiKey = async () => {
     if (!newKeyName.trim()) {
-      toast.error("Anna API-avaimelle nimi");
+      toast.error("Please enter a name for the API key");
       return;
     }
 
@@ -56,7 +56,7 @@ export default function ApiKeyManager() {
       const keyPrefix = randomKey.substring(0, 11) + "...";
 
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error("Käyttäjää ei löytynyt");
+      if (!user) throw new Error("User not found");
 
       // Store hashed key
       const { error } = await supabase
@@ -72,11 +72,11 @@ export default function ApiKeyManager() {
 
       setGeneratedKey(randomKey);
       setNewKeyName("");
-      toast.success("API-avain luotu!");
+      toast.success("API key created!");
       fetchApiKeys();
     } catch (error) {
       console.error("Error generating API key:", error);
-      toast.error("API-avaimen luonti epäonnistui");
+      toast.error("Failed to create API key");
     } finally {
       setLoading(false);
     }
@@ -90,17 +90,17 @@ export default function ApiKeyManager() {
 
     if (error) {
       console.error("Error deleting API key:", error);
-      toast.error("API-avaimen poisto epäonnistui");
+      toast.error("Failed to delete API key");
       return;
     }
 
-    toast.success("API-avain poistettu");
+    toast.success("API key deleted");
     fetchApiKeys();
   };
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
-    toast.success("Kopioitu leikepöydälle!");
+    toast.success("Copied to clipboard!");
   };
 
   return (
@@ -113,9 +113,9 @@ export default function ApiKeyManager() {
         >
           <Card className="border-primary/50 bg-primary/5">
             <CardHeader>
-              <CardTitle className="text-lg">Uusi API-avain luotu</CardTitle>
+              <CardTitle className="text-lg">New API Key Created</CardTitle>
               <CardDescription>
-                Tallenna tämä avain turvalliseen paikkaan. Et voi nähdä sitä uudelleen!
+                Save this key in a secure location. You won't be able to see it again!
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -130,7 +130,7 @@ export default function ApiKeyManager() {
                 className="mt-4 w-full"
                 variant="secondary"
               >
-                Sulje
+                Close
               </Button>
             </CardContent>
           </Card>
@@ -139,21 +139,21 @@ export default function ApiKeyManager() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Luo uusi API-avain</CardTitle>
+          <CardTitle>Create New API Key</CardTitle>
           <CardDescription>
-            Luo API-avain agentin upottamiseen verkkosivuillesi
+            Create an API key to embed your agent on websites
           </CardDescription>
         </CardHeader>
         <CardContent>
           <div className="flex gap-2">
             <Input
-              placeholder="Avaimen nimi (esim. 'Tuotanto-verkkosivusto')"
+              placeholder="Key name (e.g., 'Production Website')"
               value={newKeyName}
               onChange={(e) => setNewKeyName(e.target.value)}
             />
             <Button onClick={generateApiKey} disabled={loading}>
               <Plus className="h-4 w-4 mr-2" />
-              Luo avain
+              Create Key
             </Button>
           </div>
         </CardContent>
@@ -161,13 +161,13 @@ export default function ApiKeyManager() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Olemassa olevat API-avaimet</CardTitle>
-          <CardDescription>Hallitse olemassa olevia API-avaimia</CardDescription>
+          <CardTitle>Existing API Keys</CardTitle>
+          <CardDescription>Manage your existing API keys</CardDescription>
         </CardHeader>
         <CardContent>
           {apiKeys.length === 0 ? (
             <p className="text-muted-foreground text-center py-8">
-              Ei API-avaimia. Luo ensimmäinen avain yllä.
+              No API keys yet. Create your first key above.
             </p>
           ) : (
             <div className="space-y-3">
@@ -183,8 +183,8 @@ export default function ApiKeyManager() {
                     </p>
                     <p className="text-xs text-muted-foreground mt-1">
                       {key.last_used_at
-                        ? `Käytetty: ${new Date(key.last_used_at).toLocaleDateString("fi-FI")}`
-                        : "Ei käytetty"}
+                        ? `Last used: ${new Date(key.last_used_at).toLocaleDateString()}`
+                        : "Never used"}
                     </p>
                   </div>
                   <Button

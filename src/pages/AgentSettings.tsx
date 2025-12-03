@@ -174,7 +174,7 @@ export default function AgentSettings() {
       if (data) {
         setName(data.name || '');
         setDescription(data.description || '');
-        setSystemPrompt(data.system_prompt || 'Olet avulias AI-assistentti.');
+        setSystemPrompt(data.system_prompt || 'You are a helpful AI assistant.');
         setAiModel(data.ai_model || 'google/gemini-2.5-flash');
         setTemperature([data.temperature || 0.7]);
         setMaxTokens([data.max_tokens || 1000]);
@@ -278,7 +278,7 @@ export default function AgentSettings() {
         </div>
 
         <div className="space-y-6">
-          {/* Perustiedot */}
+          {/* Basic Information */}
           <Card>
             <CardHeader>
               <CardTitle>{t('agentSettings.basicInfo.title')}</CardTitle>
@@ -291,7 +291,7 @@ export default function AgentSettings() {
                   id="name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Esim. Asiakaspalveluagentti"
+                  placeholder="e.g., Customer Service Agent"
                 />
               </div>
               <div className="space-y-2">
@@ -347,18 +347,18 @@ export default function AgentSettings() {
           <Card>
             <CardHeader>
               <CardTitle>System Prompt</CardTitle>
-              <CardDescription>Määritä agentin persoonallisuus ja ohjeet</CardDescription>
+              <CardDescription>Define your agent's personality and instructions</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Textarea
                   value={systemPrompt}
                   onChange={(e) => setSystemPrompt(e.target.value)}
-                  placeholder="Esim. Olet ystävällinen asiakaspalvelija joka auttaa asiakkaita..."
+                  placeholder="e.g., You are a friendly customer service agent who helps customers..."
                   className="min-h-[150px]"
                 />
                 <p className="text-sm text-muted-foreground">
-                  {systemPrompt.length}/2000 merkkiä
+                  {systemPrompt.length}/2000 characters
                 </p>
               </div>
             </CardContent>
@@ -396,11 +396,11 @@ export default function AgentSettings() {
             </CardContent>
           </Card>
 
-          {/* Lämpötila */}
+          {/* Temperature */}
           <Card>
             <CardHeader>
-              <CardTitle>Lämpötila: {temperature[0].toFixed(1)}</CardTitle>
-              <CardDescription>Säädä vastausten luovuutta</CardDescription>
+              <CardTitle>Temperature: {temperature[0].toFixed(1)}</CardTitle>
+              <CardDescription>Adjust response creativity</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
@@ -413,8 +413,8 @@ export default function AgentSettings() {
                   className="w-full"
                 />
                 <div className="flex justify-between text-sm text-muted-foreground">
-                  <span>Tarkka/Johdonmukainen</span>
-                  <span>Luova/Vaihteleva</span>
+                  <span>Precise/Consistent</span>
+                  <span>Creative/Variable</span>
                 </div>
               </div>
             </CardContent>
@@ -437,11 +437,11 @@ export default function AgentSettings() {
                   className="w-full"
                 />
                 <div className="flex justify-between text-sm text-muted-foreground">
-                  <span>100 tokenia</span>
-                  <span>4000 tokenia</span>
+                  <span>100 tokens</span>
+                  <span>4000 tokens</span>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Token ≈ 0.75 sanaa. {maxTokens[0]} tokenia ≈ {Math.round(maxTokens[0] * 0.75)} sanaa.
+                  Token ≈ 0.75 words. {maxTokens[0]} tokens ≈ {Math.round(maxTokens[0] * 0.75)} words.
                 </p>
               </div>
             </CardContent>
@@ -450,15 +450,15 @@ export default function AgentSettings() {
           {/* Knowledge Base */}
           <Card>
             <CardHeader>
-              <CardTitle>Tietopohja</CardTitle>
-              <CardDescription>Lisää agenttisi käyttöön tärkeää tietoa</CardDescription>
+              <CardTitle>Knowledge Base</CardTitle>
+              <CardDescription>Add important information for your agent to use</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex gap-2">
                 <Input
                   value={newKnowledge}
                   onChange={(e) => setNewKnowledge(e.target.value)}
-                  placeholder="Esim. Yrityksen aukioloajat: ma-pe 9-17"
+                  placeholder="e.g., Business hours: Mon-Fri 9-17"
                   onKeyPress={(e) => e.key === 'Enter' && addKnowledge()}
                 />
                 <Button onClick={addKnowledge} size="icon" variant="secondary">
@@ -484,7 +484,7 @@ export default function AgentSettings() {
                 ))}
                 {knowledgeBase.length === 0 && (
                   <p className="text-sm text-muted-foreground text-center py-4">
-                    Ei tietopohjaa. Lisää ensimmäinen tietokohde yllä.
+                    No knowledge base yet. Add your first item above.
                   </p>
                 )}
               </div>
@@ -551,7 +551,7 @@ export default function AgentSettings() {
           {/* Custom Functions */}
           {id && <CustomFunctionsManager agentId={id} />}
 
-          {/* Julkaisu */}
+          {/* Publishing */}
           <Card>
             <CardHeader>
               <CardTitle>{t('agentSettings.publishing.title')}</CardTitle>
