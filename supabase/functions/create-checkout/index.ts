@@ -35,15 +35,16 @@ serve(async (req) => {
     const { tier } = await req.json();
     logStep("Received tier", { tier });
 
-    // Map tier to price ID
+    // Map tier to price ID - Update these with your actual Stripe price IDs
     const priceMap: Record<string, string> = {
-      pro: "price_1SYCQgGx4tvYlwhY4eUVk1SU",
-      expert: "price_1SYCR2Gx4tvYlwhYxuvVNTna",
+      starter: "price_starter_19", // €19/month - Replace with actual Stripe price ID
+      pro: "price_1SYCQgGx4tvYlwhY4eUVk1SU", // €49/month
+      business: "price_1SYCR2Gx4tvYlwhYxuvVNTna", // €99/month
     };
 
     const priceId = priceMap[tier];
     if (!priceId) {
-      throw new Error(`Invalid tier: ${tier}`);
+      throw new Error(`Invalid tier: ${tier}. Valid tiers are: starter, pro, business`);
     }
     logStep("Price ID resolved", { priceId });
 

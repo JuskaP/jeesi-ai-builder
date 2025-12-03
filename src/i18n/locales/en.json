@@ -333,50 +333,59 @@
     "helpDescription": "Contact our team and we'll help you find the perfect plan for your needs.",
     "contact": "Contact Sales",
     "plans": {
-      "basic": {
-        "name": "Basic",
-        "description": "Perfect for trying out the platform",
-        "price": "Free",
+      "starter": {
+        "name": "Starter",
+        "description": "Perfect for getting started",
+        "price": "€19/month",
         "cta": "Get Started",
         "features": [
-          "5 daily credits (max 50/month)",
-          "No publishing",
+          "3 AI agents",
+          "100 credits/month",
+          "Basic integrations",
+          "Community support",
           "jeesi.ai watermark"
         ]
       },
       "pro": {
         "name": "Pro",
         "description": "For individuals and small teams",
-        "price": "€29.99/month",
+        "price": "€49/month",
         "cta": "Upgrade to Pro",
         "features": [
-          "5 daily + 150 monthly credits",
-          "Publish agents",
+          "10 AI agents",
+          "500 credits/month",
+          "All integrations",
           "Custom domains",
-          "Remove watermark"
+          "Remove watermark",
+          "Priority support"
         ]
       },
-      "expert": {
-        "name": "Expert",
-        "description": "For growing businesses",
-        "price": "€49.99/month",
-        "cta": "Upgrade to Expert",
+      "business": {
+        "name": "Business",
+        "description": "For growing businesses and teams",
+        "price": "€99/month",
+        "cta": "Upgrade to Business",
         "features": [
-          "250 credits/month",
-          "Internal publishing",
+          "Unlimited agents",
+          "2,000 credits/month",
+          "Team collaboration",
+          "API access",
           "SSO support",
-          "Design templates"
+          "Dedicated support"
         ]
       },
-      "custom": {
-        "name": "Custom",
+      "enterprise": {
+        "name": "Enterprise",
         "description": "Tailored for enterprise needs",
-        "price": "Contact us",
-        "cta": "Contact Sales",
+        "price": "Custom",
+        "cta": "Book a Call",
         "features": [
-          "Custom credits",
-          "Enterprise support",
-          "Dedicated consultation"
+          "Unlimited everything",
+          "Custom integrations",
+          "SLA guarantee",
+          "Dedicated account manager",
+          "On-premise option",
+          "24/7 priority support"
         ]
       }
     }

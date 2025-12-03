@@ -12,6 +12,21 @@ const logStep = (step: string, details?: any) => {
   console.log(`[CHECK-SUBSCRIPTION] ${step}${detailsStr}`);
 };
 
+// Map Stripe product IDs to plan types - Update with your actual Stripe product IDs
+const productToPlanMap: Record<string, string> = {
+  "prod_starter": "starter",
+  "prod_pro": "pro", 
+  "prod_business": "business",
+};
+
+// Credit allocations per plan
+const planCredits: Record<string, number> = {
+  free: 0,
+  starter: 100,
+  pro: 500,
+  business: 2000,
+};
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -47,8 +62,8 @@ serve(async (req) => {
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
     
     if (customers.data.length === 0) {
-      logStep("No customer found, updating unsubscribed state");
-      return new Response(JSON.stringify({ subscribed: false, plan_type: "basic" }), {
+      logStep("No customer found, returning free plan");
+      return new Response(JSON.stringify({ subscribed: false, plan_type: 'free' }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 200,
       });
@@ -62,72 +77,42 @@ serve(async (req) => {
       status: "active",
       limit: 1,
     });
+    
     const hasActiveSub = subscriptions.data.length > 0;
-    let productId = null;
+    let planType = 'free';
     let subscriptionEnd = null;
-    let planType = "basic";
 
     if (hasActiveSub) {
       const subscription = subscriptions.data[0];
       subscriptionEnd = new Date(subscription.current_period_end * 1000).toISOString();
       logStep("Active subscription found", { subscriptionId: subscription.id, endDate: subscriptionEnd });
       
-      productId = subscription.items.data[0].price.product as string;
-      
-      // Map product ID to plan type
-      const productMap: Record<string, string> = {
-        "prod_TVCqdIB8BXf9uc": "pro",
-        "prod_TVCqw004oSebAo": "expert",
-      };
-      planType = productMap[productId] || "basic";
-      logStep("Determined subscription tier", { productId, planType });
-
-      // Update credit balance based on plan
-      const creditMap: Record<string, number> = {
-        pro: 150,
-        expert: 250,
-      };
-
-      const credits = creditMap[planType] || 0;
-      if (credits > 0) {
-        // Check if user has credit balance record
-        const { data: existingBalance } = await supabaseClient
-          .from('credit_balances')
-          .select('*')
-          .eq('user_id', user.id)
-          .single();
-
-        if (existingBalance) {
-          // Update existing balance
-          await supabaseClient
-            .from('credit_balances')
-            .update({
-              plan_type: planType,
-              credits_remaining: credits,
-              updated_at: new Date().toISOString()
-            })
-            .eq('user_id', user.id);
-          logStep("Updated credit balance", { planType, credits });
-        } else {
-          // Create new balance
-          await supabaseClient
-            .from('credit_balances')
-            .insert({
-              user_id: user.id,
-              plan_type: planType,
-              credits_remaining: credits,
-              credits_used_this_month: 0
-            });
-          logStep("Created credit balance", { planType, credits });
-        }
-      }
+      const productId = subscription.items.data[0].price.product as string;
+      planType = productToPlanMap[productId] || 'starter';
+      logStep("Determined plan type", { productId, planType });
     } else {
       logStep("No active subscription found");
     }
 
+    // Update credit balance in database
+    const credits = planCredits[planType] || 0;
+    const { error: upsertError } = await supabaseClient
+      .from('credit_balances')
+      .upsert({
+        user_id: user.id,
+        plan_type: planType,
+        credits_remaining: credits,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'user_id' });
+
+    if (upsertError) {
+      logStep("Error updating credit balance", { error: upsertError.message });
+    } else {
+      logStep("Credit balance updated", { planType, credits });
+    }
+
     return new Response(JSON.stringify({
       subscribed: hasActiveSub,
-      product_id: productId,
       plan_type: planType,
       subscription_end: subscriptionEnd
     }), {
