@@ -61,14 +61,14 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/privacy" className="text-sm text-muted-foreground hover:text-primary transition-colors">
                   {t('footer.privacy')}
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="text-sm text-muted-foreground hover:text-primary transition-colors">
+                <Link to="/terms" className="text-sm text-muted-foreground hover:text-primary transition-colors">
                   {t('footer.terms')}
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
