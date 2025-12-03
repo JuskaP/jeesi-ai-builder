@@ -9,7 +9,33 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
-import { Loader2, Heart } from 'lucide-react';
+import { Loader2, Heart, Headphones, TrendingUp, Megaphone, HelpCircle, GraduationCap, DollarSign, ShoppingCart, Scale, UserCog, Home, Plane, Cpu, Film, UtensilsCrossed, Car, Globe, MoreHorizontal, Layers, type LucideIcon } from 'lucide-react';
+
+const CATEGORY_ICONS: Record<string, LucideIcon> = {
+  'Customer Service': Headphones,
+  'Sales': TrendingUp,
+  'Marketing': Megaphone,
+  'Support': HelpCircle,
+  'Education': GraduationCap,
+  'Healthcare': Heart,
+  'Finance': DollarSign,
+  'E-commerce': ShoppingCart,
+  'Legal': Scale,
+  'HR': UserCog,
+  'Real Estate': Home,
+  'Travel': Plane,
+  'Technology': Cpu,
+  'Entertainment': Film,
+  'Food & Restaurant': UtensilsCrossed,
+  'Automotive': Car,
+  'General': Globe,
+  'Other': MoreHorizontal,
+  'All': Layers,
+};
+
+const getCategoryIcon = (category: string): LucideIcon => {
+  return CATEGORY_ICONS[category] || Globe;
+};
 
 interface CommunityAgent {
   id: string;
@@ -227,16 +253,21 @@ export default function Community() {
         />
         
         <div className='flex flex-wrap gap-2'>
-          {categories.map(category => (
-            <Button
-              key={category}
-              variant={selectedCategory === category ? 'default' : 'outline'}
-              size='sm'
-              onClick={() => setSelectedCategory(category)}
-            >
-              {category}
-            </Button>
-          ))}
+          {categories.map(category => {
+            const IconComponent = getCategoryIcon(category);
+            return (
+              <Button
+                key={category}
+                variant={selectedCategory === category ? 'default' : 'outline'}
+                size='sm'
+                onClick={() => setSelectedCategory(category)}
+                className='flex items-center gap-1.5'
+              >
+                <IconComponent className='h-4 w-4' />
+                {category}
+              </Button>
+            );
+          })}
         </div>
       </div>
 
@@ -257,7 +288,11 @@ export default function Community() {
                 >
                   <CardHeader>
                     <div className='flex items-start justify-between mb-2'>
-                      <Badge variant='secondary' className='text-xs'>
+                      <Badge variant='secondary' className='text-xs flex items-center gap-1'>
+                        {(() => {
+                          const IconComp = getCategoryIcon(template.community_category || 'General');
+                          return <IconComp className='h-3 w-3' />;
+                        })()}
                         {template.community_category || 'General'}
                       </Badge>
                       <button
@@ -297,7 +332,13 @@ export default function Community() {
                 <div className='space-y-4 py-4'>
                   <div className='flex items-center justify-between'>
                     <span className='text-sm text-muted-foreground'>{t('community.category')}:</span>
-                    <Badge variant='secondary'>{template.community_category || 'General'}</Badge>
+                    <Badge variant='secondary' className='flex items-center gap-1'>
+                      {(() => {
+                        const IconComp = getCategoryIcon(template.community_category || 'General');
+                        return <IconComp className='h-3 w-3' />;
+                      })()}
+                      {template.community_category || 'General'}
+                    </Badge>
                   </div>
                   <div className='flex items-center justify-between'>
                     <span className='text-sm text-muted-foreground'>{t('community.likes')}:</span>

@@ -12,25 +12,34 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { ArrowLeft, Plus, Trash2, Save, TestTube, Users, Activity, Globe, Lock } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Save, TestTube, Users, Activity, Globe, Lock, Headphones, TrendingUp, Megaphone, HelpCircle, GraduationCap, Heart, DollarSign, ShoppingCart, Scale, UserCog, Home, Plane, Cpu, Film, UtensilsCrossed, Car, MoreHorizontal, type LucideIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import CustomFunctionsManager from '@/components/CustomFunctionsManager';
 
-const COMMUNITY_CATEGORIES = [
-  'Customer Service',
-  'Sales',
-  'Marketing',
-  'Support',
-  'Education',
-  'Healthcare',
-  'Finance',
-  'E-commerce',
-  'Legal',
-  'HR',
-  'Real Estate',
-  'Travel',
-  'General',
-  'Other'
+interface CategoryConfig {
+  name: string;
+  icon: LucideIcon;
+}
+
+const COMMUNITY_CATEGORIES: CategoryConfig[] = [
+  { name: 'Customer Service', icon: Headphones },
+  { name: 'Sales', icon: TrendingUp },
+  { name: 'Marketing', icon: Megaphone },
+  { name: 'Support', icon: HelpCircle },
+  { name: 'Education', icon: GraduationCap },
+  { name: 'Healthcare', icon: Heart },
+  { name: 'Finance', icon: DollarSign },
+  { name: 'E-commerce', icon: ShoppingCart },
+  { name: 'Legal', icon: Scale },
+  { name: 'HR', icon: UserCog },
+  { name: 'Real Estate', icon: Home },
+  { name: 'Travel', icon: Plane },
+  { name: 'Technology', icon: Cpu },
+  { name: 'Entertainment', icon: Film },
+  { name: 'Food & Restaurant', icon: UtensilsCrossed },
+  { name: 'Automotive', icon: Car },
+  { name: 'General', icon: Globe },
+  { name: 'Other', icon: MoreHorizontal },
 ];
 
 interface Workspace {
@@ -625,9 +634,17 @@ export default function AgentSettings() {
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            {COMMUNITY_CATEGORIES.map((cat) => (
-                              <SelectItem key={cat} value={cat}>{cat}</SelectItem>
-                            ))}
+                            {COMMUNITY_CATEGORIES.map((cat) => {
+                              const IconComponent = cat.icon;
+                              return (
+                                <SelectItem key={cat.name} value={cat.name}>
+                                  <span className="flex items-center gap-2">
+                                    <IconComponent className="h-4 w-4" />
+                                    {cat.name}
+                                  </span>
+                                </SelectItem>
+                              );
+                            })}
                           </SelectContent>
                         </Select>
                       </div>
