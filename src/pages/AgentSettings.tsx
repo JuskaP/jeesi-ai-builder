@@ -12,8 +12,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
-import { ArrowLeft, Plus, Trash2, Save, TestTube } from 'lucide-react';
+import { ArrowLeft, Plus, Trash2, Save, TestTube, Users } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+
+interface Workspace {
+  id: string;
+  name: string;
+}
 
 const AI_MODELS = [
   {
@@ -67,6 +72,8 @@ export default function AgentSettings() {
   const [isPublished, setIsPublished] = useState(false);
   const [isHeavy, setIsHeavy] = useState(false);
   const [railwayUrl, setRailwayUrl] = useState('');
+  const [workspaceId, setWorkspaceId] = useState<string | null>(null);
+  const [workspaces, setWorkspaces] = useState<Workspace[]>([]);
 
   useEffect(() => {
     if (!user) {
@@ -74,7 +81,32 @@ export default function AgentSettings() {
       return;
     }
     fetchAgent();
+    fetchWorkspaces();
   }, [id, user, navigate]);
+
+  const fetchWorkspaces = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('workspace_members')
+        .select(`
+          workspace:workspaces(id, name)
+        `)
+        .eq('user_id', user.id)
+        .in('role', ['owner', 'admin', 'editor']);
+
+      if (error) throw error;
+      
+      const ws = (data || [])
+        .map((m: any) => m.workspace)
+        .filter(Boolean) as Workspace[];
+      
+      setWorkspaces(ws);
+    } catch (error) {
+      console.error('Error fetching workspaces:', error);
+    }
+  };
 
   const fetchAgent = async () => {
     if (!id) return;
@@ -108,6 +140,7 @@ export default function AgentSettings() {
         setIsPublished(data.is_published || false);
         setIsHeavy(data.is_heavy || false);
         setRailwayUrl(data.railway_url || '');
+        setWorkspaceId(data.workspace_id || null);
       }
     } catch (error) {
       console.error('Error fetching agent:', error);
@@ -135,6 +168,7 @@ export default function AgentSettings() {
           is_published: isPublished,
           is_heavy: isHeavy,
           railway_url: railwayUrl || null,
+          workspace_id: workspaceId,
           updated_at: new Date().toISOString()
         })
         .eq('id', id)
@@ -216,6 +250,43 @@ export default function AgentSettings() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Workspace Assignment */}
+          {workspaces.length > 0 && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Users className="h-5 w-5" />
+                  {t('agentSettings.workspace.title')}
+                </CardTitle>
+                <CardDescription>{t('agentSettings.workspace.description')}</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <Select 
+                  value={workspaceId || 'none'} 
+                  onValueChange={(v) => setWorkspaceId(v === 'none' ? null : v)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={t('agentSettings.workspace.selectPlaceholder')} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">{t('agentSettings.workspace.personal')}</SelectItem>
+                    {workspaces.map((ws) => (
+                      <SelectItem key={ws.id} value={ws.id}>
+                        {ws.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <p className="text-sm text-muted-foreground mt-2">
+                  {workspaceId 
+                    ? t('agentSettings.workspace.sharedHint')
+                    : t('agentSettings.workspace.personalHint')
+                  }
+                </p>
+              </CardContent>
+            </Card>
+          )}
 
           {/* System Prompt */}
           <Card>
