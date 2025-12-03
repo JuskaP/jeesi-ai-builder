@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader2, Image as ImageIcon, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import AgentPreviewModal, { AgentConfig } from "@/components/AgentPreviewModal";
 
 interface Message {
   role: "user" | "assistant";
@@ -44,11 +45,14 @@ export default function ChatUI({ template }: ChatUIProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [isCreatingAgent, setIsCreatingAgent] = useState(false);
   const [hasUserTyped, setHasUserTyped] = useState(false);
   const [selectedImage, setSelectedImage] = useState<File | null>(null);
   const [selectedImagePreview, setSelectedImagePreview] = useState<string | null>(null);
   const [conversationId, setConversationId] = useState<string | null>(null);
+  const [showPreviewModal, setShowPreviewModal] = useState(false);
+  const [previewConfig, setPreviewConfig] = useState<AgentConfig | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
@@ -319,7 +323,7 @@ export default function ChatUI({ template }: ChatUIProps) {
     }
   };
 
-  const createAgent = async () => {
+  const analyzeAndPreview = async () => {
     if (!user) {
       toast({
         title: "Sign in required",
@@ -339,17 +343,44 @@ export default function ChatUI({ template }: ChatUIProps) {
       return;
     }
 
-    setIsCreatingAgent(true);
+    setIsAnalyzing(true);
 
     try {
       const { data, error } = await supabase.functions.invoke('create-agent', {
-        body: { messages, userId: user.id }
+        body: { messages, userId: user.id, previewOnly: true }
       });
 
       if (error) throw error;
 
+      setPreviewConfig(data.config);
+      setShowPreviewModal(true);
+    } catch (error) {
+      console.error('Analyze error:', error);
       toast({
-        title: "Agent Created! 🎉",
+        title: "Analysis Failed",
+        description: "Couldn't analyze conversation. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
+
+  const confirmCreateAgent = async (config: AgentConfig) => {
+    if (!user) return;
+
+    setIsCreatingAgent(true);
+
+    try {
+      const { data, error } = await supabase.functions.invoke('create-agent', {
+        body: { config, userId: user.id }
+      });
+
+      if (error) throw error;
+
+      setShowPreviewModal(false);
+      toast({
+        title: "Agent Created!",
         description: `${data.agent.name} is ready. Let's configure it together.`
       });
 
@@ -367,7 +398,7 @@ export default function ChatUI({ template }: ChatUIProps) {
   };
 
   // Show "Create Agent" button if conversation is substantive
-  const showCreateButton = messages.length >= 3 && messages.some(m => m.role === 'user') && !isCreatingAgent;
+  const showCreateButton = messages.length >= 3 && messages.some(m => m.role === 'user') && !isCreatingAgent && !isAnalyzing;
 
   return (
     <div className="flex flex-col w-full max-w-3xl mx-auto p-4 rounded-2xl border border-border/20 shadow-lg bg-card/10 backdrop-blur-sm min-h-[200px] max-h-[600px]">
@@ -407,14 +438,14 @@ export default function ChatUI({ template }: ChatUIProps) {
         {showCreateButton && (
           <div className="pb-2">
             <Button
-              onClick={createAgent}
-              disabled={isCreatingAgent}
+              onClick={analyzeAndPreview}
+              disabled={isAnalyzing}
               className="w-full bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
             >
-              {isCreatingAgent ? (
+              {isAnalyzing ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Creating Your Agent...
+                  Analyzing Conversation...
                 </>
               ) : (
                 <>
@@ -425,6 +456,14 @@ export default function ChatUI({ template }: ChatUIProps) {
             </Button>
           </div>
         )}
+
+        <AgentPreviewModal
+          isOpen={showPreviewModal}
+          onClose={() => setShowPreviewModal(false)}
+          config={previewConfig}
+          onConfirm={confirmCreateAgent}
+          isCreating={isCreatingAgent}
+        />
 
         {selectedImagePreview && (
           <div className="relative inline-block">
