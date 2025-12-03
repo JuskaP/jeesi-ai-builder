@@ -9,11 +9,12 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Loader2, User, Zap, TrendingUp, Bot, CreditCard, Settings, Key, ArrowRight } from 'lucide-react';
+import { Loader2, User, Zap, TrendingUp, Bot, CreditCard, Settings, Key, ArrowRight, Shield } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import CreditBalance from '@/components/CreditBalance';
 import ApiKeyManager from '@/components/ApiKeyManager';
+import ConsentSettings from '@/components/ConsentSettings';
 
 interface Agent {
   id: string;
@@ -176,7 +177,7 @@ export default function Profile() {
           </div>
 
           <Tabs defaultValue="overview" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="overview" className="gap-2">
                 <User className="w-4 h-4" />
                 {t('profile.tabs.overview')}
@@ -188,6 +189,10 @@ export default function Profile() {
               <TabsTrigger value="api-keys" className="gap-2">
                 <Key className="w-4 h-4" />
                 {t('profile.tabs.apiKeys')}
+              </TabsTrigger>
+              <TabsTrigger value="privacy" className="gap-2">
+                <Shield className="w-4 h-4" />
+                Privacy
               </TabsTrigger>
               <TabsTrigger value="settings" className="gap-2">
                 <Settings className="w-4 h-4" />
@@ -361,6 +366,11 @@ export default function Profile() {
             {/* API Keys Tab */}
             <TabsContent value="api-keys">
               <ApiKeyManager />
+            </TabsContent>
+
+            {/* Privacy Tab */}
+            <TabsContent value="privacy">
+              <ConsentSettings />
             </TabsContent>
 
             {/* Settings Tab */}

@@ -14,6 +14,50 @@ export type Database = {
   }
   public: {
     Tables: {
+      agent_issues: {
+        Row: {
+          agent_id: string | null
+          created_at: string
+          id: string
+          issue_description: string | null
+          issue_type: string
+          occurrence_count: number
+          resolved: boolean
+          sample_prompts: Json | null
+          updated_at: string
+        }
+        Insert: {
+          agent_id?: string | null
+          created_at?: string
+          id?: string
+          issue_description?: string | null
+          issue_type: string
+          occurrence_count?: number
+          resolved?: boolean
+          sample_prompts?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          agent_id?: string | null
+          created_at?: string
+          id?: string
+          issue_description?: string | null
+          issue_type?: string
+          occurrence_count?: number
+          resolved?: boolean
+          sample_prompts?: Json | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_issues_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       agents: {
         Row: {
           ai_model: string | null
@@ -262,6 +306,59 @@ export type Database = {
           },
         ]
       }
+      platform_analytics: {
+        Row: {
+          agent_id: string | null
+          created_at: string
+          error_message: string | null
+          error_type: string | null
+          event_type: string
+          id: string
+          metadata: Json | null
+          prompt_text: string | null
+          response_preview: string | null
+          response_time_ms: number | null
+          tokens_used: number | null
+          user_id: string
+        }
+        Insert: {
+          agent_id?: string | null
+          created_at?: string
+          error_message?: string | null
+          error_type?: string | null
+          event_type: string
+          id?: string
+          metadata?: Json | null
+          prompt_text?: string | null
+          response_preview?: string | null
+          response_time_ms?: number | null
+          tokens_used?: number | null
+          user_id: string
+        }
+        Update: {
+          agent_id?: string | null
+          created_at?: string
+          error_message?: string | null
+          error_type?: string | null
+          event_type?: string
+          id?: string
+          metadata?: Json | null
+          prompt_text?: string | null
+          response_preview?: string | null
+          response_time_ms?: number | null
+          tokens_used?: number | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "platform_analytics_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string | null
@@ -283,6 +380,45 @@ export type Database = {
           full_name?: string | null
           id?: string
           updated_at?: string | null
+        }
+        Relationships: []
+      }
+      user_consent: {
+        Row: {
+          consent_version: string
+          consented_at: string | null
+          created_at: string
+          error_tracking: boolean
+          id: string
+          metadata_collection: boolean
+          prompt_analysis: boolean
+          updated_at: string
+          usage_analytics: boolean
+          user_id: string
+        }
+        Insert: {
+          consent_version?: string
+          consented_at?: string | null
+          created_at?: string
+          error_tracking?: boolean
+          id?: string
+          metadata_collection?: boolean
+          prompt_analysis?: boolean
+          updated_at?: string
+          usage_analytics?: boolean
+          user_id: string
+        }
+        Update: {
+          consent_version?: string
+          consented_at?: string | null
+          created_at?: string
+          error_tracking?: boolean
+          id?: string
+          metadata_collection?: boolean
+          prompt_analysis?: boolean
+          updated_at?: string
+          usage_analytics?: boolean
+          user_id?: string
         }
         Relationships: []
       }
