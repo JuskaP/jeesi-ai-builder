@@ -342,10 +342,7 @@
       "title": "Need More Credits?",
       "description": "Top up your credits anytime",
       "packs": [
-        { "credits": 100, "price": "€19.90" },
-        { "credits": 250, "price": "€29.99" },
-        { "credits": 500, "price": "€49.90" },
-        { "credits": 1000, "price": "€84.90" }
+        { "credits": 250, "price": "€24.90" }
       ],
       "buy": "Buy"
     },
@@ -357,7 +354,7 @@
         "annualPrice": "€0/year",
         "cta": "Get Started",
         "features": [
-          "1 AI agent",
+          "2 AI agents",
           "50 credits/month",
           "+5 daily credits",
           "jeesi.ai watermark",
@@ -375,7 +372,7 @@
         "annualPrice": "€182/year",
         "cta": "Get Started",
         "features": [
-          "3 AI agents",
+          "5 AI agents",
           "100 credits/month",
           "+5 daily credits",
           "Basic integrations",
@@ -391,7 +388,7 @@
         "cta": "Upgrade to Pro",
         "features": [
           "10 AI agents",
-          "1,000 credits/month",
+          "500 credits/month",
           "+5 daily credits",
           "All integrations",
           "Custom domains",
@@ -406,7 +403,7 @@
         "cta": "Upgrade to Business",
         "features": [
           "Unlimited agents",
-          "2,000 credits/month",
+          "1,000 credits/month",
           "+5 daily credits",
           "Team collaboration",
           "API access",

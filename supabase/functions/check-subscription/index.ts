@@ -26,8 +26,8 @@ const productToPlanMap: Record<string, string> = {
 const planCredits: Record<string, number> = {
   free: 50,
   starter: 100,
-  pro: 1000,
-  business: 2000,
+  pro: 500,
+  business: 1000,
 };
 
 // All plans get 5 daily credits (don't roll over)
