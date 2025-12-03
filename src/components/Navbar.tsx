@@ -50,9 +50,11 @@ export default function Navbar() {
               Admin
             </Link>
           )}
-          <Link to={user ? '/profile' : '/auth'} className='px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm hover:bg-primary/90 transition-all duration-300 hover:shadow-lg hover:shadow-primary/20 hover:-translate-y-0.5'>
-            {user ? t('nav.profile') : t('nav.signIn')}
-          </Link>
+          {!user && (
+            <Link to='/auth' className='px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm hover:bg-primary/90 transition-all duration-300 hover:shadow-lg hover:shadow-primary/20 hover:-translate-y-0.5'>
+              {t('nav.signIn')}
+            </Link>
+          )}
         </nav>
       </div>
     </header>
