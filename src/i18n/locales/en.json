@@ -451,7 +451,7 @@
     "readyToIntegrate": { "title": "Ready to Integrate", "description": "Embed agents directly on websites, apps or use via API. Works immediately." },
     "secureReliable": { "title": "Secure & Reliable", "description": "Your data is safe. GDPR-compliant platform with support and maintenance." },
     "aiPower": { "title": "AI Power", "description": "Leverages advanced language models to understand your customers and help them better." },
-    "scalableSolution": { "title": "Scalable Solution", "description": "Start small and grow as needed. No fixed costs, pay only for usage." }
+    "scalableSolution": { "title": "Scalable Solution", "description": "Start small and grow as needed. Flexible plans from €19/month with simple, predictable pricing." }
   },
   "demo": {
     "title": "Creating an Agent is This Easy",
