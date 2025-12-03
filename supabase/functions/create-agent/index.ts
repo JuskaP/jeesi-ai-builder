@@ -12,7 +12,44 @@ serve(async (req) => {
   }
 
   try {
-    const { messages, userId } = await req.json();
+    const { messages, userId, previewOnly, config } = await req.json();
+    
+    // If config is provided, create agent directly (confirmation step)
+    if (config && userId) {
+      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+      const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+      const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+      const { data: agent, error: agentError } = await supabase
+        .from("agents")
+        .insert({
+          user_id: userId,
+          name: config.name,
+          purpose: config.purpose,
+          description: config.description,
+          system_prompt: config.system_prompt,
+          ai_model: "google/gemini-2.5-flash",
+          temperature: 0.7,
+          max_tokens: 1000,
+          status: "draft",
+          is_published: false
+        })
+        .select()
+        .single();
+
+      if (agentError) {
+        console.error("Error creating agent:", agentError);
+        return new Response(
+          JSON.stringify({ error: "Failed to create agent" }),
+          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      return new Response(
+        JSON.stringify({ agent }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
     
     if (!messages || !userId) {
       return new Response(
@@ -20,11 +57,6 @@ serve(async (req) => {
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
-
-    // Initialize Supabase client
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
     // Call Lovable AI to analyze conversation and generate agent config
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
@@ -35,7 +67,7 @@ serve(async (req) => {
     const analysisPrompt = `Based on this conversation, extract the agent configuration:
 
 Conversation:
-${messages.map((m: any) => `${m.role}: ${m.content}`).join('\n')}
+${messages.map((m: any) => `${m.role}: ${typeof m.content === 'string' ? m.content : JSON.stringify(m.content)}`).join('\n')}
 
 Analyze the conversation and return the agent configuration in this EXACT format as a tool call. Extract:
 - name: A short, clear name for the agent (2-4 words)
@@ -117,7 +149,20 @@ Important: Create a professional, working agent based on the user's requirements
 
     const agentConfig = JSON.parse(toolCall.function.arguments);
 
-    // Create agent in database
+    // If previewOnly, return config without creating agent
+    if (previewOnly) {
+      console.log("Returning preview config:", agentConfig);
+      return new Response(
+        JSON.stringify({ config: agentConfig }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Initialize Supabase client and create agent
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
     const { data: agent, error: agentError } = await supabase
       .from("agents")
       .insert({
