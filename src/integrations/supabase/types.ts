@@ -137,6 +137,71 @@ export type Database = {
           },
         ]
       }
+      agent_schedules: {
+        Row: {
+          agent_id: string
+          created_at: string
+          cron_expression: string
+          id: string
+          is_enabled: boolean
+          last_result: Json | null
+          last_run_at: string | null
+          next_run_at: string | null
+          output_action: string
+          output_config: Json | null
+          prompt_template: string
+          run_count: number
+          schedule_type: string
+          timezone: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          agent_id: string
+          created_at?: string
+          cron_expression?: string
+          id?: string
+          is_enabled?: boolean
+          last_result?: Json | null
+          last_run_at?: string | null
+          next_run_at?: string | null
+          output_action?: string
+          output_config?: Json | null
+          prompt_template?: string
+          run_count?: number
+          schedule_type?: string
+          timezone?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          agent_id?: string
+          created_at?: string
+          cron_expression?: string
+          id?: string
+          is_enabled?: boolean
+          last_result?: Json | null
+          last_run_at?: string | null
+          next_run_at?: string | null
+          output_action?: string
+          output_config?: Json | null
+          prompt_template?: string
+          run_count?: number
+          schedule_type?: string
+          timezone?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_schedules_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: true
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       agents: {
         Row: {
           ai_model: string | null
@@ -477,6 +542,66 @@ export type Database = {
         }
         Relationships: []
       }
+      scheduled_runs: {
+        Row: {
+          agent_id: string
+          completed_at: string | null
+          created_at: string
+          credits_used: number | null
+          error_message: string | null
+          generated_content: string | null
+          id: string
+          output_result: Json | null
+          schedule_id: string
+          started_at: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          agent_id: string
+          completed_at?: string | null
+          created_at?: string
+          credits_used?: number | null
+          error_message?: string | null
+          generated_content?: string | null
+          id?: string
+          output_result?: Json | null
+          schedule_id: string
+          started_at?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          agent_id?: string
+          completed_at?: string | null
+          created_at?: string
+          credits_used?: number | null
+          error_message?: string | null
+          generated_content?: string | null
+          id?: string
+          output_result?: Json | null
+          schedule_id?: string
+          started_at?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "scheduled_runs_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "scheduled_runs_schedule_id_fkey"
+            columns: ["schedule_id"]
+            isOneToOne: false
+            referencedRelation: "agent_schedules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_consent: {
         Row: {
           consent_version: string
@@ -683,6 +808,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calculate_next_run: {
+        Args: { p_cron: string; p_timezone?: string }
+        Returns: string
+      }
       deduct_credits: {
         Args: { p_credits: number; p_user_id: string }
         Returns: undefined

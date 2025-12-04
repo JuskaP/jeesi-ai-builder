@@ -15,6 +15,7 @@ import { toast } from 'sonner';
 import { ArrowLeft, Plus, Trash2, Save, TestTube, Users, Activity, Globe, Lock, Headphones, TrendingUp, Megaphone, HelpCircle, GraduationCap, Heart, DollarSign, ShoppingCart, Scale, UserCog, Home, Plane, Cpu, Film, UtensilsCrossed, Car, MoreHorizontal, type LucideIcon } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import CustomFunctionsManager from '@/components/CustomFunctionsManager';
+import AgentScheduleManager from '@/components/AgentScheduleManager';
 
 interface CategoryConfig {
   name: string;
@@ -550,6 +551,9 @@ export default function AgentSettings() {
 
           {/* Custom Functions */}
           {id && <CustomFunctionsManager agentId={id} />}
+
+          {/* Automated Scheduling */}
+          {id && user && <AgentScheduleManager agentId={id} userId={user.id} />}
 
           {/* Publishing */}
           <Card>
