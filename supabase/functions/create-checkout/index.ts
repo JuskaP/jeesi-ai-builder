@@ -17,7 +17,7 @@ const monthlyPriceMap: Record<string, string> = {
   starter: "price_1SaGfcGx4tvYlwhYuxu4weEo",
   pro: "price_1SaGflGx4tvYlwhYcZj1MSf0",
   business: "price_1SaGfoGx4tvYlwhYiIfhKBSc",
-  enterprise: "price_1SadNAGx4tvYlwhYjyP9OyCR",
+  enterprise: "price_1SadPPGx4tvYlwhYwF70UuKC",
   businessplus: "price_1SadN7Gx4tvYlwhYTtBa9r7F",
 };
 
@@ -25,7 +25,7 @@ const annualPriceMap: Record<string, string> = {
   starter: "price_1SaGfkGx4tvYlwhYpSWO1FDR",
   pro: "price_1SaGfmGx4tvYlwhYngNzJNmS",
   business: "price_1SaGfpGx4tvYlwhY01HLAcPB",
-  enterprise: "price_1SadNBGx4tvYlwhY6MKwG5ZR",
+  enterprise: "price_1SadPQGx4tvYlwhYzTRwGqSL",
   businessplus: "price_1SadN8Gx4tvYlwhY4DP7ucLW",
 };
 
