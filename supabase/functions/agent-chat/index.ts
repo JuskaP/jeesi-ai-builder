@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.84.0";
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 
 const corsHeaders = {
@@ -19,7 +20,38 @@ serve(async (req) => {
       throw new Error('LOVABLE_API_KEY is not configured');
     }
 
-    console.log('Processing agent chat request with', messages.length, 'messages');
+    // Initialize Supabase client for credit management
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Get user from authorization header
+    const authHeader = req.headers.get('Authorization');
+    let userId: string | null = null;
+    
+    if (authHeader) {
+      const token = authHeader.replace('Bearer ', '');
+      const { data: { user } } = await supabase.auth.getUser(token);
+      userId = user?.id || null;
+    }
+
+    console.log('Processing agent chat request with', messages.length, 'messages', userId ? `for user ${userId}` : '(anonymous)');
+    
+    // Check credit balance if user is authenticated
+    if (userId) {
+      const { data: balance } = await supabase
+        .from('credit_balances')
+        .select('credits_remaining')
+        .eq('user_id', userId)
+        .single();
+      
+      if (balance && balance.credits_remaining <= 0) {
+        return new Response(
+          JSON.stringify({ error: 'No credits remaining. Please upgrade your plan or purchase credits.' }),
+          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
     
     // Check if any message contains images
     const hasImages = messages.some((msg: any) => 
@@ -102,6 +134,21 @@ Be friendly, encouraging, and use clear language without technical jargon.`;
       }
       
       throw new Error(`AI gateway error: ${response.status}`);
+    }
+
+    // Deduct 1 credit for successful Helpie chat if user is authenticated
+    if (userId) {
+      await supabase.rpc('deduct_credits', { p_user_id: userId, p_credits: 1 });
+      
+      // Log credit usage
+      await supabase.from('credit_usage').insert({
+        user_id: userId,
+        credits_used: 1,
+        operation_type: 'helpie_chat',
+        metadata: { messages_count: messages.length, has_images: hasImages }
+      });
+      
+      console.log('Deducted 1 credit for user', userId);
     }
 
     return new Response(response.body, {

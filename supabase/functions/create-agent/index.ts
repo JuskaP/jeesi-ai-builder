@@ -14,11 +14,25 @@ serve(async (req) => {
   try {
     const { messages, userId, previewOnly, config } = await req.json();
     
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+
     // If config is provided, create agent directly (confirmation step)
     if (config && userId) {
-      const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-      const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-      const supabase = createClient(supabaseUrl, supabaseServiceKey);
+      // Check credit balance before creating
+      const { data: balance } = await supabase
+        .from('credit_balances')
+        .select('credits_remaining')
+        .eq('user_id', userId)
+        .single();
+      
+      if (balance && balance.credits_remaining < 2) {
+        return new Response(
+          JSON.stringify({ error: 'Insufficient credits. Creating an agent costs 2 credits.' }),
+          { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
 
       const { data: agent, error: agentError } = await supabase
         .from("agents")
@@ -45,6 +59,20 @@ serve(async (req) => {
         );
       }
 
+      // Deduct 2 credits for agent creation
+      await supabase.rpc('deduct_credits', { p_user_id: userId, p_credits: 2 });
+      
+      // Log credit usage
+      await supabase.from('credit_usage').insert({
+        user_id: userId,
+        credits_used: 2,
+        operation_type: 'agent_creation',
+        agent_id: agent.id,
+        metadata: { agent_name: config.name }
+      });
+      
+      console.log('Agent created and 2 credits deducted for user', userId);
+
       return new Response(
         JSON.stringify({ agent }),
         { headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -55,6 +83,20 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({ error: "Missing required fields: messages and userId" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Check credit balance before analysis
+    const { data: balance } = await supabase
+      .from('credit_balances')
+      .select('credits_remaining')
+      .eq('user_id', userId)
+      .single();
+    
+    if (balance && balance.credits_remaining < 1) {
+      return new Response(
+        JSON.stringify({ error: 'Insufficient credits for agent analysis.' }),
+        { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
@@ -149,6 +191,19 @@ Important: Create a professional, working agent based on the user's requirements
 
     const agentConfig = JSON.parse(toolCall.function.arguments);
 
+    // Deduct 1 credit for preview/analysis
+    await supabase.rpc('deduct_credits', { p_user_id: userId, p_credits: 1 });
+    
+    // Log credit usage for analysis
+    await supabase.from('credit_usage').insert({
+      user_id: userId,
+      credits_used: 1,
+      operation_type: 'agent_analysis',
+      metadata: { preview_only: previewOnly }
+    });
+    
+    console.log('Analysis complete, 1 credit deducted for user', userId);
+
     // If previewOnly, return config without creating agent
     if (previewOnly) {
       console.log("Returning preview config:", agentConfig);
@@ -158,10 +213,19 @@ Important: Create a professional, working agent based on the user's requirements
       );
     }
 
-    // Initialize Supabase client and create agent
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
-    const supabase = createClient(supabaseUrl, supabaseServiceKey);
+    // Check if user has enough credits to also create the agent (2 more)
+    const { data: updatedBalance } = await supabase
+      .from('credit_balances')
+      .select('credits_remaining')
+      .eq('user_id', userId)
+      .single();
+    
+    if (updatedBalance && updatedBalance.credits_remaining < 2) {
+      return new Response(
+        JSON.stringify({ error: 'Insufficient credits to create agent. Need 2 more credits.' }),
+        { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
     const { data: agent, error: agentError } = await supabase
       .from("agents")
@@ -187,6 +251,20 @@ Important: Create a professional, working agent based on the user's requirements
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+
+    // Deduct 2 credits for agent creation
+    await supabase.rpc('deduct_credits', { p_user_id: userId, p_credits: 2 });
+    
+    // Log credit usage
+    await supabase.from('credit_usage').insert({
+      user_id: userId,
+      credits_used: 2,
+      operation_type: 'agent_creation',
+      agent_id: agent.id,
+      metadata: { agent_name: agentConfig.name }
+    });
+    
+    console.log('Agent created and 2 credits deducted for user', userId);
 
     return new Response(
       JSON.stringify({ agent }),
