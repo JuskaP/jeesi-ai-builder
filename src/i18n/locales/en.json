@@ -342,12 +342,46 @@
       "title": "Need More Credits?",
       "description": "Top up your credits anytime",
       "packs": [
+        { "credits": 50, "price": "€12.90" },
         { "credits": 100, "price": "€19.90" },
         { "credits": 250, "price": "€24.90" },
         { "credits": 500, "price": "€49.90" },
         { "credits": 1000, "price": "€84.90" }
       ],
       "buy": "Buy"
+    },
+    "overage": {
+      "title": "Pay-As-You-Go Overage",
+      "description": "Exceeded your monthly credits? No problem! Continue using your agents at €0.10 per additional credit.",
+      "pricePerCredit": "€0.10/credit",
+      "enableOverage": "Enable Overage Billing",
+      "note": "Only charged when you exceed your monthly allocation"
+    },
+    "featureComparison": {
+      "title": "Compare Plans",
+      "features": {
+        "agents": "AI Agents",
+        "monthlyCredits": "Monthly Credits",
+        "dailyCredits": "Daily Bonus Credits",
+        "integrations": "Integrations",
+        "customDomains": "Custom Domains",
+        "teamCollaboration": "Team Collaboration",
+        "apiAccess": "API Access",
+        "ssoSupport": "SSO Support",
+        "customIntegrations": "Custom Integrations",
+        "onPremise": "On-Premise Option",
+        "slaGuarantee": "SLA Guarantee",
+        "support": "Support"
+      },
+      "values": {
+        "free": { "agents": "3", "monthlyCredits": "75", "dailyCredits": "5", "integrations": false, "customDomains": false, "teamCollaboration": false, "apiAccess": false, "ssoSupport": false, "customIntegrations": false, "onPremise": false, "slaGuarantee": false, "support": "Community" },
+        "starter": { "agents": "Unlimited", "monthlyCredits": "100", "dailyCredits": "5", "integrations": "Basic", "customDomains": false, "teamCollaboration": false, "apiAccess": false, "ssoSupport": false, "customIntegrations": false, "onPremise": false, "slaGuarantee": false, "support": "Community" },
+        "pro": { "agents": "Unlimited", "monthlyCredits": "500", "dailyCredits": "5", "integrations": "All", "customDomains": true, "teamCollaboration": false, "apiAccess": false, "ssoSupport": false, "customIntegrations": false, "onPremise": false, "slaGuarantee": false, "support": "Priority" },
+        "business": { "agents": "Unlimited", "monthlyCredits": "1,000", "dailyCredits": "5", "integrations": "All", "customDomains": true, "teamCollaboration": true, "apiAccess": true, "ssoSupport": true, "customIntegrations": false, "onPremise": false, "slaGuarantee": false, "support": "Dedicated" },
+        "enterprise": { "agents": "Unlimited", "monthlyCredits": "3,500", "dailyCredits": "5", "integrations": "All", "customDomains": true, "teamCollaboration": true, "apiAccess": true, "ssoSupport": true, "customIntegrations": true, "onPremise": true, "slaGuarantee": true, "support": "Dedicated" },
+        "businessplus": { "agents": "Unlimited", "monthlyCredits": "10,000", "dailyCredits": "5", "integrations": "All", "customDomains": true, "teamCollaboration": true, "apiAccess": true, "ssoSupport": true, "customIntegrations": true, "onPremise": true, "slaGuarantee": true, "support": "24/7 Priority" },
+        "custom": { "agents": "Unlimited", "monthlyCredits": "Custom", "dailyCredits": "5", "integrations": "All", "customDomains": true, "teamCollaboration": true, "apiAccess": true, "ssoSupport": true, "customIntegrations": true, "onPremise": true, "slaGuarantee": true, "support": "Dedicated Manager" }
+      }
     },
     "plans": {
       "free": {

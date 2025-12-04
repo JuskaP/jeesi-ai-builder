@@ -9,11 +9,15 @@ const logStep = (step: string, details?: any) => {
 
 // Credit pack mapping (credits by pack price)
 const creditPackCredits: Record<string, number> = {
+  "price_1Sabv2Gx4tvYlwhY12wIFZxW": 50,   // €12.90
   "price_1SaGfqGx4tvYlwhYH4YSgRyv": 100,
-  "price_1SaKQOGx4tvYlwhYkEDHcAPJ": 250,  // Updated to €24.90
+  "price_1SaKQOGx4tvYlwhYkEDHcAPJ": 250,  // €24.90
   "price_1SaGfrGx4tvYlwhYUs592ySr": 500,
   "price_1SaGfsGx4tvYlwhYnVnc6bKT": 1000,
 };
+
+// Overage price ID (€0.10 per credit)
+const OVERAGE_PRICE_ID = "price_1Sabv4Gx4tvYlwhYsTuneLfr";
 
 // Subscription plan credits (monthly credits added on subscription)
 const subscriptionCredits: Record<string, number> = {
