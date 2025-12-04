@@ -31,7 +31,7 @@ const planMonthlyCredits: Record<string, number> = {
   pro: 500,
   business: 1000,
   enterprise: 3500,
-  businessplus: 2500,
+  businessplus: 10000,
   custom: 50000,
 };
 
@@ -43,7 +43,7 @@ const featureComparisonData: Record<string, Record<string, FeatureValue>> = {
   pro: { agents: "Unlimited", monthlyCredits: "500", dailyCredits: "5", integrations: "All", customDomains: true, teamCollaboration: false, apiAccess: false, ssoSupport: false, customIntegrations: false, onPremise: false, slaGuarantee: false, support: "Priority" },
   business: { agents: "Unlimited", monthlyCredits: "1,000", dailyCredits: "5", integrations: "All", customDomains: true, teamCollaboration: true, apiAccess: true, ssoSupport: true, customIntegrations: false, onPremise: false, slaGuarantee: false, support: "Dedicated" },
   enterprise: { agents: "Unlimited", monthlyCredits: "3,500", dailyCredits: "5", integrations: "All", customDomains: true, teamCollaboration: true, apiAccess: true, ssoSupport: true, customIntegrations: true, onPremise: true, slaGuarantee: true, support: "Dedicated" },
-  businessplus: { agents: "Unlimited", monthlyCredits: "2,500", dailyCredits: "5", integrations: "All", customDomains: true, teamCollaboration: true, apiAccess: true, ssoSupport: true, customIntegrations: true, onPremise: true, slaGuarantee: true, support: "24/7 Priority" },
+  businessplus: { agents: "Unlimited", monthlyCredits: "10,000", dailyCredits: "5", integrations: "All", customDomains: true, teamCollaboration: true, apiAccess: true, ssoSupport: true, customIntegrations: true, onPremise: true, slaGuarantee: true, support: "24/7 Priority" },
   custom: { agents: "Unlimited", monthlyCredits: "Custom", dailyCredits: "5", integrations: "All", customDomains: true, teamCollaboration: true, apiAccess: true, ssoSupport: true, customIntegrations: true, onPremise: true, slaGuarantee: true, support: "Dedicated Manager" }
 };
 
