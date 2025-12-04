@@ -27,10 +27,10 @@ const subscriptionCredits: Record<string, number> = {
   "price_1SaGfmGx4tvYlwhYngNzJNmS": 500,  // pro annual
   "price_1SaGfoGx4tvYlwhYiIfhKBSc": 1000,  // business monthly
   "price_1SaGfpGx4tvYlwhY01HLAcPB": 1000,  // business annual
-  "price_1SabRQGx4tvYlwhYnBT4CEUH": 3500,  // enterprise monthly
-  "price_1SabRRGx4tvYlwhYERemhD0U": 3500,  // enterprise annual
-  "price_1SabRSGx4tvYlwhYxcUD0VlX": 10000,  // business+ monthly
-  "price_1SabRTGx4tvYlwhYpQQdVdSy": 10000,  // business+ annual
+  "price_1SadPPGx4tvYlwhYwF70UuKC": 2500,  // enterprise monthly (Business+)
+  "price_1SadPQGx4tvYlwhYzTRwGqSL": 2500,  // enterprise annual (Business+)
+  "price_1SadN7Gx4tvYlwhYTtBa9r7F": 10000,  // businessplus monthly (Enterprise)
+  "price_1SadN8Gx4tvYlwhY4DP7ucLW": 10000,  // businessplus annual (Enterprise)
 };
 
 const getPlanTypeFromPrice = (priceId: string): string => {
@@ -43,10 +43,10 @@ const getPlanTypeFromPrice = (priceId: string): string => {
   if (["price_1SaGfoGx4tvYlwhYiIfhKBSc", "price_1SaGfpGx4tvYlwhY01HLAcPB"].includes(priceId)) {
     return "business";
   }
-  if (["price_1SabRQGx4tvYlwhYnBT4CEUH", "price_1SabRRGx4tvYlwhYERemhD0U"].includes(priceId)) {
+  if (["price_1SadPPGx4tvYlwhYwF70UuKC", "price_1SadPQGx4tvYlwhYzTRwGqSL"].includes(priceId)) {
     return "enterprise";
   }
-  if (["price_1SabRSGx4tvYlwhYxcUD0VlX", "price_1SabRTGx4tvYlwhYpQQdVdSy"].includes(priceId)) {
+  if (["price_1SadN7Gx4tvYlwhYTtBa9r7F", "price_1SadN8Gx4tvYlwhY4DP7ucLW"].includes(priceId)) {
     return "businessplus";
   }
   return "free";

@@ -32,3 +32,6 @@ verify_jwt = false
 
 [functions.scheduled-agent-runner]
 verify_jwt = false
+
+[functions.generate-avatar]
+verify_jwt = true
