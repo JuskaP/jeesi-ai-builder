@@ -5,7 +5,7 @@ import ChatUI from "@/components/ChatUI";
 import FoundersCommunity from "@/components/FoundersCommunity";
 import CTABanner from "@/components/CTABanner";
 import Features from "@/components/Features";
-import DemoSection from "@/components/DemoSection";
+import BlogSection from "@/components/BlogSection";
 import Integrations from "@/components/Integrations";
 import Testimonials from "@/components/Testimonials";
 import FAQ from "@/components/FAQ";
@@ -61,7 +61,7 @@ export default function Landing() {
 
       <Features />
 
-      <DemoSection />
+      <BlogSection />
 
       <Integrations />
 
