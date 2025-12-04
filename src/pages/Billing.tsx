@@ -10,6 +10,7 @@ import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { useSEO, SEO_CONFIG } from '@/hooks/useSEO';
 
 interface SubscriptionStatus {
   subscribed: boolean;
@@ -73,6 +74,9 @@ export default function Billing() {
   });
   const [creditBalance, setCreditBalance] = useState<CreditBalance | null>(null);
   const [dailyCreditsUsed, setDailyCreditsUsed] = useState(0);
+
+  // SEO optimization
+  useSEO(SEO_CONFIG.billing);
 
   useEffect(() => {
     checkSubscription();

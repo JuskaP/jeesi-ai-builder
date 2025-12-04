@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
+import { useSEO, SEO_CONFIG } from '@/hooks/useSEO';
 import { z } from 'zod';
 import { Loader2, ArrowLeft } from 'lucide-react';
 
@@ -27,6 +28,9 @@ export default function Auth() {
   const { signIn, signUp, user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  // SEO optimization
+  useSEO(SEO_CONFIG.auth);
 
   // Redirect if already logged in
   useEffect(() => {

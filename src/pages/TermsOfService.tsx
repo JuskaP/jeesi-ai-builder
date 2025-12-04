@@ -1,10 +1,14 @@
 import { useTranslation } from "react-i18next";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { useSEO, SEO_CONFIG } from "@/hooks/useSEO";
 
 export default function TermsOfService() {
   const { t } = useTranslation();
   const lastUpdated = "December 3, 2025";
+
+  // SEO optimization
+  useSEO(SEO_CONFIG.terms);
 
   return (
     <div className="min-h-screen bg-background">

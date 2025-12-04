@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useEffect } from "react";
 import {
   Accordion,
   AccordionContent,
@@ -6,6 +7,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { useTranslation } from "react-i18next";
+import { getFAQSchema } from "@/hooks/useSEO";
 
 export default function FAQ() {
   const { t } = useTranslation();
@@ -22,6 +24,25 @@ export default function FAQ() {
     { questionKey: "faq.q9", answerKey: "faq.a9" },
     { questionKey: "faq.q10", answerKey: "faq.a10" },
   ];
+
+  // Add FAQ structured data for SEO
+  useEffect(() => {
+    const faqData = faqs.map(faq => ({
+      question: t(faq.questionKey),
+      answer: t(faq.answerKey),
+    }));
+    
+    const script = document.createElement('script');
+    script.type = 'application/ld+json';
+    script.setAttribute('data-seo', 'faq-schema');
+    script.textContent = JSON.stringify(getFAQSchema(faqData));
+    document.head.appendChild(script);
+
+    return () => {
+      const existingScript = document.querySelector('script[data-seo="faq-schema"]');
+      if (existingScript) existingScript.remove();
+    };
+  }, [t]);
 
   return (
     <section className="w-full max-w-4xl mx-auto px-4 py-16 md:py-24 relative z-10">

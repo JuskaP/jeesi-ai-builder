@@ -7,12 +7,16 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { useTranslation } from 'react-i18next';
+import { useSEO, SEO_CONFIG } from '@/hooks/useSEO';
 
 export default function Dashboard() {
   const { user } = useAuth();
   const { t } = useTranslation();
   const [agents, setAgents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // SEO optimization
+  useSEO(SEO_CONFIG.dashboard);
 
   useEffect(() => {
     if (user) {

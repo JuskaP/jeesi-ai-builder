@@ -10,11 +10,24 @@ import Integrations from "@/components/Integrations";
 import Testimonials from "@/components/Testimonials";
 import FAQ from "@/components/FAQ";
 import TrustBadges from "@/components/TrustBadges";
+import { useSEO, SEO_CONFIG, getOrganizationSchema, getSoftwareApplicationSchema } from "@/hooks/useSEO";
 
 export default function Landing() {
   const location = useLocation();
   const template = location.state?.template;
   const { t } = useTranslation();
+
+  // SEO optimization
+  useSEO({
+    ...SEO_CONFIG.home,
+    structuredData: {
+      '@context': 'https://schema.org',
+      '@graph': [
+        getOrganizationSchema(),
+        getSoftwareApplicationSchema(),
+      ],
+    },
+  });
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/50 flex flex-col items-center px-4 py-6 relative overflow-hidden">

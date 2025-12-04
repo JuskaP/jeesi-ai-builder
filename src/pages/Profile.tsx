@@ -17,6 +17,7 @@ import ApiKeyManager from '@/components/ApiKeyManager';
 import ConsentSettings from '@/components/ConsentSettings';
 import AvatarUploader from '@/components/AvatarUploader';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { useSEO, SEO_CONFIG } from '@/hooks/useSEO';
 
 interface Agent {
   id: string;
@@ -43,6 +44,9 @@ export default function Profile() {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [fullName, setFullName] = useState('');
+
+  // SEO optimization
+  useSEO(SEO_CONFIG.profile);
 
   useEffect(() => {
     if (authLoading) return;

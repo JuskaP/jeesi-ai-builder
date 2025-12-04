@@ -3,6 +3,7 @@ import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { Calendar, Clock, ArrowRight } from "lucide-react";
 import NewsletterForm from "@/components/NewsletterForm";
+import { useSEO, SEO_CONFIG, getBreadcrumbSchema } from "@/hooks/useSEO";
 
 interface BlogPost {
   slug: string;
@@ -63,6 +64,14 @@ const blogPosts: BlogPost[] = [
 ];
 
 export default function Blog() {
+  // SEO optimization
+  useSEO({
+    ...SEO_CONFIG.blog,
+    structuredData: getBreadcrumbSchema([
+      { name: 'Home', url: 'https://jeesi.ai/' },
+      { name: 'Blog', url: 'https://jeesi.ai/blog' },
+    ]),
+  });
   return (
     <div className="min-h-screen bg-background">
       <div className="max-w-6xl mx-auto px-4 py-12">
