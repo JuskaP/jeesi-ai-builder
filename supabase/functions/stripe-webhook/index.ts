@@ -23,17 +23,27 @@ const subscriptionCredits: Record<string, number> = {
   "price_1SaGfmGx4tvYlwhYngNzJNmS": 500,  // pro annual
   "price_1SaGfoGx4tvYlwhYiIfhKBSc": 1000,  // business monthly
   "price_1SaGfpGx4tvYlwhY01HLAcPB": 1000,  // business annual
+  "price_1SabRQGx4tvYlwhYnBT4CEUH": 3500,  // enterprise monthly
+  "price_1SabRRGx4tvYlwhYERemhD0U": 3500,  // enterprise annual
+  "price_1SabRSGx4tvYlwhYxcUD0VlX": 10000,  // business+ monthly
+  "price_1SabRTGx4tvYlwhYpQQdVdSy": 10000,  // business+ annual
 };
 
 const getPlanTypeFromPrice = (priceId: string): string => {
-  if (priceId.includes("starter") || ["price_1SaGfcGx4tvYlwhYuxu4weEo", "price_1SaGfkGx4tvYlwhYpSWO1FDR"].includes(priceId)) {
+  if (["price_1SaGfcGx4tvYlwhYuxu4weEo", "price_1SaGfkGx4tvYlwhYpSWO1FDR"].includes(priceId)) {
     return "starter";
   }
-  if (priceId.includes("pro") || ["price_1SaGflGx4tvYlwhYcZj1MSf0", "price_1SaGfmGx4tvYlwhYngNzJNmS"].includes(priceId)) {
+  if (["price_1SaGflGx4tvYlwhYcZj1MSf0", "price_1SaGfmGx4tvYlwhYngNzJNmS"].includes(priceId)) {
     return "pro";
   }
-  if (priceId.includes("business") || ["price_1SaGfoGx4tvYlwhYiIfhKBSc", "price_1SaGfpGx4tvYlwhY01HLAcPB"].includes(priceId)) {
+  if (["price_1SaGfoGx4tvYlwhYiIfhKBSc", "price_1SaGfpGx4tvYlwhY01HLAcPB"].includes(priceId)) {
     return "business";
+  }
+  if (["price_1SabRQGx4tvYlwhYnBT4CEUH", "price_1SabRRGx4tvYlwhYERemhD0U"].includes(priceId)) {
+    return "enterprise";
+  }
+  if (["price_1SabRSGx4tvYlwhYxcUD0VlX", "price_1SabRTGx4tvYlwhYpQQdVdSy"].includes(priceId)) {
+    return "businessplus";
   }
   return "free";
 };

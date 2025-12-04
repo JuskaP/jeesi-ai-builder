@@ -20,14 +20,20 @@ const productToPlanMap: Record<string, string> = {
   "prod_TXLMKKmQ8DZIem": "pro",      // Pro Annual
   "prod_TXLMmyZ035iZEh": "business", // Business Monthly
   "prod_TXLMG2WMeq2w6a": "business", // Business Annual
+  "prod_TXgpAXnnAZtSz7": "enterprise", // Enterprise Monthly
+  "prod_TXgpxs0o4c1IxB": "enterprise", // Enterprise Annual
+  "prod_TXgpBOVAI6nl2h": "businessplus", // Business+ Monthly
+  "prod_TXgppNctWGeWF1": "businessplus", // Business+ Annual
 };
 
 // Monthly credit allocations per plan (daily credits handled separately)
 const planCredits: Record<string, number> = {
-  free: 50,
+  free: 75,
   starter: 100,
   pro: 500,
   business: 1000,
+  enterprise: 3500,
+  businessplus: 10000,
 };
 
 // All plans get 5 daily credits (don't roll over)

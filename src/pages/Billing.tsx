@@ -24,11 +24,13 @@ interface CreditBalance {
 
 const DAILY_CREDITS = 5;
 const planMonthlyCredits: Record<string, number> = {
-  free: 50,
+  free: 75,
   starter: 100,
   pro: 500,
   business: 1000,
-  enterprise: 10000,
+  enterprise: 3500,
+  businessplus: 10000,
+  custom: 50000,
 };
 
 export default function Billing() {
@@ -166,14 +168,14 @@ export default function Billing() {
     }
   };
 
-  const planTiers = ['free', 'starter', 'pro', 'business', 'enterprise'];
+  const planTiers = ['free', 'starter', 'pro', 'business', 'enterprise', 'businessplus', 'custom'];
   
   const plans = planTiers.map(tier => {
     const plan = t(`billing.plans.${tier}`, { returnObjects: true }) as any;
     return {
       ...plan,
       tier,
-      isEnterprise: tier === 'enterprise',
+      isCustom: tier === 'custom',
       isFree: tier === 'free',
       popular: tier === 'pro',
       isCurrentPlan: subscription.plan_type === tier
@@ -183,7 +185,7 @@ export default function Billing() {
   const creditPacks = t('billing.creditTopups.packs', { returnObjects: true }) as Array<{ credits: number; price: string }>;
 
   const handlePlanAction = (plan: any) => {
-    if (plan.isEnterprise) {
+    if (plan.isCustom) {
       window.open('https://cal.com/jeesi/enterprise', '_blank');
     } else if (plan.isFree) {
       // Free plan - do nothing
@@ -301,7 +303,7 @@ export default function Billing() {
         </div>
       )}
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-4 mb-12">
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4 mb-12">
         {checkingSubscription ? (
           <div className="col-span-full flex items-center justify-center py-12">
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -364,7 +366,7 @@ export default function Billing() {
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : plan.isCurrentPlan ? (
                     'Current Plan'
-                  ) : plan.isEnterprise ? (
+                  ) : plan.isCustom ? (
                     <>
                       <Calendar className="h-4 w-4 mr-2" />
                       {plan.cta}
