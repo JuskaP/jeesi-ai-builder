@@ -2,13 +2,14 @@ import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Check, X, Sparkles, Loader2, Calendar, Zap, Clock, TrendingUp } from 'lucide-react';
+import { Check, X, Sparkles, Loader2, Calendar, Zap, Clock, TrendingUp, Star, CreditCard } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useState, useEffect } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 interface SubscriptionStatus {
   subscribed: boolean;
@@ -31,6 +32,33 @@ const planMonthlyCredits: Record<string, number> = {
   enterprise: 3500,
   businessplus: 10000,
   custom: 50000,
+};
+
+// Feature comparison data
+type FeatureValue = boolean | string;
+const featureComparisonData: Record<string, Record<string, FeatureValue>> = {
+  free: { agents: "3", monthlyCredits: "75", dailyCredits: "5", integrations: false, customDomains: false, teamCollaboration: false, apiAccess: false, ssoSupport: false, customIntegrations: false, onPremise: false, slaGuarantee: false, support: "Community" },
+  starter: { agents: "Unlimited", monthlyCredits: "100", dailyCredits: "5", integrations: "Basic", customDomains: false, teamCollaboration: false, apiAccess: false, ssoSupport: false, customIntegrations: false, onPremise: false, slaGuarantee: false, support: "Community" },
+  pro: { agents: "Unlimited", monthlyCredits: "500", dailyCredits: "5", integrations: "All", customDomains: true, teamCollaboration: false, apiAccess: false, ssoSupport: false, customIntegrations: false, onPremise: false, slaGuarantee: false, support: "Priority" },
+  business: { agents: "Unlimited", monthlyCredits: "1,000", dailyCredits: "5", integrations: "All", customDomains: true, teamCollaboration: true, apiAccess: true, ssoSupport: true, customIntegrations: false, onPremise: false, slaGuarantee: false, support: "Dedicated" },
+  enterprise: { agents: "Unlimited", monthlyCredits: "3,500", dailyCredits: "5", integrations: "All", customDomains: true, teamCollaboration: true, apiAccess: true, ssoSupport: true, customIntegrations: true, onPremise: true, slaGuarantee: true, support: "Dedicated" },
+  businessplus: { agents: "Unlimited", monthlyCredits: "10,000", dailyCredits: "5", integrations: "All", customDomains: true, teamCollaboration: true, apiAccess: true, ssoSupport: true, customIntegrations: true, onPremise: true, slaGuarantee: true, support: "24/7 Priority" },
+  custom: { agents: "Unlimited", monthlyCredits: "Custom", dailyCredits: "5", integrations: "All", customDomains: true, teamCollaboration: true, apiAccess: true, ssoSupport: true, customIntegrations: true, onPremise: true, slaGuarantee: true, support: "Dedicated Manager" }
+};
+
+const featureLabels: Record<string, string> = {
+  agents: "AI Agents",
+  monthlyCredits: "Monthly Credits",
+  dailyCredits: "Daily Bonus Credits",
+  integrations: "Integrations",
+  customDomains: "Custom Domains",
+  teamCollaboration: "Team Collaboration",
+  apiAccess: "API Access",
+  ssoSupport: "SSO Support",
+  customIntegrations: "Custom Integrations",
+  onPremise: "On-Premise Option",
+  slaGuarantee: "SLA Guarantee",
+  support: "Support"
 };
 
 export default function Billing() {
@@ -389,7 +417,7 @@ export default function Billing() {
         <p className="text-muted-foreground mb-6 text-center">
           {t('billing.creditTopups.description')}
         </p>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           {creditPacks.map((pack) => (
             <Card key={pack.credits} className="text-center">
               <CardContent className="pt-6">
@@ -408,6 +436,87 @@ export default function Billing() {
               </CardContent>
             </Card>
           ))}
+        </div>
+      </div>
+
+      {/* Overage Pricing Section */}
+      <div className="bg-gradient-to-r from-primary/10 to-primary/5 rounded-lg p-6 mb-12 border border-primary/20">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-primary/20 rounded-full">
+              <CreditCard className="h-6 w-6 text-primary" />
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-foreground">
+                {t('billing.overage.title')}
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                {t('billing.overage.description')}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-4">
+            <Badge variant="secondary" className="text-lg px-4 py-2">
+              {t('billing.overage.pricePerCredit')}
+            </Badge>
+          </div>
+        </div>
+        <p className="text-xs text-muted-foreground mt-4 text-center md:text-left">
+          {t('billing.overage.note')}
+        </p>
+      </div>
+
+      {/* Feature Comparison Table */}
+      <div className="mb-12">
+        <h3 className="text-2xl font-bold text-foreground mb-6 text-center">
+          {t('billing.featureComparison.title')}
+        </h3>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-48">Feature</TableHead>
+                <TableHead className="text-center">Free</TableHead>
+                <TableHead className="text-center">Starter</TableHead>
+                <TableHead className="text-center relative">
+                  <div className="flex flex-col items-center">
+                    <Badge className="absolute -top-3 bg-primary text-primary-foreground text-xs">
+                      <Star className="h-3 w-3 mr-1" />
+                      Most Popular
+                    </Badge>
+                    Pro
+                  </div>
+                </TableHead>
+                <TableHead className="text-center">Business</TableHead>
+                <TableHead className="text-center">Enterprise</TableHead>
+                <TableHead className="text-center">Business+</TableHead>
+                <TableHead className="text-center">Custom</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {Object.keys(featureLabels).map((feature) => (
+                <TableRow key={feature}>
+                  <TableCell className="font-medium">
+                    {featureLabels[feature]}
+                  </TableCell>
+                  {['free', 'starter', 'pro', 'business', 'enterprise', 'businessplus', 'custom'].map((plan) => {
+                    const value = featureComparisonData[plan][feature];
+                    return (
+                      <TableCell key={plan} className={`text-center ${plan === 'pro' ? 'bg-primary/5' : ''}`}>
+                        {value === true ? (
+                          <Check className="h-4 w-4 text-primary mx-auto" />
+                        ) : value === false ? (
+                          <X className="h-4 w-4 text-muted-foreground mx-auto" />
+                        ) : (
+                          <span className="text-sm">{String(value)}</span>
+                        )}
+                      </TableCell>
+                    );
+                  })}
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </div>
       </div>
 

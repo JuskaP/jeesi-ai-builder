@@ -31,11 +31,15 @@ const annualPriceMap: Record<string, string> = {
 
 // Credit pack price IDs
 const creditPackPriceMap: Record<number, string> = {
+  50: "price_1Sabv2Gx4tvYlwhY12wIFZxW",    // €12.90
   100: "price_1SaGfqGx4tvYlwhYH4YSgRyv",
-  250: "price_1SaKQOGx4tvYlwhYkEDHcAPJ",  // Updated to €24.90
+  250: "price_1SaKQOGx4tvYlwhYkEDHcAPJ",   // €24.90
   500: "price_1SaGfrGx4tvYlwhYUs592ySr",
   1000: "price_1SaGfsGx4tvYlwhYnVnc6bKT",
 };
+
+// Overage credit price ID (€0.10 per credit)
+const OVERAGE_PRICE_ID = "price_1Sabv4Gx4tvYlwhYsTuneLfr";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -82,7 +86,7 @@ serve(async (req) => {
     if (creditPack) {
       priceId = creditPackPriceMap[creditPack];
       if (!priceId) {
-        throw new Error(`Invalid credit pack: ${creditPack}. Valid packs are: 100, 250, 500, 1000`);
+        throw new Error(`Invalid credit pack: ${creditPack}. Valid packs are: 50, 100, 250, 500, 1000`);
       }
       mode = "payment";
       logStep("Credit pack purchase", { creditPack, priceId });
