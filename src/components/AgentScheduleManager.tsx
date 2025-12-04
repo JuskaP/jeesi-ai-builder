@@ -67,6 +67,80 @@ const OUTPUT_ACTIONS = [
   { value: 'api_call', label: 'CMS API', description: 'Post to WordPress, Webflow, Ghost, etc.' },
 ];
 
+const CMS_TEMPLATES = [
+  {
+    value: 'custom',
+    label: 'Custom API',
+    description: 'Configure your own API endpoint',
+    url: '',
+    headers: {},
+    placeholder_url: 'https://your-api.com/endpoint',
+    instructions: 'Enter your custom API endpoint and headers.'
+  },
+  {
+    value: 'wordpress',
+    label: 'WordPress',
+    description: 'WordPress REST API (Posts)',
+    url: 'https://YOUR-SITE.com/wp-json/wp/v2/posts',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Basic YOUR_BASE64_ENCODED_CREDENTIALS'
+    },
+    placeholder_url: 'https://yoursite.com/wp-json/wp/v2/posts',
+    instructions: 'Replace YOUR-SITE.com with your domain. For Authorization, base64 encode "username:application_password" (create app password in WP Dashboard → Users → Profile).'
+  },
+  {
+    value: 'webflow',
+    label: 'Webflow',
+    description: 'Webflow CMS API',
+    url: 'https://api.webflow.com/v2/collections/YOUR_COLLECTION_ID/items',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer YOUR_WEBFLOW_API_TOKEN',
+      'accept-version': '2.0.0'
+    },
+    placeholder_url: 'https://api.webflow.com/v2/collections/COLLECTION_ID/items',
+    instructions: 'Get your Collection ID from Webflow CMS settings. Create API token in Webflow Dashboard → Site Settings → Integrations → API Access.'
+  },
+  {
+    value: 'ghost',
+    label: 'Ghost',
+    description: 'Ghost Admin API',
+    url: 'https://YOUR-SITE.ghost.io/ghost/api/admin/posts/',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Ghost YOUR_ADMIN_API_KEY'
+    },
+    placeholder_url: 'https://yoursite.ghost.io/ghost/api/admin/posts/',
+    instructions: 'Get Admin API key from Ghost Admin → Settings → Integrations → Add custom integration. Format: "Ghost {api_key}".'
+  },
+  {
+    value: 'strapi',
+    label: 'Strapi',
+    description: 'Strapi CMS API',
+    url: 'https://YOUR-STRAPI-URL/api/articles',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer YOUR_STRAPI_API_TOKEN'
+    },
+    placeholder_url: 'https://your-strapi.com/api/articles',
+    instructions: 'Create API token in Strapi Admin → Settings → API Tokens. Replace "articles" with your content type.'
+  },
+  {
+    value: 'contentful',
+    label: 'Contentful',
+    description: 'Contentful Management API',
+    url: 'https://api.contentful.com/spaces/YOUR_SPACE_ID/environments/master/entries',
+    headers: {
+      'Content-Type': 'application/vnd.contentful.management.v1+json',
+      'Authorization': 'Bearer YOUR_MANAGEMENT_TOKEN',
+      'X-Contentful-Content-Type': 'blogPost'
+    },
+    placeholder_url: 'https://api.contentful.com/spaces/SPACE_ID/environments/master/entries',
+    instructions: 'Get Space ID from Contentful Settings. Create Management token in Settings → API keys → Content management tokens.'
+  }
+];
+
 export default function AgentScheduleManager({ agentId, userId }: Props) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -80,6 +154,7 @@ export default function AgentScheduleManager({ agentId, userId }: Props) {
   const [timezone, setTimezone] = useState('UTC');
   const [promptTemplate, setPromptTemplate] = useState('Generate an SEO-optimized blog post about [topic]. Include:\n- Engaging headline\n- Meta description (max 160 chars)\n- Introduction\n- 3-5 main sections with H2 headers\n- Conclusion with CTA');
   const [outputAction, setOutputAction] = useState('store');
+  const [cmsTemplate, setCmsTemplate] = useState('custom');
   const [webhookUrl, setWebhookUrl] = useState('');
   const [apiUrl, setApiUrl] = useState('');
   const [apiHeaders, setApiHeaders] = useState('');
@@ -125,6 +200,10 @@ export default function AgentScheduleManager({ agentId, userId }: Props) {
           } else if (data.output_action === 'api_call') {
             setApiUrl(config.url || '');
             setApiHeaders(config.headers ? JSON.stringify(config.headers, null, 2) : '');
+            // Load saved template if exists
+            if (config.template && CMS_TEMPLATES.some(t => t.value === config.template)) {
+              setCmsTemplate(config.template);
+            }
           }
         }
       }
@@ -168,9 +247,18 @@ export default function AgentScheduleManager({ agentId, userId }: Props) {
       } catch (e) {
         // Invalid JSON, ignore
       }
-      return { url: apiUrl, method: 'POST', headers };
+      return { url: apiUrl, method: 'POST', headers, template: cmsTemplate };
     }
     return {};
+  };
+
+  const handleCmsTemplateChange = (templateValue: string) => {
+    setCmsTemplate(templateValue);
+    const template = CMS_TEMPLATES.find(t => t.value === templateValue);
+    if (template && templateValue !== 'custom') {
+      setApiUrl(template.url);
+      setApiHeaders(JSON.stringify(template.headers, null, 2));
+    }
   };
 
   const handleSave = async () => {
@@ -374,12 +462,41 @@ export default function AgentScheduleManager({ agentId, userId }: Props) {
           {/* API Config */}
           {outputAction === 'api_call' && (
             <div className="space-y-4 p-4 rounded-lg bg-secondary/50 border border-border">
+              {/* CMS Template Selector */}
               <div className="space-y-2">
-                <Label>CMS API URL</Label>
+                <Label>CMS Platform</Label>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                  {CMS_TEMPLATES.map((template) => (
+                    <div
+                      key={template.value}
+                      className={`p-3 rounded-lg border cursor-pointer transition-colors text-center ${
+                        cmsTemplate === template.value
+                          ? 'border-primary bg-primary/10'
+                          : 'border-border hover:border-primary/50'
+                      }`}
+                      onClick={() => handleCmsTemplateChange(template.value)}
+                    >
+                      <p className="font-medium text-sm">{template.label}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Template Instructions */}
+              {cmsTemplate !== 'custom' && (
+                <div className="p-3 rounded-lg bg-primary/5 border border-primary/20">
+                  <p className="text-sm text-muted-foreground">
+                    <strong>Setup:</strong> {CMS_TEMPLATES.find(t => t.value === cmsTemplate)?.instructions}
+                  </p>
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <Label>API URL</Label>
                 <Input
                   value={apiUrl}
                   onChange={(e) => setApiUrl(e.target.value)}
-                  placeholder="https://your-site.com/wp-json/wp/v2/posts"
+                  placeholder={CMS_TEMPLATES.find(t => t.value === cmsTemplate)?.placeholder_url || 'https://your-api.com/endpoint'}
                 />
               </div>
               <div className="space-y-2">
@@ -388,11 +505,11 @@ export default function AgentScheduleManager({ agentId, userId }: Props) {
                   value={apiHeaders}
                   onChange={(e) => setApiHeaders(e.target.value)}
                   placeholder='{"Authorization": "Bearer YOUR_TOKEN"}'
-                  className="font-mono text-sm"
+                  className="font-mono text-sm min-h-[100px]"
                 />
               </div>
               <p className="text-xs text-muted-foreground">
-                Supports WordPress REST API, Webflow CMS API, Ghost Admin API, and similar endpoints.
+                Replace placeholder values (YOUR_SITE, YOUR_TOKEN, etc.) with your actual credentials.
               </p>
             </div>
           )}
