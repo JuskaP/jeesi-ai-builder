@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Coins, TrendingUp, Calendar } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -17,6 +16,46 @@ export default function CreditBalance() {
 
   useEffect(() => {
     fetchBalance();
+    
+    // Subscribe to real-time credit balance updates
+    const setupRealtimeSubscription = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const channel = supabase
+        .channel('credit-balance-changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'credit_balances',
+            filter: `user_id=eq.${user.id}`
+          },
+          (payload) => {
+            console.log('Credit balance updated:', payload);
+            if (payload.new) {
+              const newBalance = payload.new as CreditBalance;
+              setBalance({
+                credits_remaining: newBalance.credits_remaining,
+                credits_used_this_month: newBalance.credits_used_this_month,
+                plan_type: newBalance.plan_type
+              });
+            }
+          }
+        )
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    };
+
+    const cleanup = setupRealtimeSubscription();
+    
+    return () => {
+      cleanup.then(unsubscribe => unsubscribe?.());
+    };
   }, []);
 
   const fetchBalance = async () => {
@@ -75,15 +114,24 @@ export default function CreditBalance() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
+        key={`remaining-${balance.credits_remaining}`}
       >
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Jäljellä olevat krediitit</CardTitle>
+            <CardTitle className="text-sm font-medium">Credits Remaining</CardTitle>
             <Coins className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{balance.credits_remaining}</div>
-            <p className="text-xs text-muted-foreground">Käytettävissä nyt</p>
+            <motion.div 
+              className="text-2xl font-bold"
+              key={balance.credits_remaining}
+              initial={{ scale: 1.2, color: 'hsl(var(--primary))' }}
+              animate={{ scale: 1, color: 'hsl(var(--foreground))' }}
+              transition={{ duration: 0.3 }}
+            >
+              {balance.credits_remaining}
+            </motion.div>
+            <p className="text-xs text-muted-foreground">Available now</p>
           </CardContent>
         </Card>
       </motion.div>
@@ -95,12 +143,20 @@ export default function CreditBalance() {
       >
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Käytetty tässä kuussa</CardTitle>
+            <CardTitle className="text-sm font-medium">Used This Month</CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{balance.credits_used_this_month}</div>
-            <p className="text-xs text-muted-foreground">Krediittiä käytetty</p>
+            <motion.div 
+              className="text-2xl font-bold"
+              key={balance.credits_used_this_month}
+              initial={{ scale: 1.2 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 0.3 }}
+            >
+              {balance.credits_used_this_month}
+            </motion.div>
+            <p className="text-xs text-muted-foreground">Credits used</p>
           </CardContent>
         </Card>
       </motion.div>
@@ -112,12 +168,12 @@ export default function CreditBalance() {
       >
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Tilaustaso</CardTitle>
+            <CardTitle className="text-sm font-medium">Subscription Tier</CardTitle>
             <Calendar className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{planLabels[balance.plan_type]}</div>
-            <p className="text-xs text-muted-foreground">Nykyinen suunnitelma</p>
+            <p className="text-xs text-muted-foreground">Current plan</p>
           </CardContent>
         </Card>
       </motion.div>
