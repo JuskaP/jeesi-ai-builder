@@ -379,7 +379,7 @@
         "pro": { "agents": "Unlimited", "monthlyCredits": "500", "dailyCredits": "5", "integrations": "All", "customDomains": true, "teamCollaboration": false, "apiAccess": false, "ssoSupport": false, "customIntegrations": false, "onPremise": false, "slaGuarantee": false, "support": "Priority" },
         "business": { "agents": "Unlimited", "monthlyCredits": "1,000", "dailyCredits": "5", "integrations": "All", "customDomains": true, "teamCollaboration": true, "apiAccess": true, "ssoSupport": true, "customIntegrations": false, "onPremise": false, "slaGuarantee": false, "support": "Dedicated" },
         "enterprise": { "agents": "Unlimited", "monthlyCredits": "3,500", "dailyCredits": "5", "integrations": "All", "customDomains": true, "teamCollaboration": true, "apiAccess": true, "ssoSupport": true, "customIntegrations": true, "onPremise": true, "slaGuarantee": true, "support": "Dedicated" },
-        "businessplus": { "agents": "Unlimited", "monthlyCredits": "10,000", "dailyCredits": "5", "integrations": "All", "customDomains": true, "teamCollaboration": true, "apiAccess": true, "ssoSupport": true, "customIntegrations": true, "onPremise": true, "slaGuarantee": true, "support": "24/7 Priority" },
+        "businessplus": { "agents": "Unlimited", "monthlyCredits": "2,500", "dailyCredits": "5", "integrations": "All", "customDomains": true, "teamCollaboration": true, "apiAccess": true, "ssoSupport": true, "customIntegrations": true, "onPremise": true, "slaGuarantee": true, "support": "24/7 Priority" },
         "custom": { "agents": "Unlimited", "monthlyCredits": "Custom", "dailyCredits": "5", "integrations": "All", "customDomains": true, "teamCollaboration": true, "apiAccess": true, "ssoSupport": true, "customIntegrations": true, "onPremise": true, "slaGuarantee": true, "support": "Dedicated Manager" }
       }
     },
@@ -467,12 +467,12 @@
       "businessplus": {
         "name": "Enterprise",
         "description": "Production-level agent usage",
-        "price": "€499/month",
-        "annualPrice": "€4,790/year",
+        "price": "€249/month",
+        "annualPrice": "€2,390/year",
         "cta": "Upgrade to Enterprise",
         "features": [
           "Unlimited agents",
-          "10,000 credits/month",
+          "2,500 credits/month",
           "+5 daily credits",
           "Custom integrations",
           "On-premise option",
