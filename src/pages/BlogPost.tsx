@@ -17,6 +17,360 @@ interface BlogPostData {
 }
 
 const blogPostsData: Record<string, BlogPostData> = {
+  "ultimate-prompting-guide": {
+    title: "The Ultimate Prompting Guide: How to Write Powerful Prompts and Get the Best Results from Jeesi.ai",
+    excerpt: "Master the art of AI prompting with practical techniques, templates, and best practices to unlock the full potential of your AI agents.",
+    category: "Tutorial",
+    readTime: "12 min read",
+    date: "December 4, 2025",
+    image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=1200&auto=format&fit=crop&q=80",
+    content: `
+## Introduction: The Power of Great Prompts
+
+In the world of AI, your results are only as good as your prompts. Whether you're building customer service agents, content generators, or sales assistants on Jeesi.ai, mastering the art of prompting is the single most important skill you can develop.
+
+**Prompting** is simply the act of giving instructions to an AI. But here's the catch: AI doesn't think like humans. It needs clear, structured, and contextual instructions to deliver the results you want.
+
+This guide will teach you everything you need to know about writing powerful prompts—from basic principles to advanced techniques—so you can unlock the full potential of Jeesi.ai.
+
+---
+
+## What Makes a Good Prompt?
+
+Before diving into techniques, let's understand the core elements that separate great prompts from mediocre ones.
+
+### 1. Clarity
+Say exactly what you mean. Vague prompts produce vague results.
+
+- ❌ *"Help with emails"*
+- ✅ *"Write a professional follow-up email to a client who hasn't responded in 7 days"*
+
+### 2. Context
+Give the AI the background it needs. The more relevant information, the better the output.
+
+- ❌ *"Write a product description"*
+- ✅ *"Write a product description for our eco-friendly bamboo toothbrush. Target audience: health-conscious millennials. Tone: friendly and informative. Include sustainability benefits."*
+
+### 3. Constraints
+Define boundaries, length, format, or style requirements.
+
+- ❌ *"Summarize this article"*
+- ✅ *"Summarize this article in exactly 3 bullet points, each under 20 words"*
+
+### 4. Expected Output
+Tell the AI what format you want the response in.
+
+- ❌ *"Give me ideas"*
+- ✅ *"Give me 5 ideas as a numbered list, with a brief explanation for each"*
+
+### 5. Role Assignment
+Assign a persona or expertise level to guide the AI's perspective.
+
+- ❌ *"Explain SEO"*
+- ✅ *"Act as an SEO expert with 10 years of experience and explain SEO basics to a small business owner"*
+
+---
+
+## Jeesi.ai vs Traditional Prompting
+
+Jeesi.ai isn't just a chatbot—it's an **agent builder platform**. This means your prompts become the foundation for autonomous AI agents that can:
+
+| Traditional AI Chat | Jeesi.ai Agents |
+|---------------------|-----------------|
+| Single-turn responses | Multi-turn conversations |
+| No memory | Context retention |
+| Generic responses | Customized personalities |
+| Manual interaction | Automated workflows |
+| One-size-fits-all | Role-specific agents |
+
+### Why This Matters for Prompting
+
+When you write prompts for Jeesi.ai agents, you're not just getting a one-time answer—you're defining how your agent will behave across hundreds or thousands of interactions. **Precision matters even more.**
+
+---
+
+## 10 Best Prompting Techniques
+
+### 1. Role Prompting
+Assign a specific role or expertise to the AI.
+
+> *Act as a senior customer service representative for a luxury hotel. You are patient, empathetic, and always maintain a premium service standard.*
+
+### 2. Goal-First Prompting
+State the objective before the details.
+
+> *GOAL: Generate 5 blog post ideas about sustainable living.*
+> *AUDIENCE: Urban professionals aged 25-40*
+> *TONE: Inspiring but practical*
+
+### 3. Provide Context Early
+Front-load important background information.
+
+> *CONTEXT: We are a B2B SaaS company selling project management software. Our main competitors are Asana and Monday.com. Our differentiator is AI-powered task prioritization.*
+> 
+> *Now, write a LinkedIn post announcing our new feature.*
+
+### 4. Output Formatting
+Specify exactly how you want the response structured.
+
+> *Provide your response in this format:*
+> *- **Summary** (2-3 sentences)*
+> *- **Key Points** (bullet list)*
+> *- **Action Items** (numbered list)*
+> *- **Next Steps** (1 paragraph)*
+
+### 5. Step-by-Step Thinking
+Ask the AI to break down complex problems.
+
+> *Analyze this customer complaint step by step:*
+> *1. Identify the core issue*
+> *2. Understand the customer's emotion*
+> *3. Propose a solution*
+> *4. Draft a response*
+
+### 6. Give Examples
+Show the AI what you want through examples.
+
+> *Write product descriptions in this style:*
+> 
+> *EXAMPLE - Product: Wireless Earbuds*
+> *Description: "Lose the wires, not the quality. Our wireless earbuds deliver crystal-clear audio with 8 hours of battery life—perfect for your commute, workout, or Netflix binge."*
+> 
+> *Now write one for: Smart Water Bottle*
+
+### 7. Define Constraints
+Set clear boundaries and limitations.
+
+> *Write a welcome message for new subscribers.*
+> *CONSTRAINTS:*
+> *- Maximum 50 words*
+> *- Include a call-to-action*
+> *- Do not use exclamation marks*
+> *- Maintain professional tone*
+
+### 8. Ask for Iteration or Refinement
+Request multiple versions or improvements.
+
+> *Write 3 different versions of this email subject line, ranging from:*
+> *1. Professional and formal*
+> *2. Friendly and casual*
+> *3. Urgent and action-oriented*
+
+### 9. Multi-Agent Prompts
+For complex tasks, define multiple roles.
+
+> *Analyze this business proposal from three perspectives:*
+> *1. AS A CFO: Focus on financial viability*
+> *2. AS A CMO: Focus on market opportunity*
+> *3. AS A COO: Focus on operational feasibility*
+> 
+> *Provide separate analyses for each role.*
+
+### 10. System-Style Guidance
+Write instructions as if programming behavior.
+
+> *SYSTEM INSTRUCTIONS:*
+> *- Always greet users warmly*
+> *- If asked about pricing, direct to the pricing page*
+> *- Never make promises about features not yet released*
+> *- If uncertain, say "Let me check on that for you"*
+> *- End every conversation asking if there's anything else*
+
+---
+
+## Jeesi.ai Prompt Templates (Ready to Use)
+
+### Agent Creation Template
+
+> **PURPOSE:** [What should this agent do?]
+> **BUSINESS TYPE:** [What kind of business is this for?]
+> **TARGET AUDIENCE:** [Who will interact with this agent?]
+>
+> **PERSONALITY:**
+> - Tone: [Professional/Friendly/Casual/Formal]
+> - Communication style: [Concise/Detailed/Conversational]
+> - Brand voice: [Describe your brand personality]
+>
+> **KEY CAPABILITIES:**
+> 1. [Main function]
+> 2. [Secondary function]
+> 3. [Additional function]
+>
+> **KNOWLEDGE BASE:**
+> - [Topic 1 the agent should know about]
+> - [Topic 2]
+> - [Topic 3]
+>
+> **LIMITATIONS:**
+> - [What should the agent NOT do?]
+> - [What topics should it avoid?]
+
+### Business Analysis Template
+
+> *Act as a business analyst with expertise in [INDUSTRY].*
+>
+> *Analyze the following business scenario: [INSERT SCENARIO]*
+>
+> *Provide:*
+> *1. SWOT Analysis (Strengths, Weaknesses, Opportunities, Threats)*
+> *2. Key metrics to track*
+> *3. Top 3 recommendations*
+> *4. Potential risks and mitigation strategies*
+>
+> *Format your response with clear headings and bullet points.*
+
+### SEO Optimization Template
+
+> *Act as an SEO specialist.*
+>
+> *Create an SEO-optimized blog post outline for:*
+> *TOPIC: [Your topic]*
+> *TARGET KEYWORD: [Primary keyword]*
+> *SECONDARY KEYWORDS: [Keyword 1, Keyword 2, Keyword 3]*
+>
+> *Include:*
+> *- Meta title (under 60 characters)*
+> *- Meta description (under 160 characters)*
+> *- H1 heading*
+> *- 5-7 H2 subheadings with brief descriptions*
+> *- Suggested internal linking opportunities*
+> *- Call-to-action recommendation*
+
+### Customer Service Agent Prompt
+
+> *You are the customer service representative for [COMPANY NAME].*
+>
+> **PERSONALITY:** Friendly, patient, and solution-oriented
+> **TONE:** Professional but warm
+>
+> **KNOWLEDGE:**
+> - Products/Services: [List key offerings]
+> - Common issues: [List frequent problems]
+> - Policies: [Returns, refunds, shipping, etc.]
+>
+> **BEHAVIOR RULES:**
+> 1. Always greet customers warmly
+> 2. Acknowledge their issue before offering solutions
+> 3. If you can't solve something, offer to escalate
+> 4. Never argue with customers
+> 5. End conversations positively
+>
+> **ESCALATION TRIGGERS:**
+> - Requests for refunds over $[amount]
+> - Legal threats
+> - Repeated complaints
+> - Technical issues beyond basic troubleshooting
+
+### Automation Workflow Prompt
+
+> *Create an automated workflow for [TASK].*
+>
+> **TRIGGER:** [What initiates this workflow?]
+> **INPUT:** [What data/information does it receive?]
+>
+> **PROCESS STEPS:**
+> 1. [First action]
+> 2. [Second action]
+> 3. [Third action]
+>
+> **OUTPUT:** [What should be produced?]
+> **DESTINATION:** [Where should output be sent?]
+>
+> **ERROR HANDLING:**
+> - If [condition], then [action]
+> - If [condition], then [action]
+>
+> **SUCCESS CRITERIA:** [How do we know it worked?]
+
+---
+
+## The Biggest Prompting Mistakes to Avoid
+
+### ❌ Mistake 1: Vague Prompts
+**Bad:** "Help me with marketing"
+**Good:** "Create a 30-day social media content calendar for a fitness app targeting working professionals"
+
+### ❌ Mistake 2: Missing Context
+**Bad:** "Write a response to this complaint"
+**Good:** "Write a response to this complaint. We are a subscription box company. Our policy allows cancellations within 48 hours. The customer is upset about being charged after requesting cancellation 3 days late."
+
+### ❌ Mistake 3: Multiple Unrelated Tasks
+**Bad:** "Write an email, create a spreadsheet formula, and summarize this article"
+**Good:** Focus on one task per prompt, or clearly separate them with numbered sections
+
+### ❌ Mistake 4: Forgetting Format Instructions
+**Bad:** "Give me feedback on my resume"
+**Good:** "Review my resume and provide feedback in this format: 3 strengths (bullet points), 3 areas for improvement (bullet points), and 1 overall recommendation (single paragraph)"
+
+### ❌ Mistake 5: Incomplete Goals
+**Bad:** "Make this better"
+**Good:** "Improve this product description by making it more persuasive, adding sensory language, and including a clear call-to-action. Keep it under 100 words."
+
+---
+
+## Advanced Jeesi.ai Prompting Tips
+
+### Chain-of-Thought Prompting
+For complex reasoning, ask the AI to show its work.
+
+> *Before answering, think through this problem step by step:*
+> *1. What is the core question?*
+> *2. What factors should I consider?*
+> *3. What are the possible approaches?*
+> *4. Which approach is best and why?*
+>
+> *Then provide your final answer.*
+
+### Multi-Turn Refinement
+Build on previous responses for better results.
+
+> **Turn 1:** "Write a tagline for our new coffee brand"
+> **Turn 2:** "Make it shorter and punchier"
+> **Turn 3:** "Now give me 3 variations with different emotional appeals"
+
+### Ask for Clarifying Questions First
+
+> *Before completing this task, ask me 3-5 clarifying questions that would help you provide a better response. Wait for my answers before proceeding.*
+
+### Prompting for Structured Output
+
+> *Respond in valid JSON format with: summary (string), key_points (array), sentiment (positive/negative/neutral), action_required (boolean), priority (high/medium/low)*
+
+### Using Jeesi.ai Tools & Integrations
+
+> *When a user asks about [TOPIC], use the following workflow:*
+> *1. Acknowledge the question*
+> *2. Check the knowledge base for relevant information*
+> *3. If scheduling is needed, trigger the calendar integration*
+> *4. If follow-up is required, log the interaction for the CRM webhook*
+> *5. Summarize the resolution to the user*
+
+---
+
+## Conclusion: Your Prompting Journey Starts Now
+
+Great prompts are the difference between AI that frustrates and AI that amazes. By applying the techniques in this guide, you'll be able to:
+
+- ✅ Create AI agents that truly understand your business
+- ✅ Get consistent, high-quality outputs every time
+- ✅ Automate workflows with precision and reliability
+- ✅ Save hours of trial-and-error experimentation
+- ✅ Unlock capabilities you didn't know were possible
+
+**Remember the core principles:**
+1. Be clear and specific
+2. Provide relevant context
+3. Define constraints and format
+4. Assign roles when helpful
+5. Iterate and refine
+
+The best prompters aren't born—they're made through practice and experimentation. Start applying these techniques today, and watch your Jeesi.ai agents transform from good to extraordinary.
+
+---
+
+**Ready to put these techniques into action?** Create your first powerful AI agent on Jeesi.ai today and see the difference great prompting makes.
+    `
+  },
   "ai-agents-future-of-business": {
     title: "Why AI Agents Are the Future of Every Business",
     excerpt: "Discover how AI agents are revolutionizing the way businesses operate.",
