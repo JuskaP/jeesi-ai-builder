@@ -32,7 +32,7 @@ const planCredits: Record<string, number> = {
   starter: 100,
   pro: 500,
   business: 1000,
-  enterprise: 3500,
+  enterprise: 2500,
   businessplus: 10000,
 };
 
