@@ -5,6 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Calendar, Clock, ArrowLeft, Share2, BookOpen } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import NewsletterForm from "@/components/NewsletterForm";
+import { useSEO, getArticleSchema, getBreadcrumbSchema } from "@/hooks/useSEO";
 
 interface BlogPostData {
   title: string;
@@ -1038,6 +1039,35 @@ export default function BlogPost() {
   const { toast } = useToast();
   
   const post = slug ? blogPostsData[slug] : null;
+
+  // SEO optimization for blog posts
+  useSEO({
+    title: post ? `${post.title} - Jeesi.ai Blog` : 'Blog - Jeesi.ai',
+    description: post?.excerpt || 'Read the latest AI insights and guides from Jeesi.ai',
+    keywords: 'AI blog, AI guides, AI automation, AI agents, Jeesi.ai',
+    canonicalUrl: slug ? `https://jeesi.ai/blog/${slug}` : 'https://jeesi.ai/blog',
+    ogImage: post?.image || 'https://jeesi.ai/og-image.png',
+    ogType: 'article',
+    structuredData: post ? {
+      '@context': 'https://schema.org',
+      '@graph': [
+        getArticleSchema({
+          title: post.title,
+          description: post.excerpt,
+          image: post.image,
+          datePublished: '2025-12-04',
+          dateModified: '2025-12-04',
+          author: 'Jeesi.ai Team',
+          url: `https://jeesi.ai/blog/${slug}`,
+        }),
+        getBreadcrumbSchema([
+          { name: 'Home', url: 'https://jeesi.ai/' },
+          { name: 'Blog', url: 'https://jeesi.ai/blog' },
+          { name: post.title, url: `https://jeesi.ai/blog/${slug}` },
+        ]),
+      ],
+    } : undefined,
+  });
 
   if (!post) {
     return <Navigate to="/blog" replace />;

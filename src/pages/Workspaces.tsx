@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import CreateWorkspaceDialog from '@/components/CreateWorkspaceDialog';
+import { useSEO, SEO_CONFIG } from '@/hooks/useSEO';
 import { Plus, Users, Globe, Lock } from 'lucide-react';
 
 interface Workspace {
@@ -29,6 +30,9 @@ export default function Workspaces() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
+
+  // SEO optimization
+  useSEO(SEO_CONFIG.workspaces);
 
   useEffect(() => {
     checkAuthAndLoad();

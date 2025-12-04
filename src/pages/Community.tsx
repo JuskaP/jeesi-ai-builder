@@ -9,6 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
+import { useSEO, SEO_CONFIG } from '@/hooks/useSEO';
 import { Loader2, Heart, Headphones, TrendingUp, Megaphone, HelpCircle, GraduationCap, DollarSign, ShoppingCart, Scale, UserCog, Home, Plane, Cpu, Film, UtensilsCrossed, Car, Globe, MoreHorizontal, Layers, type LucideIcon } from 'lucide-react';
 
 const CATEGORY_ICONS: Record<string, LucideIcon> = {
@@ -65,6 +66,9 @@ export default function Community() {
   const [likingAgent, setLikingAgent] = useState<string | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
+
+  // SEO optimization
+  useSEO(SEO_CONFIG.community);
 
   // Fetch community-shared agents from database
   useEffect(() => {
