@@ -16,6 +16,15 @@ interface BlogPost {
 
 const blogPosts: BlogPost[] = [
   {
+    slug: "ultimate-prompting-guide",
+    title: "The Ultimate Prompting Guide: How to Write Powerful Prompts and Get the Best Results from Jeesi.ai",
+    excerpt: "Master the art of AI prompting with practical techniques, templates, and best practices to unlock the full potential of your AI agents.",
+    category: "Tutorial",
+    readTime: "12 min read",
+    date: "December 4, 2025",
+    image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&auto=format&fit=crop&q=60"
+  },
+  {
     slug: "ai-agents-future-of-business",
     title: "Why AI Agents Are the Future of Every Business",
     excerpt: "Discover how AI agents are revolutionizing the way businesses operate, from automating repetitive tasks to providing 24/7 customer support.",
