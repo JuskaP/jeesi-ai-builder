@@ -57,7 +57,22 @@ export default function ChatUI({ template }: ChatUIProps) {
   const [previewConfig, setPreviewConfig] = useState<AgentConfig | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { toast } = useToast();
+
+  // Auto-resize textarea
+  const adjustTextareaHeight = () => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = 'auto';
+      const newHeight = Math.min(textarea.scrollHeight, 200); // Max 200px
+      textarea.style.height = `${newHeight}px`;
+    }
+  };
+
+  useEffect(() => {
+    adjustTextareaHeight();
+  }, [input]);
 
   const rotatingGreetings = t('landing.greetings.loggedOut', { returnObjects: true }) as string[];
 
@@ -539,16 +554,23 @@ export default function ChatUI({ template }: ChatUIProps) {
             <ImageIcon className="h-4 w-4" />
           </Button>
           
-          <input
-            className="flex-1 border border-border rounded-xl p-3 bg-background text-foreground"
+          <textarea
+            ref={textareaRef}
+            className="flex-1 border border-border rounded-xl p-3 bg-background text-foreground resize-none min-h-[48px] max-h-[200px] overflow-y-auto"
             value={input}
             onChange={(e) => {
               setInput(e.target.value);
               if (e.target.value.length > 0) setHasUserTyped(true);
             }}
-            onKeyPress={handleKeyPress}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+              }
+            }}
             placeholder={t('chat.placeholder')}
             disabled={isLoading}
+            rows={1}
           />
           
           <button
