@@ -449,11 +449,11 @@
         ]
       },
       "enterprise": {
-        "name": "Enterprise",
+        "name": "Business+",
         "description": "For scaling organizations",
         "price": "€399/month",
         "annualPrice": "€3,830/year",
-        "cta": "Upgrade to Enterprise",
+        "cta": "Upgrade to Business+",
         "features": [
           "Unlimited agents",
           "3,500 credits/month",
@@ -465,11 +465,11 @@
         ]
       },
       "businessplus": {
-        "name": "Business+",
+        "name": "Enterprise",
         "description": "Production-level agent usage",
         "price": "€499/month",
         "annualPrice": "€4,790/year",
-        "cta": "Upgrade to Business+",
+        "cta": "Upgrade to Enterprise",
         "features": [
           "Unlimited agents",
           "10,000 credits/month",
