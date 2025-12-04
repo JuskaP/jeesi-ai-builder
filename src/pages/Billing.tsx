@@ -30,7 +30,7 @@ const planMonthlyCredits: Record<string, number> = {
   starter: 100,
   pro: 500,
   business: 1000,
-  enterprise: 3500,
+  enterprise: 2500,
   businessplus: 10000,
   custom: 50000,
 };
@@ -42,7 +42,7 @@ const featureComparisonData: Record<string, Record<string, FeatureValue>> = {
   starter: { agents: "Unlimited", monthlyCredits: "100", dailyCredits: "5", integrations: "Basic", customDomains: false, teamCollaboration: false, apiAccess: false, ssoSupport: false, customIntegrations: false, onPremise: false, slaGuarantee: false, support: "Community" },
   pro: { agents: "Unlimited", monthlyCredits: "500", dailyCredits: "5", integrations: "All", customDomains: true, teamCollaboration: false, apiAccess: false, ssoSupport: false, customIntegrations: false, onPremise: false, slaGuarantee: false, support: "Priority" },
   business: { agents: "Unlimited", monthlyCredits: "1,000", dailyCredits: "5", integrations: "All", customDomains: true, teamCollaboration: true, apiAccess: true, ssoSupport: true, customIntegrations: false, onPremise: false, slaGuarantee: false, support: "Dedicated" },
-  enterprise: { agents: "Unlimited", monthlyCredits: "3,500", dailyCredits: "5", integrations: "All", customDomains: true, teamCollaboration: true, apiAccess: true, ssoSupport: true, customIntegrations: true, onPremise: true, slaGuarantee: true, support: "Dedicated" },
+  enterprise: { agents: "Unlimited", monthlyCredits: "2,500", dailyCredits: "5", integrations: "All", customDomains: true, teamCollaboration: true, apiAccess: true, ssoSupport: true, customIntegrations: true, onPremise: true, slaGuarantee: true, support: "Dedicated" },
   businessplus: { agents: "Unlimited", monthlyCredits: "10,000", dailyCredits: "5", integrations: "All", customDomains: true, teamCollaboration: true, apiAccess: true, ssoSupport: true, customIntegrations: true, onPremise: true, slaGuarantee: true, support: "24/7 Priority" },
   custom: { agents: "Unlimited", monthlyCredits: "Custom", dailyCredits: "5", integrations: "All", customDomains: true, teamCollaboration: true, apiAccess: true, ssoSupport: true, customIntegrations: true, onPremise: true, slaGuarantee: true, support: "Dedicated Manager" }
 };

@@ -378,7 +378,7 @@
         "starter": { "agents": "Unlimited", "monthlyCredits": "100", "dailyCredits": "5", "integrations": "Basic", "customDomains": false, "teamCollaboration": false, "apiAccess": false, "ssoSupport": false, "customIntegrations": false, "onPremise": false, "slaGuarantee": false, "support": "Community" },
         "pro": { "agents": "Unlimited", "monthlyCredits": "500", "dailyCredits": "5", "integrations": "All", "customDomains": true, "teamCollaboration": false, "apiAccess": false, "ssoSupport": false, "customIntegrations": false, "onPremise": false, "slaGuarantee": false, "support": "Priority" },
         "business": { "agents": "Unlimited", "monthlyCredits": "1,000", "dailyCredits": "5", "integrations": "All", "customDomains": true, "teamCollaboration": true, "apiAccess": true, "ssoSupport": true, "customIntegrations": false, "onPremise": false, "slaGuarantee": false, "support": "Dedicated" },
-        "enterprise": { "agents": "Unlimited", "monthlyCredits": "3,500", "dailyCredits": "5", "integrations": "All", "customDomains": true, "teamCollaboration": true, "apiAccess": true, "ssoSupport": true, "customIntegrations": true, "onPremise": true, "slaGuarantee": true, "support": "Dedicated" },
+        "enterprise": { "agents": "Unlimited", "monthlyCredits": "2,500", "dailyCredits": "5", "integrations": "All", "customDomains": true, "teamCollaboration": true, "apiAccess": true, "ssoSupport": true, "customIntegrations": true, "onPremise": true, "slaGuarantee": true, "support": "Dedicated" },
         "businessplus": { "agents": "Unlimited", "monthlyCredits": "10,000", "dailyCredits": "5", "integrations": "All", "customDomains": true, "teamCollaboration": true, "apiAccess": true, "ssoSupport": true, "customIntegrations": true, "onPremise": true, "slaGuarantee": true, "support": "24/7 Priority" },
         "custom": { "agents": "Unlimited", "monthlyCredits": "Custom", "dailyCredits": "5", "integrations": "All", "customDomains": true, "teamCollaboration": true, "apiAccess": true, "ssoSupport": true, "customIntegrations": true, "onPremise": true, "slaGuarantee": true, "support": "Dedicated Manager" }
       }
@@ -451,12 +451,12 @@
       "enterprise": {
         "name": "Business+",
         "description": "For scaling organizations",
-        "price": "€399/month",
-        "annualPrice": "€3,830/year",
+        "price": "€249/month",
+        "annualPrice": "€2,390/year",
         "cta": "Upgrade to Business+",
         "features": [
           "Unlimited agents",
-          "3,500 credits/month",
+          "2,500 credits/month",
           "+5 daily credits",
           "Custom integrations",
           "On-premise option",
