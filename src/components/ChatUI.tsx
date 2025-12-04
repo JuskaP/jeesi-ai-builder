@@ -556,7 +556,11 @@ export default function ChatUI({ template }: ChatUIProps) {
           
           <textarea
             ref={textareaRef}
-            className="flex-1 border border-border rounded-xl p-3 bg-background text-foreground resize-none min-h-[48px] max-h-[200px] overflow-y-auto"
+            className="flex-1 border border-border/30 rounded-xl p-3 bg-background/50 text-foreground resize-none min-h-[48px] max-h-[200px] overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-border/50 hover:scrollbar-thumb-border/70"
+            style={{
+              scrollbarWidth: 'thin',
+              scrollbarColor: 'hsl(var(--border) / 0.5) transparent'
+            }}
             value={input}
             onChange={(e) => {
               setInput(e.target.value);
