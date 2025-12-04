@@ -17,16 +17,16 @@ const monthlyPriceMap: Record<string, string> = {
   starter: "price_1SaGfcGx4tvYlwhYuxu4weEo",
   pro: "price_1SaGflGx4tvYlwhYcZj1MSf0",
   business: "price_1SaGfoGx4tvYlwhYiIfhKBSc",
-  enterprise: "price_1SabRQGx4tvYlwhYnBT4CEUH",
-  businessplus: "price_1SadJLGx4tvYlwhY0fzYLqLJ",
+  enterprise: "price_1SadNAGx4tvYlwhYjyP9OyCR",
+  businessplus: "price_1SadN7Gx4tvYlwhYTtBa9r7F",
 };
 
 const annualPriceMap: Record<string, string> = {
   starter: "price_1SaGfkGx4tvYlwhYpSWO1FDR",
   pro: "price_1SaGfmGx4tvYlwhYngNzJNmS",
   business: "price_1SaGfpGx4tvYlwhY01HLAcPB",
-  enterprise: "price_1SabRRGx4tvYlwhYERemhD0U",
-  businessplus: "price_1SadJMGx4tvYlwhYIN0sKHq8",
+  enterprise: "price_1SadNBGx4tvYlwhY6MKwG5ZR",
+  businessplus: "price_1SadN8Gx4tvYlwhY4DP7ucLW",
 };
 
 // Credit pack price IDs

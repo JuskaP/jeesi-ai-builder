@@ -467,8 +467,8 @@
       "businessplus": {
         "name": "Enterprise",
         "description": "Production-level agent usage",
-        "price": "€249/month",
-        "annualPrice": "€2,390/year",
+        "price": "€499/month",
+        "annualPrice": "€4,790/year",
         "cta": "Upgrade to Enterprise",
         "features": [
           "Unlimited agents",
