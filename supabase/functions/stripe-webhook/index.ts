@@ -27,10 +27,10 @@ const subscriptionCredits: Record<string, number> = {
   "price_1SaGfmGx4tvYlwhYngNzJNmS": 500,  // pro annual
   "price_1SaGfoGx4tvYlwhYiIfhKBSc": 1000,  // business monthly
   "price_1SaGfpGx4tvYlwhY01HLAcPB": 1000,  // business annual
-  "price_1SadPPGx4tvYlwhYwF70UuKC": 2500,  // enterprise monthly (Business+)
-  "price_1SadPQGx4tvYlwhYzTRwGqSL": 2500,  // enterprise annual (Business+)
-  "price_1SadN7Gx4tvYlwhYTtBa9r7F": 10000,  // businessplus monthly (Enterprise)
-  "price_1SadN8Gx4tvYlwhY4DP7ucLW": 10000,  // businessplus annual (Enterprise)
+  "price_1SadPPGx4tvYlwhYwF70UuKC": 2500,  // businessplus monthly (Business+ €249)
+  "price_1SadPQGx4tvYlwhYzTRwGqSL": 2500,  // businessplus annual (Business+ €2,390)
+  "price_1SadN7Gx4tvYlwhYTtBa9r7F": 10000,  // enterprise monthly (Enterprise €499)
+  "price_1SadN8Gx4tvYlwhY4DP7ucLW": 10000,  // enterprise annual (Enterprise €4,790)
 };
 
 const getPlanTypeFromPrice = (priceId: string): string => {
@@ -43,11 +43,13 @@ const getPlanTypeFromPrice = (priceId: string): string => {
   if (["price_1SaGfoGx4tvYlwhYiIfhKBSc", "price_1SaGfpGx4tvYlwhY01HLAcPB"].includes(priceId)) {
     return "business";
   }
+  // Business+ (€249, 2,500 credits)
   if (["price_1SadPPGx4tvYlwhYwF70UuKC", "price_1SadPQGx4tvYlwhYzTRwGqSL"].includes(priceId)) {
-    return "enterprise";
-  }
-  if (["price_1SadN7Gx4tvYlwhYTtBa9r7F", "price_1SadN8Gx4tvYlwhY4DP7ucLW"].includes(priceId)) {
     return "businessplus";
+  }
+  // Enterprise (€499, 10,000 credits)
+  if (["price_1SadN7Gx4tvYlwhYTtBa9r7F", "price_1SadN8Gx4tvYlwhY4DP7ucLW"].includes(priceId)) {
+    return "enterprise";
   }
   return "free";
 };
