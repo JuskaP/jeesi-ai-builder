@@ -7,12 +7,54 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// SECURITY FIX: Simple in-memory rate limiter
+// In production, consider using Redis or similar for distributed rate limiting
+const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
+const RATE_LIMIT_WINDOW_MS = 60000; // 1 minute
+const RATE_LIMIT_MAX_REQUESTS_ANONYMOUS = 10; // 10 requests per minute for anonymous
+const RATE_LIMIT_MAX_REQUESTS_AUTHENTICATED = 30; // 30 requests per minute for authenticated
+
+function checkRateLimit(identifier: string, isAuthenticated: boolean): { allowed: boolean; remaining: number } {
+  const now = Date.now();
+  const limit = isAuthenticated ? RATE_LIMIT_MAX_REQUESTS_AUTHENTICATED : RATE_LIMIT_MAX_REQUESTS_ANONYMOUS;
+  
+  const existing = rateLimitMap.get(identifier);
+  
+  if (!existing || now > existing.resetTime) {
+    // New window
+    rateLimitMap.set(identifier, { count: 1, resetTime: now + RATE_LIMIT_WINDOW_MS });
+    return { allowed: true, remaining: limit - 1 };
+  }
+  
+  if (existing.count >= limit) {
+    return { allowed: false, remaining: 0 };
+  }
+  
+  existing.count++;
+  return { allowed: true, remaining: limit - existing.count };
+}
+
+// Clean up old entries periodically (every 5 minutes)
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, value] of rateLimitMap.entries()) {
+    if (now > value.resetTime) {
+      rateLimitMap.delete(key);
+    }
+  }
+}, 300000);
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
+    // Get client IP for rate limiting
+    const clientIP = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 
+                     req.headers.get('x-real-ip') || 
+                     'unknown';
+    
     const { messages, agentConfig } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     
@@ -35,7 +77,27 @@ serve(async (req) => {
       userId = user?.id || null;
     }
 
-    console.log('Processing agent chat request with', messages.length, 'messages', userId ? `for user ${userId}` : '(anonymous)');
+    // SECURITY FIX: Apply rate limiting
+    const rateLimitKey = userId || `ip:${clientIP}`;
+    const rateCheck = checkRateLimit(rateLimitKey, !!userId);
+    
+    if (!rateCheck.allowed) {
+      console.log(`Rate limit exceeded for ${rateLimitKey}`);
+      return new Response(
+        JSON.stringify({ error: 'Rate limit exceeded. Please wait a moment before trying again.' }),
+        { 
+          status: 429, 
+          headers: { 
+            ...corsHeaders, 
+            'Content-Type': 'application/json',
+            'X-RateLimit-Remaining': '0',
+            'Retry-After': '60'
+          } 
+        }
+      );
+    }
+
+    console.log('Processing agent chat request with', messages.length, 'messages', userId ? `for user ${userId}` : '(anonymous)', `- Rate limit remaining: ${rateCheck.remaining}`);
     
     // Check credit balance if user is authenticated
     if (userId) {
@@ -152,7 +214,11 @@ Be friendly, encouraging, and use clear language without technical jargon.`;
     }
 
     return new Response(response.body, {
-      headers: { ...corsHeaders, 'Content-Type': 'text/event-stream' },
+      headers: { 
+        ...corsHeaders, 
+        'Content-Type': 'text/event-stream',
+        'X-RateLimit-Remaining': rateCheck.remaining.toString()
+      },
     });
   } catch (error) {
     console.error('Agent chat error:', error);

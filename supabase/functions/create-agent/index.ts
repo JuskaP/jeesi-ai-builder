@@ -12,14 +12,37 @@ serve(async (req) => {
   }
 
   try {
-    const { messages, userId, previewOnly, config } = await req.json();
-    
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+    // SECURITY FIX: Extract userId from JWT token instead of request body
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
+      return new Response(
+        JSON.stringify({ error: "Authorization header required" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const token = authHeader.replace("Bearer ", "");
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    
+    if (authError || !user) {
+      console.error("Auth error:", authError);
+      return new Response(
+        JSON.stringify({ error: "Invalid or expired token" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const userId = user.id;
+    console.log("Authenticated user:", userId);
+
+    const { messages, previewOnly, config } = await req.json();
+
     // If config is provided, create agent directly (confirmation step)
-    if (config && userId) {
+    if (config) {
       // Check credit balance before creating
       const { data: balance } = await supabase
         .from('credit_balances')
@@ -79,9 +102,9 @@ serve(async (req) => {
       );
     }
     
-    if (!messages || !userId) {
+    if (!messages) {
       return new Response(
-        JSON.stringify({ error: "Missing required fields: messages and userId" }),
+        JSON.stringify({ error: "Missing required field: messages" }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
