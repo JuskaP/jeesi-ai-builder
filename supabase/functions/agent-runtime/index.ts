@@ -6,6 +6,79 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-api-key",
 };
 
+// Rate limiting configuration per plan
+const RATE_LIMITS: Record<string, { requestsPerMinute: number; requestsPerHour: number }> = {
+  free: { requestsPerMinute: 5, requestsPerHour: 50 },
+  starter: { requestsPerMinute: 15, requestsPerHour: 200 },
+  pro: { requestsPerMinute: 30, requestsPerHour: 500 },
+  business: { requestsPerMinute: 60, requestsPerHour: 1000 },
+  businessplus: { requestsPerMinute: 120, requestsPerHour: 2500 },
+  enterprise: { requestsPerMinute: 300, requestsPerHour: 10000 },
+};
+
+// Check rate limit using database
+async function checkRateLimit(
+  supabase: any, 
+  userId: string, 
+  planType: string
+): Promise<{ allowed: boolean; retryAfter?: number; message?: string }> {
+  const limits = RATE_LIMITS[planType] || RATE_LIMITS.free;
+  const now = new Date();
+  const oneMinuteAgo = new Date(now.getTime() - 60 * 1000);
+  const oneHourAgo = new Date(now.getTime() - 60 * 60 * 1000);
+
+  try {
+    // Check requests in the last minute
+    const { count: minuteCount, error: minuteError } = await supabase
+      .from("credit_usage")
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", userId)
+      .gte("created_at", oneMinuteAgo.toISOString());
+
+    if (minuteError) {
+      console.error("[RATE-LIMIT] Error checking minute rate:", minuteError);
+      // Allow request on error to avoid blocking users
+      return { allowed: true };
+    }
+
+    if ((minuteCount || 0) >= limits.requestsPerMinute) {
+      console.log(`[RATE-LIMIT] User ${userId} exceeded minute limit: ${minuteCount}/${limits.requestsPerMinute}`);
+      return { 
+        allowed: false, 
+        retryAfter: 60,
+        message: `Rate limit exceeded. Maximum ${limits.requestsPerMinute} requests per minute. Try again in 60 seconds.`
+      };
+    }
+
+    // Check requests in the last hour
+    const { count: hourCount, error: hourError } = await supabase
+      .from("credit_usage")
+      .select("*", { count: "exact", head: true })
+      .eq("user_id", userId)
+      .gte("created_at", oneHourAgo.toISOString());
+
+    if (hourError) {
+      console.error("[RATE-LIMIT] Error checking hour rate:", hourError);
+      return { allowed: true };
+    }
+
+    if ((hourCount || 0) >= limits.requestsPerHour) {
+      console.log(`[RATE-LIMIT] User ${userId} exceeded hour limit: ${hourCount}/${limits.requestsPerHour}`);
+      return { 
+        allowed: false, 
+        retryAfter: 3600,
+        message: `Hourly rate limit exceeded. Maximum ${limits.requestsPerHour} requests per hour. Please upgrade your plan for higher limits.`
+      };
+    }
+
+    return { allowed: true };
+  } catch (error) {
+    console.error("[RATE-LIMIT] Unexpected error:", error);
+    // Allow request on unexpected error
+    return { allowed: true };
+  }
+}
+
 interface AgentFunction {
   id: string;
   name: string;
@@ -89,6 +162,26 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({ error: "Insufficient credits" }),
         { status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Check rate limit based on user's plan
+    const rateLimitResult = await checkRateLimit(supabase, userId, creditData.plan_type);
+    if (!rateLimitResult.allowed) {
+      console.log(`[AGENT-RUNTIME] Rate limit exceeded for user ${userId}`);
+      return new Response(
+        JSON.stringify({ 
+          error: rateLimitResult.message || "Rate limit exceeded",
+          retryAfter: rateLimitResult.retryAfter 
+        }),
+        { 
+          status: 429, 
+          headers: { 
+            ...corsHeaders, 
+            "Content-Type": "application/json",
+            "Retry-After": String(rateLimitResult.retryAfter || 60)
+          } 
+        }
       );
     }
 
