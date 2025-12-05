@@ -26,7 +26,7 @@ interface CreditBalance {
 
 const DAILY_CREDITS = 5;
 const planMonthlyCredits: Record<string, number> = {
-  free: 75,
+  free: 50,
   starter: 100,
   pro: 500,
   business: 1000,
@@ -38,23 +38,28 @@ const planMonthlyCredits: Record<string, number> = {
 // Feature comparison data
 type FeatureValue = boolean | string;
 const featureComparisonData: Record<string, Record<string, FeatureValue>> = {
-  free: { agents: "3", monthlyCredits: "75", dailyCredits: "5", integrations: false, customDomains: false, teamCollaboration: false, apiAccess: false, ssoSupport: false, customIntegrations: false, onPremise: false, slaGuarantee: false, support: "Community" },
-  starter: { agents: "Unlimited", monthlyCredits: "100", dailyCredits: "5", integrations: "Basic", customDomains: false, teamCollaboration: false, apiAccess: false, ssoSupport: false, customIntegrations: false, onPremise: false, slaGuarantee: false, support: "Community" },
-  pro: { agents: "Unlimited", monthlyCredits: "500", dailyCredits: "5", integrations: "All", customDomains: true, teamCollaboration: false, apiAccess: false, ssoSupport: false, customIntegrations: false, onPremise: false, slaGuarantee: false, support: "Priority" },
-  business: { agents: "Unlimited", monthlyCredits: "1,000", dailyCredits: "5", integrations: "All", customDomains: true, teamCollaboration: true, apiAccess: true, ssoSupport: true, customIntegrations: false, onPremise: false, slaGuarantee: false, support: "Dedicated" },
-  enterprise: { agents: "Unlimited", monthlyCredits: "2,500", dailyCredits: "5", integrations: "All", customDomains: true, teamCollaboration: true, apiAccess: true, ssoSupport: true, customIntegrations: true, onPremise: true, slaGuarantee: true, support: "Dedicated" },
-  businessplus: { agents: "Unlimited", monthlyCredits: "10,000", dailyCredits: "5", integrations: "All", customDomains: true, teamCollaboration: true, apiAccess: true, ssoSupport: true, customIntegrations: true, onPremise: true, slaGuarantee: true, support: "24/7 Priority" },
-  custom: { agents: "Unlimited", monthlyCredits: "Custom", dailyCredits: "5", integrations: "All", customDomains: true, teamCollaboration: true, apiAccess: true, ssoSupport: true, customIntegrations: true, onPremise: true, slaGuarantee: true, support: "Dedicated Manager" }
+  free: { agents: "3", monthlyCredits: "50", dailyCredits: "5", publishing: false, communitySharing: true, scheduledRuns: false, integrations: false, customDomains: false, teamCollaboration: false, apiAccess: false, whiteLabel: false, advancedAnalytics: false, ssoSupport: false, customIntegrations: false, onPremise: false, slaGuarantee: false, support: "Community" },
+  starter: { agents: "Unlimited", monthlyCredits: "100", dailyCredits: "5", publishing: true, communitySharing: true, scheduledRuns: false, integrations: "Basic", customDomains: false, teamCollaboration: false, apiAccess: true, whiteLabel: false, advancedAnalytics: false, ssoSupport: false, customIntegrations: false, onPremise: false, slaGuarantee: false, support: "Priority" },
+  pro: { agents: "Unlimited", monthlyCredits: "500", dailyCredits: "5", publishing: true, communitySharing: true, scheduledRuns: true, integrations: "All", customDomains: true, teamCollaboration: "Up to 5", apiAccess: true, whiteLabel: false, advancedAnalytics: false, ssoSupport: false, customIntegrations: false, onPremise: false, slaGuarantee: false, support: "Priority" },
+  business: { agents: "Unlimited", monthlyCredits: "1,000", dailyCredits: "5", publishing: true, communitySharing: true, scheduledRuns: true, integrations: "All", customDomains: true, teamCollaboration: "Up to 15", apiAccess: true, whiteLabel: true, advancedAnalytics: true, ssoSupport: true, customIntegrations: false, onPremise: false, slaGuarantee: false, support: "Dedicated" },
+  enterprise: { agents: "Unlimited", monthlyCredits: "2,500", dailyCredits: "5", publishing: true, communitySharing: true, scheduledRuns: true, integrations: "All", customDomains: true, teamCollaboration: "Up to 15", apiAccess: true, whiteLabel: true, advancedAnalytics: true, ssoSupport: true, customIntegrations: true, onPremise: true, slaGuarantee: true, support: "Dedicated" },
+  businessplus: { agents: "Unlimited", monthlyCredits: "10,000", dailyCredits: "5", publishing: true, communitySharing: true, scheduledRuns: true, integrations: "All", customDomains: true, teamCollaboration: "Up to 15", apiAccess: true, whiteLabel: true, advancedAnalytics: true, ssoSupport: true, customIntegrations: true, onPremise: true, slaGuarantee: true, support: "24/7 Priority" },
+  custom: { agents: "Unlimited", monthlyCredits: "Custom", dailyCredits: "5", publishing: true, communitySharing: true, scheduledRuns: true, integrations: "All", customDomains: true, teamCollaboration: "Unlimited", apiAccess: true, whiteLabel: true, advancedAnalytics: true, ssoSupport: true, customIntegrations: true, onPremise: true, slaGuarantee: true, support: "Dedicated Manager" }
 };
 
 const featureLabels: Record<string, string> = {
   agents: "AI Agents",
   monthlyCredits: "Monthly Credits",
   dailyCredits: "Daily Bonus Credits",
+  publishing: "Publish Agents",
+  communitySharing: "Community Sharing",
+  scheduledRuns: "Scheduled Agent Runs",
   integrations: "Integrations",
   customDomains: "Custom Domains",
   teamCollaboration: "Team Collaboration",
   apiAccess: "API Access",
+  whiteLabel: "White Label Agents",
+  advancedAnalytics: "Advanced Analytics",
   ssoSupport: "SSO Support",
   customIntegrations: "Custom Integrations",
   onPremise: "On-Premise Option",

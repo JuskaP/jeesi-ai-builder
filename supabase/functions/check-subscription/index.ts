@@ -28,7 +28,7 @@ const productToPlanMap: Record<string, string> = {
 
 // Monthly credit allocations per plan (daily credits handled separately)
 const planCredits: Record<string, number> = {
-  free: 75,
+  free: 50,
   starter: 100,
   pro: 500,
   business: 1000,
