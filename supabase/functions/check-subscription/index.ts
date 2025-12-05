@@ -32,8 +32,8 @@ const planCredits: Record<string, number> = {
   starter: 100,
   pro: 500,
   business: 1000,
-  enterprise: 2500,
-  businessplus: 10000,
+  businessplus: 2500,   // Business+ €249/month
+  enterprise: 10000,    // Enterprise €499/month
 };
 
 // All plans get 5 daily credits (don't roll over)

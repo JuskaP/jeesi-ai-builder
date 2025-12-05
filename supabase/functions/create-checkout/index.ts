@@ -95,7 +95,7 @@ serve(async (req) => {
       const priceMap = annual ? annualPriceMap : monthlyPriceMap;
       priceId = priceMap[tier];
       if (!priceId) {
-        throw new Error(`Invalid tier: ${tier}. Valid tiers are: starter, pro, business`);
+        throw new Error(`Invalid tier: ${tier}. Valid tiers are: starter, pro, business, businessplus, enterprise`);
       }
       mode = "subscription";
       logStep("Subscription checkout", { tier, annual, priceId });
