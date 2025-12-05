@@ -85,7 +85,7 @@ export default function WhiteLabelSettings({ agentId, hasAccess }: WhiteLabelSet
         .from('agents')
         .update({
           white_label_enabled: whiteLabelEnabled,
-          custom_branding: branding,
+          custom_branding: JSON.parse(JSON.stringify(branding)),
           updated_at: new Date().toISOString()
         })
         .eq('id', agentId);
