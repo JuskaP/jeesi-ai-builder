@@ -88,14 +88,7 @@ function AnimatedRoutes() {
           } 
         />
         <Route path="/invite/:token" element={<PageTransition><AcceptInvitation /></PageTransition>} />
-        <Route 
-          path="/billing" 
-          element={
-            <ProtectedRoute>
-              <PageTransition><Billing /></PageTransition>
-            </ProtectedRoute>
-          } 
-        />
+        <Route path="/billing" element={<PageTransition><Billing /></PageTransition>} />
         <Route 
           path="/profile" 
           element={
