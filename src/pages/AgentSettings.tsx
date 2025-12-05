@@ -16,6 +16,7 @@ import { ArrowLeft, Plus, Trash2, Save, TestTube, Users, Activity, Globe, Lock, 
 import { useTranslation } from 'react-i18next';
 import CustomFunctionsManager from '@/components/CustomFunctionsManager';
 import AgentScheduleManager from '@/components/AgentScheduleManager';
+import WhiteLabelSettings from '@/components/WhiteLabelSettings';
 
 interface CategoryConfig {
   name: string;
@@ -554,6 +555,14 @@ export default function AgentSettings() {
 
           {/* Automated Scheduling */}
           {id && user && <AgentScheduleManager agentId={id} userId={user.id} />}
+
+          {/* White Label Settings - Business+ only */}
+          {id && (
+            <WhiteLabelSettings 
+              agentId={id} 
+              hasAccess={['business', 'businessplus', 'enterprise', 'custom'].includes(userPlanType)} 
+            />
+          )}
 
           {/* Publishing */}
           <Card>

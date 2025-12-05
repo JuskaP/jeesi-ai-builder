@@ -9,13 +9,14 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Loader2, User, Zap, TrendingUp, Bot, CreditCard, Settings, Key, ArrowRight, Shield } from 'lucide-react';
+import { Loader2, User, Zap, TrendingUp, Bot, CreditCard, Settings, Key, ArrowRight, Shield, BarChart3 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import CreditBalance from '@/components/CreditBalance';
 import ApiKeyManager from '@/components/ApiKeyManager';
 import ConsentSettings from '@/components/ConsentSettings';
 import AvatarUploader from '@/components/AvatarUploader';
+import AdvancedAnalyticsDashboard from '@/components/AdvancedAnalyticsDashboard';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useSEO, SEO_CONFIG } from '@/hooks/useSEO';
 
@@ -183,10 +184,14 @@ export default function Profile() {
           </div>
 
           <Tabs defaultValue="overview" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-5">
+            <TabsList className="grid w-full grid-cols-6">
               <TabsTrigger value="overview" className="gap-2">
                 <User className="w-4 h-4" />
                 {t('profile.tabs.overview')}
+              </TabsTrigger>
+              <TabsTrigger value="analytics" className="gap-2">
+                <BarChart3 className="w-4 h-4" />
+                Analytics
               </TabsTrigger>
               <TabsTrigger value="billing" className="gap-2">
                 <CreditCard className="w-4 h-4" />
@@ -321,6 +326,16 @@ export default function Profile() {
                   )}
                 </CardContent>
               </Card>
+            </TabsContent>
+
+            {/* Analytics Tab */}
+            <TabsContent value="analytics" className="space-y-6">
+              {user && (
+                <AdvancedAnalyticsDashboard 
+                  userId={user.id} 
+                  hasAccess={['business', 'businessplus', 'enterprise', 'custom'].includes(creditBalance?.plan_type || 'free')} 
+                />
+              )}
             </TabsContent>
 
             {/* Billing Tab */}
