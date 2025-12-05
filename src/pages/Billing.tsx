@@ -205,7 +205,7 @@ export default function Billing() {
     }
   };
 
-  const planTiers = ['free', 'starter', 'pro', 'business', 'enterprise', 'businessplus', 'custom'];
+  const planTiers = ['free', 'starter', 'pro', 'business', 'businessplus', 'enterprise', 'custom'];
   
   const plans = planTiers.map(tier => {
     const plan = t(`billing.plans.${tier}`, { returnObjects: true }) as any;
