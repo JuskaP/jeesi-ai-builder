@@ -26,9 +26,10 @@ export default function ApiKeyManager() {
   }, []);
 
   const fetchApiKeys = async () => {
+    // Only select non-sensitive columns - never expose key_hash
     const { data, error } = await supabase
       .from("api_keys")
-      .select("*")
+      .select("id, key_name, key_prefix, last_used_at, created_at")
       .eq("is_active", true)
       .order("created_at", { ascending: false });
 
