@@ -462,26 +462,6 @@
         ]
       },
       "enterprise": {
-        "name": "Business+",
-        "description": "For scaling organizations",
-        "price": "€249/month",
-        "annualPrice": "€2,390/year",
-        "cta": "Upgrade to Business+",
-        "features": [
-          "Unlimited agents",
-          "2,500 credits/month",
-          "+5 daily credits",
-          "⭐ Scheduled agent runs",
-          "White label agents",
-          "Advanced analytics",
-          "Team collaboration (15 members)",
-          "Custom integrations",
-          "On-premise option",
-          "SLA guarantee",
-          "Dedicated support"
-        ]
-      },
-      "businessplus": {
         "name": "Enterprise",
         "description": "Production-level agent usage",
         "price": "€499/month",
@@ -499,6 +479,26 @@
           "On-premise option",
           "SLA guarantee",
           "24/7 priority support"
+        ]
+      },
+      "businessplus": {
+        "name": "Business+",
+        "description": "For scaling organizations",
+        "price": "€249/month",
+        "annualPrice": "€2,390/year",
+        "cta": "Upgrade to Business+",
+        "features": [
+          "Unlimited agents",
+          "2,500 credits/month",
+          "+5 daily credits",
+          "⭐ Scheduled agent runs",
+          "White label agents",
+          "Advanced analytics",
+          "Team collaboration (15 members)",
+          "Custom integrations",
+          "On-premise option",
+          "SLA guarantee",
+          "Dedicated support"
         ]
       },
       "custom": {

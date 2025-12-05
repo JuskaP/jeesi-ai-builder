@@ -208,6 +208,7 @@ export type Database = {
           community_category: string | null
           community_likes: number | null
           created_at: string | null
+          custom_branding: Json | null
           description: string | null
           features: Json | null
           id: string
@@ -226,6 +227,7 @@ export type Database = {
           temperature: number | null
           updated_at: string | null
           user_id: string
+          white_label_enabled: boolean | null
           workspace_id: string | null
         }
         Insert: {
@@ -233,6 +235,7 @@ export type Database = {
           community_category?: string | null
           community_likes?: number | null
           created_at?: string | null
+          custom_branding?: Json | null
           description?: string | null
           features?: Json | null
           id?: string
@@ -251,6 +254,7 @@ export type Database = {
           temperature?: number | null
           updated_at?: string | null
           user_id: string
+          white_label_enabled?: boolean | null
           workspace_id?: string | null
         }
         Update: {
@@ -258,6 +262,7 @@ export type Database = {
           community_category?: string | null
           community_likes?: number | null
           created_at?: string | null
+          custom_branding?: Json | null
           description?: string | null
           features?: Json | null
           id?: string
@@ -276,6 +281,7 @@ export type Database = {
           temperature?: number | null
           updated_at?: string | null
           user_id?: string
+          white_label_enabled?: boolean | null
           workspace_id?: string | null
         }
         Relationships: [
