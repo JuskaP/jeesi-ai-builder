@@ -363,10 +363,15 @@
         "agents": "AI Agents",
         "monthlyCredits": "Monthly Credits",
         "dailyCredits": "Daily Bonus Credits",
+        "publishing": "Publish Agents",
+        "communitySharing": "Community Sharing",
+        "scheduledRuns": "Scheduled Agent Runs",
         "integrations": "Integrations",
         "customDomains": "Custom Domains",
         "teamCollaboration": "Team Collaboration",
         "apiAccess": "API Access",
+        "whiteLabel": "White Label Agents",
+        "advancedAnalytics": "Advanced Analytics",
         "ssoSupport": "SSO Support",
         "customIntegrations": "Custom Integrations",
         "onPremise": "On-Premise Option",
@@ -374,13 +379,13 @@
         "support": "Support"
       },
       "values": {
-        "free": { "agents": "3", "monthlyCredits": "75", "dailyCredits": "5", "integrations": false, "customDomains": false, "teamCollaboration": false, "apiAccess": false, "ssoSupport": false, "customIntegrations": false, "onPremise": false, "slaGuarantee": false, "support": "Community" },
-        "starter": { "agents": "Unlimited", "monthlyCredits": "100", "dailyCredits": "5", "integrations": "Basic", "customDomains": false, "teamCollaboration": false, "apiAccess": false, "ssoSupport": false, "customIntegrations": false, "onPremise": false, "slaGuarantee": false, "support": "Community" },
-        "pro": { "agents": "Unlimited", "monthlyCredits": "500", "dailyCredits": "5", "integrations": "All", "customDomains": true, "teamCollaboration": false, "apiAccess": false, "ssoSupport": false, "customIntegrations": false, "onPremise": false, "slaGuarantee": false, "support": "Priority" },
-        "business": { "agents": "Unlimited", "monthlyCredits": "1,000", "dailyCredits": "5", "integrations": "All", "customDomains": true, "teamCollaboration": true, "apiAccess": true, "ssoSupport": true, "customIntegrations": false, "onPremise": false, "slaGuarantee": false, "support": "Dedicated" },
-        "enterprise": { "agents": "Unlimited", "monthlyCredits": "2,500", "dailyCredits": "5", "integrations": "All", "customDomains": true, "teamCollaboration": true, "apiAccess": true, "ssoSupport": true, "customIntegrations": true, "onPremise": true, "slaGuarantee": true, "support": "Dedicated" },
-        "businessplus": { "agents": "Unlimited", "monthlyCredits": "10,000", "dailyCredits": "5", "integrations": "All", "customDomains": true, "teamCollaboration": true, "apiAccess": true, "ssoSupport": true, "customIntegrations": true, "onPremise": true, "slaGuarantee": true, "support": "24/7 Priority" },
-        "custom": { "agents": "Unlimited", "monthlyCredits": "Custom", "dailyCredits": "5", "integrations": "All", "customDomains": true, "teamCollaboration": true, "apiAccess": true, "ssoSupport": true, "customIntegrations": true, "onPremise": true, "slaGuarantee": true, "support": "Dedicated Manager" }
+        "free": { "agents": "3", "monthlyCredits": "50", "dailyCredits": "5", "publishing": false, "communitySharing": true, "scheduledRuns": false, "integrations": false, "customDomains": false, "teamCollaboration": false, "apiAccess": false, "whiteLabel": false, "advancedAnalytics": false, "ssoSupport": false, "customIntegrations": false, "onPremise": false, "slaGuarantee": false, "support": "Community" },
+        "starter": { "agents": "Unlimited", "monthlyCredits": "100", "dailyCredits": "5", "publishing": true, "communitySharing": true, "scheduledRuns": false, "integrations": "Basic", "customDomains": false, "teamCollaboration": false, "apiAccess": true, "whiteLabel": false, "advancedAnalytics": false, "ssoSupport": false, "customIntegrations": false, "onPremise": false, "slaGuarantee": false, "support": "Priority" },
+        "pro": { "agents": "Unlimited", "monthlyCredits": "500", "dailyCredits": "5", "publishing": true, "communitySharing": true, "scheduledRuns": true, "integrations": "All", "customDomains": true, "teamCollaboration": "Up to 5", "apiAccess": true, "whiteLabel": false, "advancedAnalytics": false, "ssoSupport": false, "customIntegrations": false, "onPremise": false, "slaGuarantee": false, "support": "Priority" },
+        "business": { "agents": "Unlimited", "monthlyCredits": "1,000", "dailyCredits": "5", "publishing": true, "communitySharing": true, "scheduledRuns": true, "integrations": "All", "customDomains": true, "teamCollaboration": "Up to 15", "apiAccess": true, "whiteLabel": true, "advancedAnalytics": true, "ssoSupport": true, "customIntegrations": false, "onPremise": false, "slaGuarantee": false, "support": "Dedicated" },
+        "enterprise": { "agents": "Unlimited", "monthlyCredits": "2,500", "dailyCredits": "5", "publishing": true, "communitySharing": true, "scheduledRuns": true, "integrations": "All", "customDomains": true, "teamCollaboration": "Up to 15", "apiAccess": true, "whiteLabel": true, "advancedAnalytics": true, "ssoSupport": true, "customIntegrations": true, "onPremise": true, "slaGuarantee": true, "support": "Dedicated" },
+        "businessplus": { "agents": "Unlimited", "monthlyCredits": "10,000", "dailyCredits": "5", "publishing": true, "communitySharing": true, "scheduledRuns": true, "integrations": "All", "customDomains": true, "teamCollaboration": "Up to 15", "apiAccess": true, "whiteLabel": true, "advancedAnalytics": true, "ssoSupport": true, "customIntegrations": true, "onPremise": true, "slaGuarantee": true, "support": "24/7 Priority" },
+        "custom": { "agents": "Unlimited", "monthlyCredits": "Custom", "dailyCredits": "5", "publishing": true, "communitySharing": true, "scheduledRuns": true, "integrations": "All", "customDomains": true, "teamCollaboration": "Unlimited", "apiAccess": true, "whiteLabel": true, "advancedAnalytics": true, "ssoSupport": true, "customIntegrations": true, "onPremise": true, "slaGuarantee": true, "support": "Dedicated Manager" }
       }
     },
     "plans": {
@@ -392,14 +397,14 @@
         "cta": "Get Started",
         "features": [
           "3 AI agents",
-          "75 credits/month",
+          "50 credits/month",
           "+5 daily credits",
-          "jeesi.ai watermark",
+          "Community sharing",
           "Community support"
         ],
         "limitations": [
-          "No integrations",
-          "No publishing"
+          "No publishing",
+          "No API access"
         ]
       },
       "starter": {
@@ -412,9 +417,11 @@
           "Unlimited agents",
           "100 credits/month",
           "+5 daily credits",
+          "Publish agents",
+          "API access",
+          "Community sharing",
           "Basic integrations",
-          "No watermark",
-          "Community support"
+          "Priority support"
         ]
       },
       "pro": {
@@ -427,6 +434,9 @@
           "Unlimited agents",
           "500 credits/month",
           "+5 daily credits",
+          "⭐ Scheduled agent runs",
+          "API access",
+          "Team collaboration (5 members)",
           "All integrations",
           "Custom domains",
           "Priority support"
@@ -442,7 +452,10 @@
           "Unlimited agents",
           "1,000 credits/month",
           "+5 daily credits",
-          "Team collaboration",
+          "⭐ Scheduled agent runs",
+          "White label agents",
+          "Advanced analytics",
+          "Team collaboration (15 members)",
           "API access",
           "SSO support",
           "Dedicated support"
@@ -458,6 +471,10 @@
           "Unlimited agents",
           "2,500 credits/month",
           "+5 daily credits",
+          "⭐ Scheduled agent runs",
+          "White label agents",
+          "Advanced analytics",
+          "Team collaboration (15 members)",
           "Custom integrations",
           "On-premise option",
           "SLA guarantee",
@@ -474,6 +491,10 @@
           "Unlimited agents",
           "10,000 credits/month",
           "+5 daily credits",
+          "⭐ Scheduled agent runs",
+          "White label agents",
+          "Advanced analytics",
+          "Team collaboration (15 members)",
           "Custom integrations",
           "On-premise option",
           "SLA guarantee",
@@ -490,6 +511,10 @@
           "Unlimited everything",
           "Custom credits",
           "+5 daily credits",
+          "⭐ Scheduled agent runs",
+          "White label agents",
+          "Advanced analytics",
+          "Unlimited team members",
           "Custom integrations",
           "SLA guarantee",
           "Dedicated account manager",
@@ -557,9 +582,9 @@
     "q2": "How long does it take to create an agent?",
     "a2": "You can create a simple agent in just a few minutes. More complex agents may require 15-30 minutes. It all depends on your needs and desired functionality.",
     "q3": "What are credits and how are they used?",
-    "a3": "Credits are jeesi.ai's usage units. Each agent interaction consumes credits. All plans include 5 daily bonus credits that reset each day. Free tier gets 50 credits/month, Starter gets 100/month, Pro gets 500/month, and Business gets 1,000/month.",
+    "a3": "Credits are jeesi.ai's usage units. Each agent interaction consumes credits. All plans include 5 daily bonus credits that reset each day. Free tier gets 50 credits/month, Starter gets 100/month, Pro gets 500/month, Business gets 1,000/month, Business+ gets 2,500/month, and Enterprise gets 10,000/month.",
     "q4": "How does pricing work?",
-    "a4": "We offer five tiers: Free (€0, 2 agents, 50 credits/month), Starter (€19/month, 5 agents, 100 credits/month), Pro (€49/month, 10 agents, 500 credits/month), Business (€99/month, unlimited agents, 1,000 credits/month), and Enterprise (custom pricing). Annual billing saves 20%.",
+    "a4": "We offer seven tiers: Free (€0, 3 agents, 50 credits/month), Starter (€19/month, unlimited agents, API access), Pro (€49/month, scheduled runs, team collaboration up to 5), Business (€99/month, white label, analytics, up to 15 team members), Business+ (€249/month, custom integrations, SLA), Enterprise (€499/month, 10,000 credits, 24/7 support), and Custom (tailored pricing). Annual billing saves 20%.",
     "q5": "Can I buy more credits?",
     "a5": "Yes! All paid tier users can purchase additional credits anytime: 100 credits for €19.90, 250 credits for €29.99, 500 credits for €49.90, or 1,000 credits for €84.90. Purchased credits roll over and don't expire.",
     "q6": "What happens to unused credits?",
