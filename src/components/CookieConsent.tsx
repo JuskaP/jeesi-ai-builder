@@ -89,7 +89,7 @@ export default function CookieConsent() {
             <p className="text-sm text-muted-foreground">
               We use cookies to enhance your experience. By continuing to visit this site, you agree to our use of cookies.{" "}
               <Link to="/privacy" className="text-primary hover:underline">
-                Learn more
+                Read our Privacy Policy
               </Link>
             </p>
           </div>
