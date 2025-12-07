@@ -17,16 +17,16 @@ const monthlyPriceMap: Record<string, string> = {
   starter: "price_1SaGfcGx4tvYlwhYuxu4weEo",
   pro: "price_1SaGflGx4tvYlwhYcZj1MSf0",
   business: "price_1SaGfoGx4tvYlwhYiIfhKBSc",
-  enterprise: "price_1SadPPGx4tvYlwhYwF70UuKC",
-  businessplus: "price_1SadN7Gx4tvYlwhYTtBa9r7F",
+  businessplus: "price_1SadPPGx4tvYlwhYwF70UuKC",  // €249/month
+  enterprise: "price_1SadN7Gx4tvYlwhYTtBa9r7F",   // €499/month
 };
 
 const annualPriceMap: Record<string, string> = {
   starter: "price_1SaGfkGx4tvYlwhYpSWO1FDR",
   pro: "price_1SaGfmGx4tvYlwhYngNzJNmS",
   business: "price_1SaGfpGx4tvYlwhY01HLAcPB",
-  enterprise: "price_1SadPQGx4tvYlwhYzTRwGqSL",
-  businessplus: "price_1SadN8Gx4tvYlwhY4DP7ucLW",
+  businessplus: "price_1SadPQGx4tvYlwhYzTRwGqSL",  // €2,390/year
+  enterprise: "price_1SadN8Gx4tvYlwhY4DP7ucLW",   // €4,790/year
 };
 
 // Credit pack price IDs
