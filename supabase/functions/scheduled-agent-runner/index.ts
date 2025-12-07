@@ -16,6 +16,29 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Validate CRON_SECRET for authentication
+  const cronSecret = Deno.env.get('CRON_SECRET');
+  const providedSecret = req.headers.get('x-cron-secret') || req.headers.get('authorization')?.replace('Bearer ', '');
+  
+  if (!cronSecret) {
+    logStep('ERROR', { message: 'CRON_SECRET not configured' });
+    return new Response(JSON.stringify({ error: 'Server configuration error' }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+
+  if (!providedSecret || providedSecret !== cronSecret) {
+    logStep('Unauthorized access attempt', { 
+      hasSecret: !!providedSecret,
+      ip: req.headers.get('x-forwarded-for') || 'unknown'
+    });
+    return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+      status: 401,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+
   const supabaseAdmin = createClient(
     Deno.env.get('SUPABASE_URL') ?? '',
     Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
@@ -23,7 +46,7 @@ serve(async (req) => {
   );
 
   try {
-    logStep('Starting scheduled agent runner');
+    logStep('Starting scheduled agent runner (authenticated)');
     
     const now = new Date().toISOString();
     
@@ -123,7 +146,7 @@ serve(async (req) => {
               { role: 'user', content: schedule.prompt_template }
             ],
             temperature: agent.temperature || 0.7,
-            max_tokens: agent.max_tokens || 1000
+            max_completion_tokens: agent.max_tokens || 1000
           })
         });
 
