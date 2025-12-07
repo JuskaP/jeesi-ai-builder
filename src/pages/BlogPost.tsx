@@ -6,6 +6,7 @@ import { Calendar, Clock, ArrowLeft, Share2, BookOpen } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import NewsletterForm from "@/components/NewsletterForm";
 import { useSEO, getArticleSchema, getBreadcrumbSchema } from "@/hooks/useSEO";
+import DOMPurify from "dompurify";
 
 interface BlogPostData {
   title: string;
@@ -1128,7 +1129,7 @@ export default function BlogPost() {
 
         <div 
           className="blog-content"
-          dangerouslySetInnerHTML={{ __html: formatMarkdown(post.content) }}
+          dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(formatMarkdown(post.content)) }}
         />
 
         {/* Newsletter CTA */}
