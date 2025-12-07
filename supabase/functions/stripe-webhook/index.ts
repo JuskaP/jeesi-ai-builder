@@ -7,48 +7,48 @@ const logStep = (step: string, details?: any) => {
   console.log(`[STRIPE-WEBHOOK] ${step}${detailsStr}`);
 };
 
-// Credit pack mapping (credits by pack price)
+// Credit pack mapping (credits by pack price) - LIVE
 const creditPackCredits: Record<string, number> = {
-  "price_1Sabv2Gx4tvYlwhY12wIFZxW": 50,   // €12.90
-  "price_1SaGfqGx4tvYlwhYH4YSgRyv": 100,
-  "price_1SaKQOGx4tvYlwhYkEDHcAPJ": 250,  // €24.90
-  "price_1SaGfrGx4tvYlwhYUs592ySr": 500,
-  "price_1SaGfsGx4tvYlwhYnVnc6bKT": 1000,
+  "price_1SblC2KDXNDCp6ElrD3ZUrcj": 50,    // €12.90
+  "price_1SblC3KDXNDCp6ElOBdqoSAj": 100,   // €19.90
+  "price_1SblC4KDXNDCp6Eld7aCG9pr": 250,   // €24.90
+  "price_1SblC5KDXNDCp6Elap7CmEil": 500,   // €49.90
+  "price_1SblC7KDXNDCp6ElKUh31n6e": 1000,  // €84.90
 };
 
-// Overage price ID (€0.10 per credit)
-const OVERAGE_PRICE_ID = "price_1Sabv4Gx4tvYlwhYsTuneLfr";
+// Overage price ID (€0.10 per credit) - LIVE
+const OVERAGE_PRICE_ID = "price_1SblC9KDXNDCp6ElniT55Lzk";
 
-// Subscription plan credits (monthly credits added on subscription)
+// Subscription plan credits (monthly credits added on subscription) - LIVE
 const subscriptionCredits: Record<string, number> = {
-  "price_1SaGfcGx4tvYlwhYuxu4weEo": 100,  // starter monthly
-  "price_1SaGfkGx4tvYlwhYpSWO1FDR": 100,  // starter annual
-  "price_1SaGflGx4tvYlwhYcZj1MSf0": 500,  // pro monthly
-  "price_1SaGfmGx4tvYlwhYngNzJNmS": 500,  // pro annual
-  "price_1SaGfoGx4tvYlwhYiIfhKBSc": 1000,  // business monthly
-  "price_1SaGfpGx4tvYlwhY01HLAcPB": 1000,  // business annual
-  "price_1SadPPGx4tvYlwhYwF70UuKC": 2500,  // businessplus monthly (Business+ €249)
-  "price_1SadPQGx4tvYlwhYzTRwGqSL": 2500,  // businessplus annual (Business+ €2,390)
-  "price_1SadN7Gx4tvYlwhYTtBa9r7F": 10000,  // enterprise monthly (Enterprise €499)
-  "price_1SadN8Gx4tvYlwhY4DP7ucLW": 10000,  // enterprise annual (Enterprise €4,790)
+  "price_1Sbky2KDXNDCp6ElPempVyhZ": 100,   // starter monthly €19
+  "price_1Sbl3oKDXNDCp6ElpehayPBE": 100,   // starter annual €182
+  "price_1SblBkKDXNDCp6ElMoXWp8ub": 500,   // pro monthly €49
+  "price_1SblBlKDXNDCp6ElwSBZ8zT2": 500,   // pro annual €470
+  "price_1SblBnKDXNDCp6ElhXT7kx9S": 1000,  // business monthly €99
+  "price_1SblBpKDXNDCp6ElUprgLpqA": 1000,  // business annual €950
+  "price_1SblBrKDXNDCp6ElzsVUfTwr": 2500,  // businessplus monthly €249
+  "price_1SblBtKDXNDCp6ElOv0UxFM0": 2500,  // businessplus annual €2,390
+  "price_1SblBvKDXNDCp6ElUuuMTTwM": 10000, // enterprise monthly €499
+  "price_1SblBwKDXNDCp6EllMcmITop": 10000, // enterprise annual €4,790
 };
 
 const getPlanTypeFromPrice = (priceId: string): string => {
-  if (["price_1SaGfcGx4tvYlwhYuxu4weEo", "price_1SaGfkGx4tvYlwhYpSWO1FDR"].includes(priceId)) {
+  if (["price_1Sbky2KDXNDCp6ElPempVyhZ", "price_1Sbl3oKDXNDCp6ElpehayPBE"].includes(priceId)) {
     return "starter";
   }
-  if (["price_1SaGflGx4tvYlwhYcZj1MSf0", "price_1SaGfmGx4tvYlwhYngNzJNmS"].includes(priceId)) {
+  if (["price_1SblBkKDXNDCp6ElMoXWp8ub", "price_1SblBlKDXNDCp6ElwSBZ8zT2"].includes(priceId)) {
     return "pro";
   }
-  if (["price_1SaGfoGx4tvYlwhYiIfhKBSc", "price_1SaGfpGx4tvYlwhY01HLAcPB"].includes(priceId)) {
+  if (["price_1SblBnKDXNDCp6ElhXT7kx9S", "price_1SblBpKDXNDCp6ElUprgLpqA"].includes(priceId)) {
     return "business";
   }
   // Business+ (€249, 2,500 credits)
-  if (["price_1SadPPGx4tvYlwhYwF70UuKC", "price_1SadPQGx4tvYlwhYzTRwGqSL"].includes(priceId)) {
+  if (["price_1SblBrKDXNDCp6ElzsVUfTwr", "price_1SblBtKDXNDCp6ElOv0UxFM0"].includes(priceId)) {
     return "businessplus";
   }
   // Enterprise (€499, 10,000 credits)
-  if (["price_1SadN7Gx4tvYlwhYTtBa9r7F", "price_1SadN8Gx4tvYlwhY4DP7ucLW"].includes(priceId)) {
+  if (["price_1SblBvKDXNDCp6ElUuuMTTwM", "price_1SblBwKDXNDCp6EllMcmITop"].includes(priceId)) {
     return "enterprise";
   }
   return "free";

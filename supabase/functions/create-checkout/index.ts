@@ -12,34 +12,34 @@ const logStep = (step: string, details?: any) => {
   console.log(`[CREATE-CHECKOUT] ${step}${detailsStr}`);
 };
 
-// Price IDs for subscription plans
+// Price IDs for subscription plans (LIVE)
 const monthlyPriceMap: Record<string, string> = {
-  starter: "price_1SaGfcGx4tvYlwhYuxu4weEo",
-  pro: "price_1SaGflGx4tvYlwhYcZj1MSf0",
-  business: "price_1SaGfoGx4tvYlwhYiIfhKBSc",
-  businessplus: "price_1SadPPGx4tvYlwhYwF70UuKC",  // €249/month
-  enterprise: "price_1SadN7Gx4tvYlwhYTtBa9r7F",   // €499/month
+  starter: "price_1Sbky2KDXNDCp6ElPempVyhZ",     // €19/month
+  pro: "price_1SblBkKDXNDCp6ElMoXWp8ub",         // €49/month
+  business: "price_1SblBnKDXNDCp6ElhXT7kx9S",    // €99/month
+  businessplus: "price_1SblBrKDXNDCp6ElzsVUfTwr", // €249/month
+  enterprise: "price_1SblBvKDXNDCp6ElUuuMTTwM",  // €499/month
 };
 
 const annualPriceMap: Record<string, string> = {
-  starter: "price_1SaGfkGx4tvYlwhYpSWO1FDR",
-  pro: "price_1SaGfmGx4tvYlwhYngNzJNmS",
-  business: "price_1SaGfpGx4tvYlwhY01HLAcPB",
-  businessplus: "price_1SadPQGx4tvYlwhYzTRwGqSL",  // €2,390/year
-  enterprise: "price_1SadN8Gx4tvYlwhY4DP7ucLW",   // €4,790/year
+  starter: "price_1Sbl3oKDXNDCp6ElpehayPBE",     // €182/year
+  pro: "price_1SblBlKDXNDCp6ElwSBZ8zT2",         // €470/year
+  business: "price_1SblBpKDXNDCp6ElUprgLpqA",    // €950/year
+  businessplus: "price_1SblBtKDXNDCp6ElOv0UxFM0", // €2,390/year
+  enterprise: "price_1SblBwKDXNDCp6EllMcmITop",  // €4,790/year
 };
 
-// Credit pack price IDs
+// Credit pack price IDs (LIVE)
 const creditPackPriceMap: Record<number, string> = {
-  50: "price_1Sabv2Gx4tvYlwhY12wIFZxW",    // €12.90
-  100: "price_1SaGfqGx4tvYlwhYH4YSgRyv",
-  250: "price_1SaKQOGx4tvYlwhYkEDHcAPJ",   // €24.90
-  500: "price_1SaGfrGx4tvYlwhYUs592ySr",
-  1000: "price_1SaGfsGx4tvYlwhYnVnc6bKT",
+  50: "price_1SblC2KDXNDCp6ElrD3ZUrcj",     // €12.90
+  100: "price_1SblC3KDXNDCp6ElOBdqoSAj",    // €19.90
+  250: "price_1SblC4KDXNDCp6Eld7aCG9pr",    // €24.90
+  500: "price_1SblC5KDXNDCp6Elap7CmEil",    // €49.90
+  1000: "price_1SblC7KDXNDCp6ElKUh31n6e",   // €84.90
 };
 
-// Overage credit price ID (€0.10 per credit)
-const OVERAGE_PRICE_ID = "price_1Sabv4Gx4tvYlwhYsTuneLfr";
+// Overage credit price ID (€0.10 per credit) - LIVE
+const OVERAGE_PRICE_ID = "price_1SblC9KDXNDCp6ElniT55Lzk";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
