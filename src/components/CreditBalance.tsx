@@ -102,8 +102,13 @@ export default function CreditBalance() {
   if (!balance) return null;
 
   const planLabels: Record<string, string> = {
-    basic: "Basic",
+    free: "Free",
+    basic: "Free",
+    starter: "Starter",
     pro: "Pro",
+    business: "Business",
+    businessplus: "Business+",
+    enterprise: "Enterprise",
     expert: "Expert",
     custom: "Custom"
   };
