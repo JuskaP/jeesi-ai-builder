@@ -340,7 +340,7 @@ export default function Billing() {
         </div>
       )}
 
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4 mb-12">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12">
         {checkingSubscription ? (
           <div className="col-span-full flex items-center justify-center py-12">
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -349,53 +349,60 @@ export default function Billing() {
           plans.map((plan: any) => (
             <Card 
               key={plan.name} 
-              className={`relative ${plan.popular ? 'border-primary shadow-lg shadow-primary/20' : ''} ${plan.isCurrentPlan ? 'border-2 border-primary' : ''}`}
+              className={`relative flex flex-col ${plan.popular ? 'border-primary shadow-lg shadow-primary/20 ring-1 ring-primary/50' : ''} ${plan.isCurrentPlan ? 'border-2 border-primary' : ''}`}
             >
               {plan.isCurrentPlan && (
-                <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground">
+                <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground whitespace-nowrap z-10">
                   <Check className="h-3 w-3 mr-1" />
                   Your Plan
                 </Badge>
               )}
               {plan.popular && !plan.isCurrentPlan && (
-                <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground">
+                <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground whitespace-nowrap z-10">
                   <Sparkles className="h-3 w-3 mr-1" />
                   {t('billing.mostPopular')}
                 </Badge>
               )}
             
-              <CardHeader className="pb-2">
-                <CardTitle className="text-xl">{plan.name}</CardTitle>
-                <CardDescription className="min-h-[32px] text-sm">{plan.description}</CardDescription>
-                <div className="pt-2">
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-2xl font-bold text-foreground">
-                      {isAnnual ? plan.annualPrice : plan.price}
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg truncate">{plan.name}</CardTitle>
+                <CardDescription className="min-h-[40px] text-sm line-clamp-2">{plan.description}</CardDescription>
+                <div className="pt-3">
+                  <span className="text-3xl font-bold text-foreground">
+                    {isAnnual ? plan.annualPrice : plan.price}
+                  </span>
+                  {!plan.isFree && !plan.isCustom && (
+                    <span className="text-sm text-muted-foreground ml-1">
+                      /{isAnnual ? 'year' : 'month'}
                     </span>
-                  </div>
+                  )}
                 </div>
               </CardHeader>
 
-              <CardContent className="space-y-4">
-                <ul className="space-y-1.5">
-                  {plan.features.map((feature: string) => (
-                    <li key={feature} className="flex items-start gap-2 text-xs">
-                      <Check className="h-3 w-3 text-primary shrink-0 mt-0.5" />
-                      <span>{feature}</span>
+              <CardContent className="flex-1 flex flex-col">
+                <ul className="space-y-2 flex-1 mb-4">
+                  {plan.features.slice(0, 6).map((feature: string) => (
+                    <li key={feature} className="flex items-start gap-2 text-sm">
+                      <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                      <span className="line-clamp-1">{feature}</span>
                     </li>
                   ))}
-                  {plan.limitations?.map((limitation: string) => (
-                    <li key={limitation} className="flex items-start gap-2 text-xs text-muted-foreground">
-                      <X className="h-3 w-3 text-destructive shrink-0 mt-0.5" />
-                      <span>{limitation}</span>
+                  {plan.features.length > 6 && (
+                    <li className="text-xs text-muted-foreground pl-6">
+                      +{plan.features.length - 6} more features
+                    </li>
+                  )}
+                  {plan.limitations?.slice(0, 2).map((limitation: string) => (
+                    <li key={limitation} className="flex items-start gap-2 text-sm text-muted-foreground">
+                      <X className="h-4 w-4 text-destructive shrink-0 mt-0.5" />
+                      <span className="line-clamp-1">{limitation}</span>
                     </li>
                   ))}
                 </ul>
 
                 <Button 
-                  className="w-full" 
+                  className="w-full mt-auto" 
                   variant={plan.popular ? 'default' : 'outline'}
-                  size="sm"
                   disabled={loading || plan.isCurrentPlan}
                   onClick={() => handlePlanAction(plan)}
                 >
@@ -480,44 +487,44 @@ export default function Billing() {
         <h3 className="text-2xl font-bold text-foreground mb-6 text-center">
           {t('billing.featureComparison.title')}
         </h3>
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto rounded-lg border">
           <Table>
             <TableHeader>
-              <TableRow>
-                <TableHead className="w-48">Feature</TableHead>
-                <TableHead className="text-center">Free</TableHead>
-                <TableHead className="text-center">Starter</TableHead>
-                <TableHead className="text-center relative">
-                  <div className="flex flex-col items-center">
-                    <Badge className="absolute -top-3 bg-primary text-primary-foreground text-xs">
-                      <Star className="h-3 w-3 mr-1" />
-                      Most Popular
+              <TableRow className="bg-muted/50">
+                <TableHead className="w-48 font-semibold">Feature</TableHead>
+                <TableHead className="text-center min-w-[80px]">Free</TableHead>
+                <TableHead className="text-center min-w-[80px]">Starter</TableHead>
+                <TableHead className="text-center min-w-[80px] bg-primary/10 relative">
+                  <div className="flex flex-col items-center pt-2">
+                    <Badge className="absolute -top-2 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-[10px] px-2 py-0.5 whitespace-nowrap">
+                      <Star className="h-2.5 w-2.5 mr-0.5" />
+                      Popular
                     </Badge>
                     Pro
                   </div>
                 </TableHead>
-                <TableHead className="text-center">Business</TableHead>
-                <TableHead className="text-center">Enterprise</TableHead>
-                <TableHead className="text-center">Business+</TableHead>
-                <TableHead className="text-center">Custom</TableHead>
+                <TableHead className="text-center min-w-[80px]">Business</TableHead>
+                <TableHead className="text-center min-w-[90px]">Business+</TableHead>
+                <TableHead className="text-center min-w-[90px]">Enterprise</TableHead>
+                <TableHead className="text-center min-w-[80px]">Custom</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {Object.keys(featureLabels).map((feature) => (
-                <TableRow key={feature}>
-                  <TableCell className="font-medium">
+                <TableRow key={feature} className="hover:bg-muted/30">
+                  <TableCell className="font-medium text-sm">
                     {featureLabels[feature]}
                   </TableCell>
-                  {['free', 'starter', 'pro', 'business', 'enterprise', 'businessplus', 'custom'].map((plan) => {
+                  {['free', 'starter', 'pro', 'business', 'businessplus', 'enterprise', 'custom'].map((plan) => {
                     const value = featureComparisonData[plan][feature];
                     return (
                       <TableCell key={plan} className={`text-center ${plan === 'pro' ? 'bg-primary/5' : ''}`}>
                         {value === true ? (
                           <Check className="h-4 w-4 text-primary mx-auto" />
                         ) : value === false ? (
-                          <X className="h-4 w-4 text-muted-foreground mx-auto" />
+                          <X className="h-4 w-4 text-muted-foreground/50 mx-auto" />
                         ) : (
-                          <span className="text-sm">{String(value)}</span>
+                          <span className="text-xs font-medium whitespace-nowrap">{String(value)}</span>
                         )}
                       </TableCell>
                     );
