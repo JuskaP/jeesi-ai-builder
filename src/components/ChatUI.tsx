@@ -59,6 +59,77 @@ export default function ChatUI({ template }: ChatUIProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { toast } = useToast();
+  const hasLoadedConversation = useRef(false);
+
+  // Session storage key for conversation persistence
+  const CONVERSATION_KEY = 'helpie_conversation_id';
+
+  // Load existing conversation on mount
+  useEffect(() => {
+    if (hasLoadedConversation.current || !user) return;
+    
+    const loadExistingConversation = async () => {
+      try {
+        // Check sessionStorage for active conversation
+        const storedConvId = sessionStorage.getItem(CONVERSATION_KEY);
+        
+        if (storedConvId) {
+          // Load messages from this conversation
+          const { data: messagesData, error } = await supabase
+            .from('messages')
+            .select('role, content, attachments')
+            .eq('conversation_id', storedConvId)
+            .order('created_at', { ascending: true });
+
+          if (!error && messagesData && messagesData.length > 0) {
+            setConversationId(storedConvId);
+            setMessages(messagesData.map(m => ({
+              role: m.role as 'user' | 'assistant',
+              content: m.content,
+              attachments: m.attachments as string[] | undefined
+            })));
+            setHasUserTyped(true);
+            hasLoadedConversation.current = true;
+            return;
+          }
+        }
+        
+        // If no stored conversation, try to find the most recent one for this user
+        const { data: recentConv, error: convError } = await supabase
+          .from('conversations')
+          .select('id')
+          .eq('user_id', user.id)
+          .is('agent_id', null)
+          .order('updated_at', { ascending: false })
+          .limit(1)
+          .single();
+
+        if (!convError && recentConv) {
+          const { data: messagesData } = await supabase
+            .from('messages')
+            .select('role, content, attachments')
+            .eq('conversation_id', recentConv.id)
+            .order('created_at', { ascending: true });
+
+          if (messagesData && messagesData.length > 0) {
+            setConversationId(recentConv.id);
+            sessionStorage.setItem(CONVERSATION_KEY, recentConv.id);
+            setMessages(messagesData.map(m => ({
+              role: m.role as 'user' | 'assistant',
+              content: m.content,
+              attachments: m.attachments as string[] | undefined
+            })));
+            setHasUserTyped(true);
+          }
+        }
+      } catch (error) {
+        console.error('Error loading conversation:', error);
+      }
+      hasLoadedConversation.current = true;
+    };
+
+    loadExistingConversation();
+  }, [user]);
 
   // Auto-resize textarea
   const adjustTextareaHeight = () => {
@@ -270,6 +341,8 @@ export default function ChatUI({ template }: ChatUIProps) {
 
       if (error) throw error;
       setConversationId(data.id);
+      // Persist to sessionStorage so conversation survives page navigation
+      sessionStorage.setItem(CONVERSATION_KEY, data.id);
       return data.id;
     } catch (error) {
       console.error('Error creating conversation:', error);
